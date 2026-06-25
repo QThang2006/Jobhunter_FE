@@ -178,3 +178,12 @@ export interface ISubscribers {
     createdAt?: string;
     updatedAt?: string;
 }
+
+export interface INotification {
+    id: number;
+    title: string;
+    body: string;
+    status: string; // APPROVED | REJECTED | REVIEWING | PENDING
+    isRead: boolean;
+    createdAt: string;
+}

@@ -285,4 +285,22 @@ export const callSendIntroEmail = () => {
     return axios.get<IBackendRes<any>>('/api/v1/email');
 }
 
+/**
+ *
+ Module Notification
+ */
+export const callFetchNotifications = (page: number = 1, pageSize: number = 10) => {
+    return axios.get<IBackendRes<any>>(`/api/v1/notifications?page=${page}&size=${pageSize}&sort=createdAt,desc`);
+}
 
+export const callCountUnreadNotifications = () => {
+    return axios.get<IBackendRes<{ unreadCount: number }>>('/api/v1/notifications/unread-count');
+}
+
+export const callMarkNotificationAsRead = (id: number) => {
+    return axios.put<IBackendRes<void>>(`/api/v1/notifications/${id}/read`);
+}
+
+export const callMarkAllNotificationsAsRead = () => {
+    return axios.put<IBackendRes<void>>('/api/v1/notifications/read-all');
+}

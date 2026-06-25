@@ -20,6 +20,7 @@ import { isMobile } from 'react-device-detect';
 import type { MenuProps } from 'antd';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import { ALL_PERMISSIONS } from '@/config/permissions';
+import NotificationBell from '@/components/share/notification-bell';
 
 const { Content, Sider } = Layout;
 
@@ -193,7 +194,7 @@ const LayoutAdmin = () => {
 
                 <Layout>
                     {!isMobile &&
-                        <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20 }}>
+                        <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20, alignItems: "center" }}>
                             <Button
                                 type="text"
                                 icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
@@ -205,13 +206,15 @@ const LayoutAdmin = () => {
                                 }}
                             />
 
-                            <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                <Space style={{ cursor: "pointer" }}>
-                                    Welcome {user?.name}
-                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
-
-                                </Space>
-                            </Dropdown>
+                            <Space size={16} align="center">
+                                <NotificationBell />
+                                <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                                    <Space style={{ cursor: "pointer" }}>
+                                        Welcome {user?.name}
+                                        <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                    </Space>
+                                </Dropdown>
+                            </Space>
                         </div>
                     }
                     <Content style={{ padding: '15px' }}>

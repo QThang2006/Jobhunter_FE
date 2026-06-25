@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { callLogout } from '@/config/api';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import ManageAccount from './modal/manage.account';
+import NotificationBell from '@/components/share/notification-bell';
 
 const Header = (props: any) => {
     const navigate = useNavigate();
@@ -122,12 +123,15 @@ const Header = (props: any) => {
                                     {isAuthenticated === false ?
                                         <Link to={'/login'}>Đăng Nhập</Link>
                                         :
-                                        <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                            <Space style={{ cursor: "pointer" }}>
-                                                <span>Welcome {user?.name}</span>
-                                                <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
-                                            </Space>
-                                        </Dropdown>
+                                        <Space size={12} align="center">
+                                            <NotificationBell />
+                                            <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                                                <Space style={{ cursor: "pointer" }}>
+                                                    <span>Welcome {user?.name}</span>
+                                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                                </Space>
+                                            </Dropdown>
+                                        </Space>
                                     }
 
                                 </div>

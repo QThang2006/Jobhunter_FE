@@ -1,0 +1,278 @@
+/* Wrapper cho icon chuông */
+.bell-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: relative;
+}
+
+.bell-wrapper:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Icon chuông */
+.bell-icon {
+    font-size: 18px;
+    color: #a7a7a7;
+    transition: color 0.2s ease, transform 0.3s ease;
+}
+
+.bell-icon:hover {
+    color: #fff;
+}
+
+/* Khi có thông báo chưa đọc: chuông rung */
+.bell-icon--has-notif {
+    color: #faad14;
+    animation: bell-ring 1.5s ease infinite;
+}
+
+@keyframes bell-ring {
+    0%   { transform: rotate(0deg); }
+    5%   { transform: rotate(12deg); }
+    10%  { transform: rotate(-10deg); }
+    15%  { transform: rotate(8deg); }
+    20%  { transform: rotate(-6deg); }
+    25%  { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+}
+
+/* Dropdown overlay — override antd */
+:global(.notif-dropdown-overlay) .ant-dropdown-arrow {
+    display: none;
+}
+
+/* Panel chính */
+.notif-panel {
+    width: 380px;
+    max-width: 95vw;
+    background: #1e1e2e;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: slide-down 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Header panel */
+.notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.notif-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e8e8f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+}
+
+.notif-badge-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: linear-gradient(135deg, #ff4d6d, #c9184a);
+    color: #fff;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(255, 77, 109, 0.5);
+}
+
+.mark-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(24, 144, 255, 0.12);
+    color: #40a9ff;
+    border: 1px solid rgba(24, 144, 255, 0.25);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.mark-all-btn:hover:not(:disabled) {
+    background: rgba(24, 144, 255, 0.22);
+    border-color: #40a9ff;
+    transform: translateY(-1px);
+}
+
+.mark-all-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Body scrollable */
+.notif-body {
+    max-height: 420px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.notif-body::-webkit-scrollbar {
+    width: 4px;
+}
+.notif-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+}
+
+/* Loading state */
+.notif-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 20px;
+    color: #888;
+    font-size: 13px;
+}
+
+/* Từng item thông báo */
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    cursor: pointer;
+    transition: background 0.15s ease;
+    position: relative;
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Chưa đọc: nền nhẹ hơn */
+.notif-item--unread {
+    background: rgba(24, 144, 255, 0.06);
+}
+
+.notif-item--unread:hover {
+    background: rgba(24, 144, 255, 0.1);
+}
+
+/* Chấm màu status bên trái */
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 6px;
+    box-shadow: 0 0 6px currentColor;
+}
+
+/* Nội dung chính của item */
+.notif-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-item-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #dde1f0;
+    line-height: 1.4;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-item-body {
+    font-size: 12px;
+    color: #8b92b8;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.notif-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.status-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+.notif-time {
+    font-size: 11px;
+    color: #5a6080;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Chấm đỏ bên phải khi chưa đọc */
+.unread-dot {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff4d6d;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px rgba(255, 77, 109, 0.7);
+}
+
+/* Footer */
+.notif-footer {
+    padding: 10px 16px;
+    text-align: center;
+    font-size: 11px;
+    color: #4a5070;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.15);
+    letter-spacing: 0.3px;
+}
