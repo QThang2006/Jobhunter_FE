@@ -95,10 +95,10 @@ const NotificationBell = () => {
     }, [isAuthenticated, fetchUnreadCount]);
 
     const handleMarkRead = async (n: INotification) => {
-        if (n.isRead) return;
+        if (n.read) return;
         await callMarkNotificationAsRead(n.id);
         setNotifications(prev =>
-            prev.map(item => item.id === n.id ? { ...item, isRead: true } : item)
+            prev.map(item => item.id === n.id ? { ...item, read: true } : item)
         );
         setUnreadCount(prev => Math.max(0, prev - 1));
     };
@@ -155,7 +155,7 @@ const NotificationBell = () => {
                         return (
                             <div
                                 key={n.id}
-                                className={`${styles['notif-item']} ${!n.isRead ? styles['notif-item--unread'] : ''}`}
+                                className={`${styles['notif-item']} ${!n.read ? styles['notif-item--unread'] : ''}`}
                                 onClick={() => handleMarkRead(n)}
                             >
                                 {/* Status dot */}
@@ -181,7 +181,7 @@ const NotificationBell = () => {
                                         </span>
                                     </div>
                                 </div>
-                                {!n.isRead && <span className={styles['unread-dot']} />}
+                                {!n.read && <span className={styles['unread-dot']} />}
                             </div>
                         );
                     })

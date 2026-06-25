@@ -184,6 +184,6 @@ export interface INotification {
     title: string;
     body: string;
     status: string; // APPROVED | REJECTED | REVIEWING | PENDING
-    isRead: boolean;
+    read: boolean;  // Java boolean isRead → Jackson serializes getter isRead() → "read"
     createdAt: string;
 }
