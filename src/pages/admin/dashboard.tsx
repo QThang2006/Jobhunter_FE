@@ -65,7 +65,7 @@ const DashboardPage = () => {
     const [isEmailLoading, setIsEmailLoading] = useState(false);
 
     useEffect(() => {
-        if (userRole && userRole !== 'NORMAL_USER') {
+        if (userRole === 'SUPER_ADMIN') {
             fetchDashboardData();
         }
     }, [userRole]);
@@ -83,7 +83,7 @@ const DashboardPage = () => {
         }
     }
 
-    if (userRole === 'NORMAL_USER') {
+    if (userRole !== 'SUPER_ADMIN') {
         return (
             <Result
                 status="403"
