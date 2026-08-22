@@ -71,7 +71,7 @@ export const accountSlide = createSlice({
             state.user.name = action.payload.name;
             state.user.role = action?.payload?.role;
 
-            if (!action?.payload?.user?.role) state.user.role = {};
+            if (!action?.payload?.role) state.user.role = {};
             state.user.role.permissions = action?.payload?.role?.permissions ?? [];
         },
         setLogoutAction: (state, action) => {
@@ -94,7 +94,7 @@ export const accountSlide = createSlice({
         }
 
     },
-    extraReducers: (builder) => {
+    extraReducers: (builder) => {   
         // Add reducers for additional action types here, and handle loading state as needed
         builder.addCase(fetchAccount.pending, (state, action) => {
             if (action.payload) {
@@ -118,8 +118,8 @@ export const accountSlide = createSlice({
 
         builder.addCase(fetchAccount.rejected, (state, action) => {
             if (action.payload) {
-                state.isAuthenticated = false;
-                state.isLoading = false;
+            state.isAuthenticated = false;
+            state.isLoading = false;
             }
         })
 
