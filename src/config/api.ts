@@ -78,6 +78,10 @@ export const callFetchCompany = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<ICompany>>>(`/api/v1/companies?${query}`);
 }
 
+export const callFetchCompanyAdmin = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<ICompany>>>(`/api/v1/companies/by-user?${query}`);
+}
+
 export const callFetchCompanyById = (id: string) => {
     return axios.get<IBackendRes<ICompany>>(`/api/v1/companies/${id}`);
 }
@@ -150,6 +154,10 @@ export const callDeleteJob = (id: string) => {
 
 export const callFetchJob = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<IJob>>>(`/api/v1/jobs?${query}`);
+}
+
+export const callFetchJobAdmin = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IJob>>>(`/api/v1/jobs/by-company?${query}`);
 }
 
 export const callFetchJobById = (id: string) => {
