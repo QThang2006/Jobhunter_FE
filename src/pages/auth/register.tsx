@@ -1,8 +1,10 @@
 import { Button, Divider, Form, Input, Row, Select, message, notification } from 'antd';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { callRegister } from 'config/api';
+import { callRegister, callGoogleLogin } from 'config/api';
+import { FcGoogle } from 'react-icons/fc';
 import styles from 'styles/auth.module.scss';
+
 import { IUser } from '@/types/backend';
 const { Option } = Select;
 
@@ -128,12 +130,30 @@ const RegisterPage = () => {
                                     Đăng ký
                                 </Button>
                             </Form.Item>
-                            <Divider> Or </Divider>
+                            <Divider> Hoặc </Divider>
+                            <div style={{ marginBottom: 16 }}>
+                                <Button
+                                    icon={<FcGoogle size={20} style={{ marginRight: 8 }} />}
+                                    block
+                                    size="large"
+                                    onClick={() => callGoogleLogin()}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 500,
+                                        borderRadius: 6
+                                    }}
+                                >
+                                    Đăng ký / Đăng nhập với Google
+                                </Button>
+                            </div>
                             <p className="text text-normal" > Đã có tài khoản ?
                                 <span>
                                     <Link to='/login' > Đăng Nhập </Link>
                                 </span>
                             </p>
+
                         </Form>
                     </section>
                 </div>

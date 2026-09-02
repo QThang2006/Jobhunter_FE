@@ -1,7 +1,8 @@
 import { Button, Divider, Form, Input, message, notification } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { callLogin, callForgotPassword, callVerifyOTP, callResetPassword } from 'config/api';
+import { callLogin, callForgotPassword, callVerifyOTP, callResetPassword, callGoogleLogin } from 'config/api';
 import { useState, useEffect } from 'react';
+import { FcGoogle } from 'react-icons/fc';
 import { useDispatch } from 'react-redux';
 import { setUserLoginInfo } from '@/redux/slice/accountSlide';
 import { Modal, Steps } from 'antd';
@@ -170,12 +171,30 @@ const LoginPage = () => {
                                     <a onClick={() => setIsModalVisible(true)}>Quên mật khẩu?</a>
                                 </span>
                             </Form.Item>
-                            <Divider>Or</Divider>
+                            <Divider>Hoặc</Divider>
+                            <div style={{ marginBottom: 16 }}>
+                                <Button
+                                    icon={<FcGoogle size={20} style={{ marginRight: 8 }} />}
+                                    block
+                                    size="large"
+                                    onClick={() => callGoogleLogin()}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontWeight: 500,
+                                        borderRadius: 6
+                                    }}
+                                >
+                                    Đăng nhập với Google
+                                </Button>
+                            </div>
                             <p className="text text-normal">Chưa có tài khoản ?
                                 <span>
                                     <Link to='/register' > Đăng Ký </Link>
                                 </span>
                             </p>
+
                         </Form>
                     </section>
                 </div>

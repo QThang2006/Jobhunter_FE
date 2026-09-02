@@ -10,6 +10,7 @@ import NotFound from 'components/share/not.found';
 import Loading from 'components/share/loading';
 import LoginPage from 'pages/auth/login';
 import RegisterPage from 'pages/auth/register';
+import OAuth2RedirectHandler from 'pages/auth/oauth2.redirect';
 import LayoutAdmin from 'components/admin/layout.admin';
 import ProtectedRoute from 'components/share/protected-route.ts';
 import Header from 'components/client/header.client';
@@ -61,14 +62,16 @@ export default function App() {
   const isLoading = useAppSelector(state => state.account.isLoading);
 
 
-  useEffect(() => {
-    if (
-      window.location.pathname === '/login'
-      || window.location.pathname === '/register'
-    )
-      return;
-    dispatch(fetchAccount())
-  }, [])
+    useEffect(() => {
+      if (
+        window.location.pathname === '/login'
+        || window.location.pathname === '/register'
+        || window.location.pathname === '/oauth2/redirect'
+      )
+        return;
+      dispatch(fetchAccount())
+    }, [])
+
 
   const router = createBrowserRouter([
     {
@@ -158,7 +161,13 @@ export default function App() {
       path: "/register",
       element: <RegisterPage />,
     },
+
+    {
+      path: "/oauth2/redirect",
+      element: <OAuth2RedirectHandler />,
+    },
   ]);
+
 
   return (
     <>

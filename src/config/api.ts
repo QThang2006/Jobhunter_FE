@@ -13,6 +13,20 @@ export const callLogin = (username: string, password: string) => {
     return axios.post<IBackendRes<IAccount>>('/api/v1/auth/login', { username, password })
 }
 
+export const callGoogleLogin = (idToken?: string) => {
+    // Standard OAuth2 backend trigger url
+    const backendOAuth2Url = `${import.meta.env.VITE_BACKEND_URL}/oauth2/authorization/google`;
+    
+    // If idToken is provided (Frontend SDK mode), call backend API exchange
+    if (idToken) {
+        return axios.post<IBackendRes<IAccount>>('/api/v1/auth/google-login', { idToken });
+    }
+    
+    // Redirect to backend OAuth2 flow
+    window.location.href = backendOAuth2Url;
+}
+
+
 export const callFetchAccount = () => {
     return axios.get<IBackendRes<IGetAccount>>('/api/v1/auth/account')
 }
