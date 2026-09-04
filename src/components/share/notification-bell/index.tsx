@@ -204,6 +204,7 @@ const NotificationBell = () => {
             onOpenChange={setOpen}
             trigger={['click']}
             placement="bottomRight"
+            autoAdjustOverflow
             overlayClassName={styles['notif-dropdown-overlay']}
         >
             <div id="notification-bell-btn" className={styles['bell-wrapper']}>

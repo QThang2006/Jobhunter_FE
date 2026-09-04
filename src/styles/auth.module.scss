@@ -25,9 +25,12 @@ $shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0,
         align-items: center;
         max-width: 80rem;
         min-height: 100vh;
-        // width: 100%;
-        padding: 0 2rem;
+        padding: 0 1rem;
         margin: 0 auto;
+
+        @media (max-width: 576px) {
+            padding: 0 0.5rem;
+        }
     }
 
 
@@ -41,6 +44,10 @@ $shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0,
             font-size: 2rem;
             font-weight: 600;
             color: $color-black;
+
+            @media (max-width: 576px) {
+                font-size: 1.5rem;
+            }
         }
 
         &-normal {
@@ -62,10 +69,11 @@ $shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0,
 
     // Main
     .main {
+        width: 100%;
         .wrapper {
             max-width: 28rem;
             width: 100%;
-            margin: 2rem auto;
+            margin: 1.5rem auto;
             padding: 2rem 2.5rem;
             border: none;
             outline: none;
@@ -73,6 +81,11 @@ $shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0,
             color: $color-black;
             background: $color-white;
             box-shadow: $shadow-large;
+
+            @media (max-width: 576px) {
+                padding: 1.25rem 1rem;
+                margin: 1rem auto;
+            }
 
             .form {
                 width: 100%;

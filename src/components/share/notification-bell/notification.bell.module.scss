@@ -50,7 +50,7 @@
 /* Panel chính */
 .notif-panel {
     width: 380px;
-    max-width: 95vw;
+    max-width: calc(100vw - 16px);
     background: #1e1e2e;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -137,6 +137,10 @@
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+
+    @media (max-width: 480px) {
+        max-height: calc(100dvh - 240px);
+    }
 }
 
 .notif-body::-webkit-scrollbar {

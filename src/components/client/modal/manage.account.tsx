@@ -1,5 +1,4 @@
 import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notification, Input } from "antd";
-import { isMobile } from "react-device-detect";
 import type { TabsProps } from 'antd';
 import { IResume, ISubscribers } from "@/types/backend";
 import { useState, useEffect } from 'react';
@@ -95,12 +94,13 @@ const UserResume = (props: any) => {
     ];
 
     return (
-        <div>
+        <div style={{ overflowX: 'auto' }}>
             <Table<IResume>
                 columns={columns}
                 dataSource={listCV}
                 loading={isFetching}
                 pagination={false}
+                scroll={{ x: 600 }}
             />
         </div>
     )
@@ -379,22 +379,22 @@ const ManageAccount = (props: IProps) => {
     const items: TabsProps['items'] = [
         {
             key: 'user-resume',
-            label: `Rải CV`,
+            label: `CV của tôi`,
             children: <UserResume />,
         },
         {
             key: 'email-by-skills',
-            label: `Nhận Jobs qua Email`,
+            label: `Nhận Job qua Email`,
             children: <JobByEmail />,
         },
         {
             key: 'user-update-info',
-            label: `Cập nhật thông tin`,
+            label: `Hồ sơ`,
             children: <UserUpdateInfo />,
         },
         {
             key: 'user-password',
-            label: `Thay đổi mật khẩu`,
+            label: `Mật khẩu`,
             children: <UserPassword />,
         },
     ];
@@ -409,17 +409,21 @@ const ManageAccount = (props: IProps) => {
                 maskClosable={false}
                 footer={null}
                 destroyOnClose={true}
-                width={isMobile ? "100%" : "1000px"}
+                style={{ top: 20 }}
+                styles={{
+                    body: { padding: '12px 16px' }
+                }}
+                width="min(1000px, 96vw)"
             >
-
-                <div style={{ minHeight: 400 }}>
+                <div style={{ minHeight: 350 }}>
                     <Tabs
                         defaultActiveKey="user-resume"
                         items={items}
                         onChange={onChange}
+                        size="small"
+                        style={{ overflowX: 'auto' }}
                     />
                 </div>
-
             </Modal>
         </>
     )
