@@ -82,9 +82,9 @@ const SearchClient = () => {
                 }
             }
         >
-            <Row gutter={[20, 20]}>
+            <Row gutter={[12, 12]}>
                 <Col span={24}><h2>Việc Làm IT Cho Developer "Chất"</h2></Col>
-                <Col span={24} md={16}>
+                <Col span={24} md={14}>
                     <ProForm.Item
                         name="skills"
                     >
@@ -103,7 +103,7 @@ const SearchClient = () => {
                         />
                     </ProForm.Item>
                 </Col>
-                <Col span={12} md={4}>
+                <Col span={24} sm={14} md={6}>
                     <ProForm.Item
                         name="location"
                     >
@@ -122,8 +122,8 @@ const SearchClient = () => {
                         />
                     </ProForm.Item>
                 </Col>
-                <Col span={12} md={4}>
-                    <Button type='primary' onClick={() => form.submit()}>Search</Button>
+                <Col span={24} sm={10} md={4}>
+                    <Button type='primary' block onClick={() => form.submit()}>Search</Button>
                 </Col>
             </Row>
         </ProForm>

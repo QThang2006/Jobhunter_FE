@@ -70,7 +70,7 @@ const CompanyCard = (props: IProps) => {
                 <Spin spinning={isLoading} tip="Loading...">
                     <Row gutter={[20, 20]}>
                         <Col span={24}>
-                            <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
+                            <div className={styles["dflex-header"]}>
                                 <span className={styles["title"]}>Nhà Tuyển Dụng Hàng Đầu</span>
                                 {!showPagination &&
                                     <Link to="company">Xem tất cả</Link>
@@ -80,7 +80,7 @@ const CompanyCard = (props: IProps) => {
 
                         {displayCompany?.map(item => {
                             return (
-                                <Col span={24} md={6} key={item.id}>
+                                <Col span={24} sm={12} md={6} key={item.id}>
                                     <Card
                                         onClick={() => handleViewDetailJob(item)}
                                         style={{ height: 350 }}

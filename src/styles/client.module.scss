@@ -78,28 +78,42 @@
     height: 55px;
     background-color: #222831;
 
-    .brand {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        svg {
-            cursor: pointer;
-            color: #1677ff;
-            font-size: 30px;
-            margin-top: 7px;
-            animation: spin 20s linear infinite;
-        }
-    }
-
-    .top-menu {
+    .header-wrapper {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        height: 55px;
         width: 100%;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+
+        .logo-icon {
+            color: #1677ff;
+            font-size: 28px;
+            animation: spin 20s linear infinite;
+        }
+
+        .logo-text {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+    }
+
+    .top-menu-desktop {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex: 1;
+        margin-left: 30px;
 
         .extra {
-
             a,
             span {
                 cursor: pointer;
@@ -114,12 +128,31 @@
         }
     }
 
-    .header-mobile {
-        display: flex;
-        justify-content: space-between;
+    .header-mobile-trigger {
+        display: none;
         align-items: center;
-        height: 55px;
+        gap: 16px;
         color: white;
+
+        .hamburger-icon {
+            font-size: 22px;
+            cursor: pointer;
+            color: #ffffff;
+
+            &:hover {
+                color: #1677ff;
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        .top-menu-desktop {
+            display: none !important;
+        }
+
+        .header-mobile-trigger {
+            display: flex !important;
+        }
     }
 }
 
@@ -131,16 +164,18 @@
         padding: 50px;
     }
 
-    .dflex-mobile {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .dflex-pc {
+    .dflex-header {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+
+        @media (max-width: 576px) {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
     }
 
     .job-content {
@@ -193,23 +228,26 @@
 
 .company-section {
     .company-content {
-        padding-top: 50px;
+        padding-top: 30px;
 
         .card-customize {
-            height: 200px;
-            width: 200px;
-            margin: 20px auto;
+            height: 180px;
+            max-width: 100%;
+            margin: 10px auto;
             display: flex;
             align-items: center;
             justify-content: center;
+
+            img {
+                max-width: 100%;
+                max-height: 140px;
+                object-fit: contain;
+            }
         }
     }
-
 }
 
-
 .home-section {
-
     .empty {
         display: flex;
         justify-content: center;
@@ -217,25 +255,31 @@
         padding: 50px;
     }
 
-    .dflex-mobile {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .dflex-pc {
+    .dflex-header {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+
+        @media (max-width: 576px) {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
     }
 
     .title {
-        font-size: 27px;
+        font-size: 24px;
         font-family: "Roboto", sans-serif;
         color: #353535;
-        line-height: 35px;
-        margin-top: 20px;
-        margin-bottom: 20px;
+        line-height: 32px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+
+        @media (max-width: 576px) {
+            font-size: 20px;
+        }
     }
 }
 

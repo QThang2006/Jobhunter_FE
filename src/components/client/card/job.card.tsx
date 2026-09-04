@@ -111,7 +111,7 @@ const JobCard = (props: IProps) => {
                 <Spin spinning={isLoading} tip="Loading...">
                     <Row gutter={[20, 20]}>
                         <Col span={24}>
-                            <div className={isMobile ? styles["dflex-mobile"] : styles["dflex-pc"]}>
+                            <div className={styles["dflex-header"]}>
                                 <span className={styles["title"]}>Công Việc Mới Nhất</span>
                                 {!showPagination &&
                                     <Link to="job">Xem tất cả</Link>

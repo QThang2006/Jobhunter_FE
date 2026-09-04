@@ -67,7 +67,10 @@ const Header = (props: any) => {
         {
             label: <label
                 style={{ cursor: 'pointer' }}
-                onClick={() => setOpenManageAccount(true)}
+                onClick={() => {
+                    setOpenManageAccount(true);
+                    setOpenMobileMenu(false);
+                }}
             >Quản lý tài khoản</label>,
             key: 'manage-account',
             icon: <ContactsOutlined />
@@ -75,6 +78,7 @@ const Header = (props: any) => {
         ...(user.role?.permissions?.length ? [{
             label: <Link
                 to={"/admin"}
+                onClick={() => setOpenMobileMenu(false)}
             >Trang Quản Trị</Link>,
             key: 'admin',
             icon: <FireOutlined />
@@ -83,81 +87,132 @@ const Header = (props: any) => {
         {
             label: <label
                 style={{ cursor: 'pointer' }}
-                onClick={() => handleLogout()}
+                onClick={() => {
+                    handleLogout();
+                    setOpenMobileMenu(false);
+                }}
             >Đăng xuất</label>,
             key: 'logout',
             icon: <LogoutOutlined />
         },
     ];
 
-    const itemsMobiles = [...items, ...itemsDropdown];
+    const itemsMobiles = [
+        {
+            label: <Link to={'/'} onClick={() => setOpenMobileMenu(false)}>Trang Chủ</Link>,
+            key: '/',
+            icon: <TwitterOutlined />,
+        },
+        {
+            label: <Link to={'/job'} onClick={() => setOpenMobileMenu(false)}>Việc Làm IT</Link>,
+            key: '/job',
+            icon: <CodeOutlined />,
+        },
+        {
+            label: <Link to={'/company'} onClick={() => setOpenMobileMenu(false)}>Top Công ty IT</Link>,
+            key: '/company',
+            icon: <RiseOutlined />,
+        },
+        ...itemsDropdown
+    ];
 
     return (
         <>
             <div className={styles["header-section"]}>
                 <div className={styles["container"]}>
-                    {!isMobile ?
-                        <div style={{ display: "flex", gap: 30 }}>
-                            <div className={styles['brand']} >
-                                <FaReact onClick={() => navigate('/')} title='Hỏi Dân IT' />
-                            </div>
-                            <div className={styles['top-menu']}>
-                                <ConfigProvider
-                                    theme={{
-                                        token: {
-                                            colorPrimary: '#fff',
-                                            colorBgContainer: '#222831',
-                                            colorText: '#a7a7a7',
-                                        },
-                                    }}
-                                >
+                    <div className={styles["header-wrapper"]}>
+                        <div className={styles['brand']} onClick={() => navigate('/')}>
+                            <FaReact className={styles['logo-icon']} title='JobHunter' />
+                            <span className={styles['logo-text']}>JobHunter</span>
+                        </div>
 
-                                    <Menu
-                                        // onClick={onClick}
-                                        selectedKeys={[current]}
-                                        mode="horizontal"
-                                        items={items}
-                                    />
-                                </ConfigProvider>
-                                <div className={styles['extra']}>
-                                    {isAuthenticated === false ?
-                                        <Link to={'/login'}>Đăng Nhập</Link>
-                                        :
-                                        <Space size={12} align="center">
-                                            <NotificationBell />
-                                            <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                                <Space style={{ cursor: "pointer" }}>
-                                                    <span>Welcome {user?.name}</span>
-                                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
-                                                </Space>
-                                            </Dropdown>
-                                        </Space>
-                                    }
+                        <div className={styles['top-menu-desktop']}>
+                            <ConfigProvider
+                                theme={{
+                                    token: {
+                                        colorPrimary: '#fff',
+                                        colorBgContainer: '#222831',
+                                        colorText: '#a7a7a7',
+                                    },
+                                }}
+                            >
+                                <Menu
+                                    selectedKeys={[current]}
+                                    mode="horizontal"
+                                    items={items}
+                                />
+                            </ConfigProvider>
 
-                                </div>
-
+                            <div className={styles['extra']}>
+                                {isAuthenticated === false ?
+                                    <Link to={'/login'}>Đăng Nhập</Link>
+                                    :
+                                    <Space size={12} align="center">
+                                        <NotificationBell />
+                                        <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                                            <Space style={{ cursor: "pointer" }}>
+                                                <span>Welcome {user?.name}</span>
+                                                <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                            </Space>
+                                        </Dropdown>
+                                    </Space>
+                                }
                             </div>
                         </div>
-                        :
-                        <div className={styles['header-mobile']}>
-                            <span>Your APP</span>
-                            <MenuFoldOutlined onClick={() => setOpenMobileMenu(true)} />
+
+                        <div className={styles['header-mobile-trigger']}>
+                            {isAuthenticated && <NotificationBell />}
+                            <MenuFoldOutlined
+                                className={styles['hamburger-icon']}
+                                onClick={() => setOpenMobileMenu(true)}
+                            />
                         </div>
-                    }
+                    </div>
                 </div>
             </div>
-            <Drawer title="Chức năng"
+
+            <Drawer
+                title={
+                    isAuthenticated ? (
+                        <Space align="center">
+                            <Avatar>{user?.name?.substring(0, 2)?.toUpperCase()}</Avatar>
+                            <div>
+                                <div style={{ fontWeight: 600, fontSize: 14 }}>{user?.name}</div>
+                                <div style={{ fontSize: 12, color: '#888' }}>{user?.email}</div>
+                            </div>
+                        </Space>
+                    ) : "Danh mục Chức năng"
+                }
                 placement="right"
                 onClose={() => setOpenMobileMenu(false)}
                 open={openMobileMenu}
+                width={280}
             >
                 <Menu
-                    onClick={onClick}
+                    onClick={(e) => {
+                        onClick(e);
+                        setOpenMobileMenu(false);
+                    }}
                     selectedKeys={[current]}
                     mode="vertical"
-                    items={itemsMobiles}
+                    items={
+                        isAuthenticated
+                            ? itemsMobiles
+                            : [
+                                ...items.map(item => ({
+                                    ...item,
+                                    label: <Link to={item.key} onClick={() => setOpenMobileMenu(false)}>{(item.label as any)?.props?.children ?? item.label}</Link>
+                                })),
+                                {
+                                    label: <Link to={'/login'} onClick={() => setOpenMobileMenu(false)}>Đăng Nhập</Link>,
+                                    key: '/login',
+                                    icon: <LogoutOutlined />
+                                }
+                            ]
+                    }
                 />
             </Drawer>
+
             <ManageAccount
                 open={openMangeAccount}
                 onClose={setOpenManageAccount}
