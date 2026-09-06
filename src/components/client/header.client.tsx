@@ -199,7 +199,7 @@ const Header = (props: any) => {
                         isAuthenticated
                             ? itemsMobiles
                             : [
-                                ...items.map(item => ({
+                                ...items.map((item:any) => ({
                                     ...item,
                                     label: <Link to={item.key} onClick={() => setOpenMobileMenu(false)}>{(item.label as any)?.props?.children ?? item.label}</Link>
                                 })),
