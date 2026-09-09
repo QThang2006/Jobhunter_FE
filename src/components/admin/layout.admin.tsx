@@ -10,8 +10,12 @@ import {
     AliwangwangOutlined,
     BugOutlined,
     ScheduleOutlined,
+    MenuOutlined,
+    CloseOutlined,
+    LogoutOutlined,
+    HomeOutlined,
 } from '@ant-design/icons';
-import { Layout, Menu, Dropdown, Space, message, Avatar, Button } from 'antd';
+import { Layout, Menu, Dropdown, Space, message, Avatar, Button, Drawer, Typography } from 'antd';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { callLogout } from 'config/api';
@@ -23,11 +27,13 @@ import { ALL_PERMISSIONS } from '@/config/permissions';
 import NotificationBell from '@/components/share/notification-bell';
 
 const { Content, Sider } = Layout;
+const { Text } = Typography;
 
 const LayoutAdmin = () => {
     const location = useLocation();
 
     const [collapsed, setCollapsed] = useState(false);
+    const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
     const [activeMenu, setActiveMenu] = useState('');
     const user = useAppSelector(state => state.account.user);
 
@@ -114,11 +120,13 @@ const LayoutAdmin = () => {
             setMenuItems(full);
         }
     }, [permissions])
+
     useEffect(() => {
         setActiveMenu(location.pathname)
+        // Close mobile drawer on route change
+        setMobileDrawerOpen(false);
 
         // TỰ ĐỘNG REDIRECT CHO NON-SUPER-ADMIN
-        // Nếu đang ở trang root /admin mà không phải Super Admin (không thấy Dashboard)
         if (location.pathname === '/admin' && user.role.name !== 'SUPER_ADMIN' && menuItems && menuItems.length > 0) {
             const firstItem: any = menuItems[0];
             if (firstItem && firstItem.key) {
@@ -136,96 +144,181 @@ const LayoutAdmin = () => {
         }
     }
 
-    // if (isMobile) {
-    //     items.push({
-    //         label: <label
-    //             style={{ cursor: 'pointer' }}
-    //             onClick={() => handleLogout()}
-    //         >Đăng xuất</label>,
-    //         key: 'logout',
-    //         icon: <LogoutOutlined />
-    //     })
-    // }
-
     const itemsDropdown = [
         {
-            label: <Link to={'/'}>Trang chủ</Link>,
+            label: <Link to={'/'}><HomeOutlined /> Trang chủ</Link>,
             key: 'home',
         },
         {
-            label: <label
-                style={{ cursor: 'pointer' }}
-                onClick={() => handleLogout()}
-            >Đăng xuất</label>,
+            type: 'divider' as const,
+        },
+        {
+            label: <span style={{ color: '#ff4d4f' }}><LogoutOutlined /> Đăng xuất</span>,
             key: 'logout',
+            onClick: () => handleLogout(),
         },
     ];
 
+    // ─────────────────────── MOBILE LAYOUT ───────────────────────
+    if (isMobile) {
+        return (
+            <Layout style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+                {/* Mobile Header */}
+                <div className="mobile-admin-header">
+                    <Button
+                        type="text"
+                        icon={<MenuOutlined />}
+                        onClick={() => setMobileDrawerOpen(true)}
+                        className="mobile-menu-btn"
+                    />
+
+                    <div className="mobile-admin-logo">
+                        <BugOutlined className="logo-icon" />
+                        <span className="logo-text">ADMIN</span>
+                    </div>
+
+                    <Space size={8} align="center">
+                        <NotificationBell />
+                        <Dropdown menu={{ items: itemsDropdown }} trigger={['click']} placement="bottomRight">
+                            <Avatar
+                                size={36}
+                                style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+                            >
+                                {user?.name?.substring(0, 2)?.toUpperCase()}
+                            </Avatar>
+                        </Dropdown>
+                    </Space>
+                </div>
+
+                {/* Mobile Drawer Sidebar */}
+                <Drawer
+                    placement="left"
+                    open={mobileDrawerOpen}
+                    onClose={() => setMobileDrawerOpen(false)}
+                    width={280}
+                    styles={{ body: { padding: 0 } }}
+                    closeIcon={false}
+                    className="mobile-admin-drawer"
+                >
+                    {/* Drawer Header */}
+                    <div className="drawer-header">
+                        <div className="drawer-user-info">
+                            <Avatar
+                                size={48}
+                                style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: 16, fontWeight: 700 }}
+                            >
+                                {user?.name?.substring(0, 2)?.toUpperCase()}
+                            </Avatar>
+                            <div className="drawer-user-details">
+                                <Text strong style={{ color: '#fff', fontSize: 15 }}>{user?.name}</Text>
+                                <Text style={{ color: 'rgba(255,255,255,0.7)', fontSize: 12, display: 'block' }}>{user?.role?.name}</Text>
+                            </div>
+                        </div>
+                        <Button
+                            type="text"
+                            icon={<CloseOutlined />}
+                            onClick={() => setMobileDrawerOpen(false)}
+                            style={{ color: '#fff', marginTop: -8 }}
+                        />
+                    </div>
+
+                    {/* Navigation Menu */}
+                    <Menu
+                        selectedKeys={[activeMenu]}
+                        mode="inline"
+                        items={menuItems}
+                        onClick={(e) => {
+                            setActiveMenu(e.key);
+                            setMobileDrawerOpen(false);
+                        }}
+                        className="mobile-admin-menu"
+                        style={{ border: 'none', flex: 1 }}
+                    />
+
+                    {/* Drawer Footer */}
+                    <div className="drawer-footer">
+                        <Button
+                            danger
+                            type="text"
+                            icon={<HomeOutlined />}
+                            onClick={() => navigate('/')}
+                            block
+                            style={{ textAlign: 'left', marginBottom: 4 }}
+                        >
+                            Trang chủ
+                        </Button>
+                        <Button
+                            danger
+                            type="text"
+                            icon={<LogoutOutlined />}
+                            onClick={() => handleLogout()}
+                            block
+                            style={{ textAlign: 'left' }}
+                        >
+                            Đăng xuất
+                        </Button>
+                    </div>
+                </Drawer>
+
+                {/* Main Content */}
+                <Content className="mobile-admin-content">
+                    <Outlet />
+                </Content>
+            </Layout>
+        );
+    }
+
+    // ─────────────────────── DESKTOP LAYOUT ───────────────────────
     return (
         <>
             <Layout
                 style={{ minHeight: '100vh' }}
                 className="layout-admin"
             >
-                {!isMobile ?
-                    <Sider
-                        theme='light'
-                        collapsible
-                        collapsed={collapsed}
-                        onCollapse={(value) => setCollapsed(value)}>
-                        <div style={{ height: 32, margin: 16, textAlign: 'center' }}>
-                            <BugOutlined />  ADMIN
-                        </div>
-                        <Menu
-                            selectedKeys={[activeMenu]}
-                            mode="inline"
-                            items={menuItems}
-                            onClick={(e) => setActiveMenu(e.key)}
-                        />
-                    </Sider>
-                    :
+                <Sider
+                    theme='light'
+                    collapsible
+                    collapsed={collapsed}
+                    onCollapse={(value) => setCollapsed(value)}>
+                    <div style={{ height: 32, margin: 16, textAlign: 'center' }}>
+                        <BugOutlined />  ADMIN
+                    </div>
                     <Menu
                         selectedKeys={[activeMenu]}
+                        mode="inline"
                         items={menuItems}
                         onClick={(e) => setActiveMenu(e.key)}
-                        mode="horizontal"
                     />
-                }
+                </Sider>
 
                 <Layout>
-                    {!isMobile &&
-                        <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20, alignItems: "center" }}>
-                            <Button
-                                type="text"
-                                icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
-                                onClick={() => setCollapsed(!collapsed)}
-                                style={{
-                                    fontSize: '16px',
-                                    width: 64,
-                                    height: 64,
-                                }}
-                            />
+                    <div className='admin-header' style={{ display: "flex", justifyContent: "space-between", marginRight: 20, alignItems: "center" }}>
+                        <Button
+                            type="text"
+                            icon={collapsed ? React.createElement(MenuUnfoldOutlined) : React.createElement(MenuFoldOutlined)}
+                            onClick={() => setCollapsed(!collapsed)}
+                            style={{
+                                fontSize: '16px',
+                                width: 64,
+                                height: 64,
+                            }}
+                        />
 
-                            <Space size={16} align="center">
-                                <NotificationBell />
-                                <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
-                                    <Space style={{ cursor: "pointer" }}>
-                                        Welcome {user?.name}
-                                        <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
-                                    </Space>
-                                </Dropdown>
-                            </Space>
-                        </div>
-                    }
+                        <Space size={16} align="center">
+                            <NotificationBell />
+                            <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                                <Space style={{ cursor: "pointer" }}>
+                                    Welcome {user?.name}
+                                    <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                </Space>
+                            </Dropdown>
+                        </Space>
+                    </div>
                     <Content style={{ padding: '15px' }}>
                         <Outlet />
                     </Content>
-                    {/* <Footer style={{ padding: 10, textAlign: 'center' }}>
-                        React Typescript series Nest.JS &copy; Hỏi Dân IT - Made with <HeartTwoTone />
-                    </Footer> */}
                 </Layout>
             </Layout>
-
         </>
     );
 };
