@@ -26,11 +26,12 @@ const PermissionPage = () => {
     const { stompClient } = useWebSocket();
     useEffect(() => {
         if (stompClient && stompClient.connected) {
-            stompClient.subscribe('/topic/permissions', (message) => {
+            const sub = stompClient.subscribe('/topic/permissions', (message) => {
                 if (message.body) {
                     reloadTable();
                 }
             });
+            return () => sub.unsubscribe();
         }
     }, [stompClient]);
     // -----------------------

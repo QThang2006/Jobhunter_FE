@@ -1,7 +1,7 @@
 import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notification, Input } from "antd";
 import type { TabsProps } from 'antd';
 import { IResume, ISubscribers } from "@/types/backend";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callUpdateUser, callFetchUserById, callUpdatePassword } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
@@ -21,27 +21,29 @@ const UserResume = (props: any) => {
 
     const { stompClient } = useWebSocket();
 
-    const fetchResume = async () => {
+    const fetchResume = useCallback(async () => {
         setIsFetching(true);
         const res = await callFetchResumeByUser();
         if (res && res.data) {
             setListCV(res.data.result as IResume[])
         }
         setIsFetching(false);
-    }
-
-    useEffect(() => {
-        fetchResume();
     }, [])
 
     useEffect(() => {
-        if (stompClient && stompClient.connected) {
-            const sub = stompClient.subscribe('/topic/resumes', (message: any) => {
-                fetchResume();
-            });
-            return () => sub.unsubscribe();
-        }
-    }, [stompClient]);
+        fetchResume();
+    }, [fetchResume])
+
+    const user = useAppSelector(state => state.account.user);
+
+    useEffect(() => {
+        if (!stompClient || !stompClient.connected || !user?.id) return;
+        // Subscribe riêng theo userId — chỉ nhận sự kiện của chính mình
+        const sub = stompClient.subscribe(`/topic/resumes/${user.id}`, () => {
+            fetchResume();
+        });
+        return () => sub.unsubscribe();
+    }, [stompClient, user?.id, fetchResume]);
 
     const columns: ColumnsType<IResume> = [
         {

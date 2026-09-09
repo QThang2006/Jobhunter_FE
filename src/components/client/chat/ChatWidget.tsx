@@ -114,7 +114,15 @@ const ChatWidget = () => {
                                 {msg.jobs && msg.jobs.length > 0 && (
                                     <div style={{ marginTop: 10 }}>
                                         {msg.jobs.map(job => (
-                                            <JobCardMini key={job.id} job={job} />
+                                            <JobCardMini
+                                                key={job.id}
+                                                job={job}
+                                                onItemClick={() => {
+                                                    if (window.innerWidth <= 768) {
+                                                        setIsOpen(false);
+                                                    }
+                                                }}
+                                            />
                                         ))}
                                     </div>
                                 )}

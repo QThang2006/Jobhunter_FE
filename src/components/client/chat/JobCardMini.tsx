@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { convertSlug } from '@/config/utils';
 import styles from './ChatWidget.module.scss';
 
 export interface IJobMini {
@@ -16,14 +17,19 @@ export interface IJobMini {
 
 interface IProps {
     job: IJobMini;
+    onItemClick?: () => void;
 }
 
 const JobCardMini = (props: IProps) => {
-    const { job } = props;
+    const { job, onItemClick } = props;
     const navigate = useNavigate();
 
     const handleJobClick = () => {
-        navigate(`/job/AI-Generate-Job?id=${job.id}`);
+        if (onItemClick) {
+            onItemClick();
+        }
+        const slug = job.slug || convertSlug(job.name);
+        navigate(`/job/${slug}?id=${job.id}`);
     }
 
     const formatSalary = (salary: number) => {
