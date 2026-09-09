@@ -178,7 +178,7 @@ const LayoutAdmin = () => {
                     </div>
 
                     <Space size={8} align="center">
-                        <NotificationBell />
+                        <NotificationBell theme="light" />
                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']} placement="bottomRight">
                             <Avatar
                                 size={36}
@@ -305,7 +305,7 @@ const LayoutAdmin = () => {
                         />
 
                         <Space size={16} align="center">
-                            <NotificationBell />
+                            <NotificationBell theme="light" />
                             <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                 <Space style={{ cursor: "pointer" }}>
                                     Welcome {user?.name}

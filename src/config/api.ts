@@ -178,6 +178,10 @@ export const callFetchJobById = (id: string) => {
     return axios.get<IBackendRes<IJob>>(`/api/v1/jobs/${id}`);
 }
 
+export const callUpdateJobActive = (id: string | number, status: boolean) => {
+    return axios.patch<IBackendRes<IJob>>(`/api/v1/jobs/${id}/active?status=${status}`);
+}
+
 /**
  * 
 Module Resume

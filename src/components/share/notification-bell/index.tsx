@@ -32,7 +32,12 @@ function timeAgo(dateStr: string): string {
     return `${diffDays} ngày trước`;
 }
 
-const NotificationBell = () => {
+interface IProps {
+    theme?: 'light' | 'dark';
+}
+
+const NotificationBell = (props: IProps) => {
+    const { theme = 'dark' } = props;
     const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState<INotification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -207,7 +212,7 @@ const NotificationBell = () => {
             autoAdjustOverflow
             overlayClassName={styles['notif-dropdown-overlay']}
         >
-            <div id="notification-bell-btn" className={styles['bell-wrapper']}>
+            <div id="notification-bell-btn" className={`${styles['bell-wrapper']} ${styles[`bell-wrapper--${theme}`]}`}>
                 <Badge
                     count={unreadCount}
                     overflowCount={99}

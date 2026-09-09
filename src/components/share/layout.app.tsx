@@ -26,24 +26,31 @@ const LayoutApp = (props: IProps) => {
         }
     }, [isRefreshToken]);
 
-    // -- WebSocket Listener for Permissions/Roles --
+    // -- WebSocket Listener for User Roles / Permissions --
     const { stompClient } = useWebSocket();
+    const user = useAppSelector(state => state.account.user);
+
     useEffect(() => {
         if (stompClient && stompClient.connected) {
             const onReceive = (msg: any) => {
                 if (msg.body) {
-                    dispatch(fetchAccount()); // Reload user info completely
+                    dispatch(fetchAccount()); // Reload user info & permissions completely
                 }
             }
             const subRoles = stompClient.subscribe('/topic/roles', onReceive);
             const subPermissions = stompClient.subscribe('/topic/permissions', onReceive);
+            let subUser: any = null;
+            if (user?.id) {
+                subUser = stompClient.subscribe(`/topic/users/${user.id}`, onReceive);
+            }
 
             return () => {
                 subRoles.unsubscribe();
                 subPermissions.unsubscribe();
+                if (subUser) subUser.unsubscribe();
             }
         }
-    }, [stompClient, dispatch]);
+    }, [stompClient, user?.id, dispatch]);
     // ----------------------------------------------
 
     return (

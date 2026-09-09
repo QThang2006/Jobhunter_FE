@@ -147,11 +147,11 @@ const Header = (props: any) => {
                                 {isAuthenticated === false ?
                                     <Link to={'/login'}>Đăng Nhập</Link>
                                     :
-                                    <Space size={12} align="center">
-                                        <NotificationBell />
+                                    <Space size={16} align="center">
+                                        <NotificationBell theme="dark" />
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
-                                                <span>Welcome {user?.name}</span>
+                                                <span className={styles['user-name-text']}>Welcome {user?.name}</span>
                                                 <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
                                             </Space>
                                         </Dropdown>
@@ -161,7 +161,7 @@ const Header = (props: any) => {
                         </div>
 
                         <div className={styles['header-mobile-trigger']}>
-                            {isAuthenticated && <NotificationBell />}
+                            {isAuthenticated && <NotificationBell theme="dark" />}
                             <MenuFoldOutlined
                                 className={styles['hamburger-icon']}
                                 onClick={() => setOpenMobileMenu(true)}

@@ -55,7 +55,7 @@ const ClientCompanyDetailPage = (props: any) => {
                                 <div className={styles["company"]}>
                                     <div>
                                         <img
-                                            width={200}
+                                            style={{ maxWidth: '100%', height: 'auto', objectFit: 'contain' }}
                                             alt="example"
                                             src={`${companyDetail?.logo}`}
                                         />

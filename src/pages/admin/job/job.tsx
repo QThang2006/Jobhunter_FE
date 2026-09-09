@@ -3,10 +3,10 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IJob } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
-import { useRef } from 'react';
+import { Button, Popconfirm, Space, Switch, Tag, message, notification } from "antd";
+import { useRef, useState, useEffect } from 'react';
 import dayjs from 'dayjs';
-import { callDeleteJob } from "@/config/api";
+import { callDeleteJob, callUpdateJobActive } from "@/config/api";
 import queryString from 'query-string';
 import { useNavigate } from "react-router-dom";
 import { fetchJob } from "@/redux/slice/jobSlide";
@@ -14,10 +14,10 @@ import Access from "@/components/share/access";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import { sfIn } from "spring-filter-query-builder";
 import { useWebSocket } from "@/context/websocket.context";
-import { useEffect } from "react";
 
 const JobPage = () => {
     const tableRef = useRef<ActionType>();
+    const [updatingActiveId, setUpdatingActiveId] = useState<string | number | null>(null);
 
     const isFetching = useAppSelector(state => state.job.isFetching);
     const meta = useAppSelector(state => state.job.meta);
@@ -31,7 +31,8 @@ const JobPage = () => {
         if (stompClient && stompClient.connected) {
             const sub = stompClient.subscribe('/topic/jobs', (message) => {
                 if (message.body) {
-                    reloadTable();
+                    // Refetch ngầm không khóa màn hình Spinner
+                    reloadTable(false);
                 }
             });
             return () => sub.unsubscribe();
@@ -44,7 +45,7 @@ const JobPage = () => {
             const res = await callDeleteJob(id);
             if (res && +res.statusCode === 200) {
                 message.success('Xóa Job thành công');
-                reloadTable();
+                reloadTable(false);
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
@@ -54,9 +55,34 @@ const JobPage = () => {
         }
     }
 
-    const reloadTable = () => {
-        tableRef?.current?.reload();
+    const reloadTable = (resetPageIndex = false) => {
+        tableRef?.current?.reload(resetPageIndex);
     }
+
+    const handleToggleActive = async (entity: IJob, checked: boolean) => {
+        if (!entity.id) return;
+        setUpdatingActiveId(entity.id);
+        try {
+            const res = await callUpdateJobActive(entity.id, checked);
+            if (res && res.data) {
+                message.success(`Đã ${checked ? 'bật' : 'tắt'} trạng thái Job "${entity.name}"`);
+                // Tải ngầm mượt mà không hiện spinner con xoay
+                reloadTable(false);
+            } else {
+                notification.error({
+                    message: 'Có lỗi xảy ra',
+                    description: res.message
+                });
+            }
+        } catch (error: any) {
+            notification.error({
+                message: 'Có lỗi xảy ra',
+                description: error?.message || 'Không thể đổi trạng thái'
+            });
+        } finally {
+            setUpdatingActiveId(null);
+        }
+    };
 
     const columns: ProColumns<IJob>[] = [
         {
@@ -115,13 +141,26 @@ const JobPage = () => {
             title: 'Trạng thái',
             dataIndex: 'active',
             render(dom, entity, index, action, schema) {
-                return <>
-                    <Tag color={entity.active ? "lime" : "red"} >
-                        {entity.active ? "ACTIVE" : "INACTIVE"}
-                    </Tag>
-                </>
+                return (
+                    <Switch
+                        checkedChildren="ACTIVE"
+                        unCheckedChildren="INACTIVE"
+                        checked={entity.active}
+                        loading={updatingActiveId === entity.id}
+                        onChange={(checked) => handleToggleActive(entity, checked)}
+                    />
+                );
             },
-            hideInSearch: true,
+            renderFormItem: (item, props, form) => (
+                <ProFormSelect
+                    allowClear
+                    valueEnum={{
+                        true: 'ACTIVE',
+                        false: 'INACTIVE',
+                    }}
+                    placeholder="Trạng thái"
+                />
+            ),
         },
 
         {

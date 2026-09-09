@@ -1,29 +1,44 @@
 /* ── Bell icon wrapper ── */
 .bell-wrapper {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 36px;
     height: 36px;
     border-radius: 50%;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
     position: relative;
-}
 
-.bell-wrapper:hover {
-    background: rgba(0, 0, 0, 0.06);
+    &--dark {
+        .bell-icon {
+            color: #a7a7a7;
+        }
+        &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            .bell-icon {
+                color: #ffffff;
+            }
+        }
+    }
+
+    &--light {
+        .bell-icon {
+            color: #595959;
+        }
+        &:hover {
+            background: rgba(0, 0, 0, 0.06);
+            .bell-icon {
+                color: #222831;
+            }
+        }
+    }
 }
 
 /* Icon chuông */
 .bell-icon {
-    font-size: 18px;
-    color: #595959;
+    font-size: 19px;
     transition: color 0.2s ease;
-}
-
-.bell-icon:hover {
-    color: #222831;
 }
 
 /* Khi có thông báo chưa đọc: chuông rung */
