@@ -28,9 +28,9 @@ const ClientJobDetailPage = (props: any) => {
     const { stompClient } = useWebSocket();
 
     // Hàm fetch data tách ra để tái sử dụng
-    const fetchJobDetail = async () => {
+    const fetchJobDetail = async (isSilent = false) => {
         if (id) {
-            setIsLoading(true)
+            if (!isSilent) setIsLoading(true);
             const res = await callFetchJobById(id);
             if (res?.data) {
                 setJobDetail(res.data)
@@ -43,7 +43,8 @@ const ClientJobDetailPage = (props: any) => {
         if (stompClient && stompClient.connected) {
             const sub = stompClient.subscribe('/topic/jobs', (message) => {
                 if (message.body) {
-                    fetchJobDetail();
+                    // Refetch ngầm mượt mà không hiện Skeleton spinner
+                    fetchJobDetail(true);
                 }
             });
             return () => sub.unsubscribe();

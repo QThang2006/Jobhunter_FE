@@ -23,7 +23,7 @@ export const fetchUser = createAsyncThunk(
 
 
 const initialState: IState = {
-    isFetching: true,
+    isFetching: false,
     meta: {
         page: 1,
         pageSize: 10,
@@ -49,9 +49,9 @@ export const userSlide = createSlice({
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
         builder.addCase(fetchUser.pending, (state, action) => {
-            state.isFetching = true;
-            // Add user to the state array
-            // state.courseOrder = action.payload;
+            if (state.result.length === 0) {
+                state.isFetching = true;
+            }
         })
 
         builder.addCase(fetchUser.rejected, (state, action) => {

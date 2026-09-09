@@ -33,7 +33,7 @@ const ResumePage = () => {
                 if (message.body) {
                     // Nếu nhận được tính hiệu 'REFRESH', reload lại bảng
                     // message.success("Dữ liệu resume đã được cập nhật!"); // Optional notify
-                    reloadTable();
+                    reloadTable(false);
                 }
             });
 
@@ -52,7 +52,7 @@ const ResumePage = () => {
             const res = await callDeleteResume(id);
             if (res && +res.statusCode === 200) {
                 message.success('Xóa Resume thành công');
-                reloadTable();
+                reloadTable(false);
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
@@ -62,8 +62,8 @@ const ResumePage = () => {
         }
     }
 
-    const reloadTable = () => {
-        tableRef?.current?.reload();
+    const reloadTable = (resetPageIndex = false) => {
+        tableRef?.current?.reload(resetPageIndex);
     }
 
     const columns: ProColumns<IResume>[] = [

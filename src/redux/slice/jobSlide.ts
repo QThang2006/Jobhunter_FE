@@ -23,7 +23,7 @@ export const fetchJob = createAsyncThunk(
 
 
 const initialState: IState = {
-    isFetching: true,
+    isFetching: false,
     meta: {
         page: 1,
         pageSize: 10,
@@ -49,9 +49,10 @@ export const jobSlide = createSlice({
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
         builder.addCase(fetchJob.pending, (state, action) => {
-            state.isFetching = true;
-            // Add user to the state array
-            // state.courseOrder = action.payload;
+            // Chỉ bật loading spinner nếu chưa có dữ liệu cache trong Redux
+            if (state.result.length === 0) {
+                state.isFetching = true;
+            }
         })
 
         builder.addCase(fetchJob.rejected, (state, action) => {

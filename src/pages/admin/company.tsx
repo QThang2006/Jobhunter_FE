@@ -27,7 +27,7 @@ const CompanyPage = () => {
         if (stompClient && stompClient.connected) {
             const sub = stompClient.subscribe('/topic/companies', (message) => {
                 if (message.body) {
-                    reloadTable();
+                    reloadTable(false);
                 }
             });
             return () => sub.unsubscribe();
@@ -57,8 +57,8 @@ const CompanyPage = () => {
         }
     }
 
-    const reloadTable = () => {
-        tableRef?.current?.reload();
+    const reloadTable = (resetPageIndex = false) => {
+        tableRef?.current?.reload(resetPageIndex);
     }
 
     const columns: ProColumns<ICompany>[] = [

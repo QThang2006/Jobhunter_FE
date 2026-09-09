@@ -40,7 +40,8 @@ const JobCard = (props: IProps) => {
         if (stompClient && stompClient.connected) {
             const sub = stompClient.subscribe('/topic/jobs', (message) => {
                 if (message.body) {
-                    fetchJob();
+                    // Refetch ngầm không bật Skeleton spinner làm gián đoạn người dùng
+                    fetchJob(true);
                 }
             });
             return () => sub.unsubscribe();
@@ -52,8 +53,8 @@ const JobCard = (props: IProps) => {
         fetchJob();
     }, [current, pageSize, filter, sortQuery, location]);
 
-    const fetchJob = async () => {
-        setIsLoading(true)
+    const fetchJob = async (isSilent = false) => {
+        if (!isSilent) setIsLoading(true);
         let query = `page=${current}&size=${pageSize}`;
         if (filter) {
             query += `&${filter}`;
