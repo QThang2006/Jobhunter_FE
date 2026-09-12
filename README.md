@@ -1,8 +1,4 @@
-﻿<h1 align="center">
-  <br/>
-  🎯 JobHunter — Frontend
-  <br/>
-</h1>
+# 🎯 JobHunter — Frontend
 
 <p align="center">
   Nền tảng tìm kiếm việc làm hiện đại được xây dựng với <strong>React 18 + Vite + TypeScript</strong>
@@ -18,23 +14,165 @@
 </p>
 
 <p align="center">
-  <a href="#-tinh-nang">Tính năng</a> •
-  <a href="#️-cong-nghe-su-dung">Công nghệ</a> •
-  <a href="#-cau-truc-du-an">Cấu trúc</a> •
-  <a href="#-cai-dat--chay-du-an">Cài đặt</a> •
-  <a href="#-bien-moi-truong">Môi trường</a> •
-  <a href="#-api--backend">API</a>
+  <a href="#-giới-thiệu">➡ Giới thiệu</a> •
+  <a href="#️-luồng-hoạt-động">➡ Luồng hoạt động</a> •
+  <a href="#-tính-năng">➡ Tính năng</a> •
+  <a href="#️-công-nghệ-sử-dụng">➡ Công nghệ</a> •
+  <a href="#-cấu-trúc-dự-án">➡ Cấu trúc</a> •
+  <a href="#-cài-đặt--chạy-dự-án">➡ Cài đặt</a>
 </p>
 
 ---
 
 ## 📌 Giới thiệu
 
-**JobHunter** là ứng dụng web tìm kiếm việc làm full-stack, được phát triển nâng cao dựa trên một phần code base của series **"Spring Boot RESTful API"** trên kênh YouTube [Hỏi Dân IT](https://www.youtube.com/@hoiDanIT). Frontend được xây dựng bằng React + Vite, giao tiếp với backend Spring Boot thông qua REST API.
+**JobHunter** là ứng dụng web tìm kiếm việc làm full-stack, được phát triển như một phần của series **"Spring Boot RESTful API"** trên kênh YouTube [Hỏi Dân IT](https://www.youtube.com/@hoiDanIT). Frontend được xây dựng bằng React + Vite, giao tiếp với backend Spring Boot thông qua REST API.
 
 Dự án bao gồm hai giao diện chính:
 - **Client Side** — Tìm kiếm việc làm, duyệt công ty, nộp hồ sơ
 - **Admin Panel** — Quản trị toàn bộ hệ thống (CRUD, phân quyền, thống kê)
+
+---
+
+## 🗺️ Luồng hoạt động
+
+### Kiến trúc hệ thống
+
+```mermaid
+graph LR
+    FE["🖥️ React + Vite
+Frontend :3000"]
+    BE["☕ Spring Boot
+REST API :8080"]
+    DB[("🗄️ MySQL
+Database")]
+    EMAIL["📧 Email Service
+JavaMail + Thymeleaf"]
+    WS["💬 WebSocket
+STOMP + SockJS"]
+    REDUX["🔄 Redux Toolkit
+State Management"]
+
+    REDUX --> FE
+    FE -->|"HTTP + JWT Auth"| BE
+    FE <-->|"WebSocket"| WS
+    WS --- BE
+    BE --> DB
+    BE --> EMAIL
+```
+
+### Luồng hoạt động toàn dự án
+
+```mermaid
+flowchart TD
+    Start(["👤 Người dùng
+truy cập"])
+    Start --> AuthCheck{"🔐 Đã
+đăng nhập?"}
+
+    AuthCheck -->|Chưa| AuthFlow
+    AuthCheck -->|Rồi| RoleCheck
+
+    subgraph AuthFlow ["🔑 Xác thực"]
+        direction LR
+        Login["📧 Đăng nhập
+Email + Password"]
+        Register["📝 Đăng ký
+tài khoản mới"]
+        OAuth2["🌐 OAuth2
+Google Login"]
+        JWT["🗝️ JWT Token
+Access + Refresh"]
+        Login --> JWT
+        Register --> JWT
+        OAuth2 --> JWT
+    end
+
+    AuthFlow --> RoleCheck
+    RoleCheck{"🎭 Vai trò?"}
+
+    RoleCheck -->|USER| ClientFlow
+    RoleCheck -->|ADMIN| AdminFlow
+
+    subgraph ClientFlow ["👤 Luồng Người dùng"]
+        direction TB
+        Home["🏠 Trang chủ
+(Job nổi bật)"]
+        JobSearch["🔍 Tìm kiếm việc làm
+filter kỹ năng, địa điểm, lương"]
+        CompanyBrowse["🏢 Duyệt công ty"]
+        JobDetail["📋 Chi tiết việc làm"]
+        Apply["📤 Nộp CV
+(Upload file)"]
+        Subscribe["📧 Đăng ký nhận
+Job qua Email"]
+        Chat["💬 Chat real-time
+WebSocket"]
+        Account["👤 Quản lý
+tài khoản & CV"]
+
+        Home --> JobSearch
+        Home --> CompanyBrowse
+        JobSearch --> JobDetail
+        JobDetail --> Apply
+    end
+
+    subgraph AdminFlow ["🛡️ Luồng Admin"]
+        direction TB
+        Dashboard["📊 Dashboard
+(Recharts)"]
+        Users["👥 Quản lý
+Users"]
+        Companies["🏭 Quản lý
+Companies"]
+        Jobs["💼 Quản lý
+Jobs"]
+        Resumes["📃 Quản lý
+Resumes"]
+        RBAC["🔑 Roles &
+Permissions"]
+
+        Dashboard --- Users
+        Dashboard --- Companies
+        Dashboard --- Jobs
+        Dashboard --- Resumes
+        Dashboard --- RBAC
+    end
+
+    Apply -->|"POST /api/v1/resumes"| API
+    Subscribe -->|"POST /api/v1/subscribers"| API
+    Chat <-->|"WebSocket / STOMP"| API
+    AdminFlow -->|"REST API + JWT"| API
+
+    API["⚙️ Spring Boot BE
+REST API"]
+    API --> DB[("🗄️ MySQL DB")]
+
+    Resumes --> ReviewFlow
+
+    subgraph ReviewFlow ["📧 Duyệt hồ sơ & Email"]
+        direction LR
+        StatusChange{"Chuyển
+trạng thái"}
+        Modal["📅 Modal chọn
+lịch phỏng vấn"]
+        EmailPV["📧 Gửi email
+lịch phỏng vấn
+cho ứng viên"]
+        OtherStatus["⏳ Cập nhật
+PENDING / REVIEWING
+/ REJECTED"]
+
+        StatusChange -->|"APPROVED"| Modal
+        Modal -->|"Xác nhận"| EmailPV
+        StatusChange -->|"Khác"| OtherStatus
+    end
+
+    EmailPV -->|"POST /api/v1/email/approve"| API
+    API -->|"Scheduler định kỳ"| EmailJob["📧 Email giới thiệu
+Job theo kỹ năng
+(Subscribers)"]
+```
 
 ---
 
@@ -44,10 +182,9 @@ Dự án bao gồm hai giao diện chính:
 - 🔍 **Tìm kiếm việc làm** nâng cao theo kỹ năng, địa điểm, mức lương
 - 🏢 **Duyệt công ty** và xem thông tin chi tiết
 - 📄 **Nộp hồ sơ (CV)** trực tiếp cho từng vị trí
-- 🔐 **Đăng nhập / Đăng ký** tài khoản, hỗ trợ **OAuth2** (Google, v.v.)
+- 🔐 **Đăng nhập / Đăng ký** tài khoản, hỗ trợ **OAuth2** (Google)
 - 💬 **Chat Widget** tích hợp real-time (WebSocket / STOMP)
 - 📧 **Nhận Job qua Email** — Đăng ký nhận thông báo việc làm phù hợp theo kỹ năng
-- 🔑 **Quên mật khẩu** — Đặt lại mật khẩu qua OTP gửi email
 - 📱 **Responsive Design** tương thích mọi thiết bị
 
 ### 🛡️ Phía Quản trị (Admin)
@@ -55,7 +192,7 @@ Dự án bao gồm hai giao diện chính:
 - 👥 **Quản lý Người dùng** — CRUD đầy đủ
 - 🏭 **Quản lý Công ty** — Thêm/sửa/xóa công ty
 - 💼 **Quản lý Việc làm** — Đăng tin, chỉnh sửa, phân loại kỹ năng
-- 📑 **Quản lý Hồ sơ** — Duyệt và cập nhật trạng thái ứng tuyển
+- 📃 **Quản lý Hồ sơ** — Duyệt và cập nhật trạng thái ứng tuyển
 - 📧 **Gửi Email Template** — Tự động gửi email thông báo lịch phỏng vấn khi duyệt hồ sơ (APPROVED)
 - 🔑 **Quản lý Quyền hạn (Permission & Role)** — RBAC (Role-Based Access Control)
 - 🛡️ **ACL (Access Control List)** — Kiểm soát truy cập theo từng API endpoint
@@ -105,7 +242,7 @@ src/
 │   │   ├── header.client.tsx
 │   │   ├── footer.client.tsx
 │   │   └── search.client.tsx
-│   └── share/           # Shared components (Loading, NotFound, ProtectedRoute...)
+│   └── share/           # Shared (Loading, NotFound, ProtectedRoute...)
 ├── config/              # Cấu hình Axios, ACL
 ├── context/             # React Context providers
 ├── pages/
@@ -148,19 +285,17 @@ npm install
 
 ### 3. Cấu hình môi trường
 
-Sao chép file `.env.development` và chỉnh sửa theo nhu cầu:
-
 ```bash
 cp .env.development .env
 ```
 
-### 4. Chạy ở môi trường Development
+### 4. Chạy Development
 
 ```bash
 npm run dev
 ```
 
-Ứng dụng sẽ chạy tại: **http://localhost:3000**
+Ứng dụng chạy tại: **http://localhost:3000**
 
 ### 5. Build Production
 
@@ -168,17 +303,9 @@ npm run dev
 npm run build
 ```
 
-### 6. Preview bản build
-
-```bash
-npm run preview
-```
-
 ---
 
 ## 🔧 Biến môi trường
-
-Tạo file `.env` (hoặc `.env.development` / `.env.production`) ở thư mục gốc:
 
 ```env
 # Cổng chạy dev server
@@ -186,30 +313,27 @@ PORT=3000
 
 # URL Backend API (Spring Boot)
 VITE_BACKEND_URL=https://jobhunter-backend-aeu0.onrender.com
-# hoặc chạy local:
+# Hoặc chạy local:
 # VITE_BACKEND_URL=http://localhost:8080
 
 # Bật/tắt ACL (Access Control List)
 VITE_ACL_ENABLE=true
 ```
 
-> **Lưu ý:** Tất cả biến môi trường dùng cho Vite phải có tiền tố `VITE_` để được expose ra phía client.
+> **Lưu ý:** Tất cả biến môi trường dùng cho Vite phải có tiền tố `VITE_`.
 
 ---
 
 ## 🌐 API & Backend
 
-Dự án này cần kết nối với **Backend Spring Boot** để hoạt động.
-
 | Tài nguyên | Link |
 |---|---|
 | 🔗 Backend Deployed | https://jobhunter-backend-aeu0.onrender.com |
-| 📺 Series YouTube code base | https://www.youtube.com/@hoiDanIT |
+| 📺 Series YouTube | https://www.youtube.com/@hoiDanIT |
 
 ### Xác thực (Authentication)
-
-- **JWT** — Access Token + Refresh Token (tự động refresh khi hết hạn qua `async-mutex`)
-- **OAuth2** — Đăng nhập qua Google hoặc các nhà cung cấp khác
+- **JWT** — Access Token + Refresh Token (tự động refresh qua `async-mutex`)
+- **OAuth2** — Đăng nhập qua Google
 - **RBAC** — Phân quyền theo Role & Permission động từ backend
 
 ---
@@ -218,14 +342,14 @@ Dự án này cần kết nối với **Backend Spring Boot** để hoạt độ
 
 | Route | Mô tả | Bảo vệ |
 |---|---|---|
-| `/` | Trang chủ — danh sách việc làm nổi bật | ❌ Public |
-| `/job` | Tất cả việc làm + tìm kiếm nâng cao | ❌ Public |
+| `/` | Trang chủ — việc làm nổi bật | ❌ Public |
+| `/job` | Tất cả việc làm + tìm kiếm | ❌ Public |
 | `/job/:id` | Chi tiết việc làm | ❌ Public |
 | `/company` | Danh sách công ty | ❌ Public |
 | `/company/:id` | Chi tiết công ty | ❌ Public |
-| `/login` | Trang đăng nhập | ❌ Public |
-| `/register` | Trang đăng ký | ❌ Public |
-| `/oauth2/redirect` | Xử lý OAuth2 callback | ❌ Public |
+| `/login` | Đăng nhập | ❌ Public |
+| `/register` | Đăng ký | ❌ Public |
+| `/oauth2/redirect` | OAuth2 callback | ❌ Public |
 | `/admin` | Dashboard quản trị | ✅ Protected |
 | `/admin/company` | Quản lý công ty | ✅ Protected |
 | `/admin/user` | Quản lý người dùng | ✅ Protected |
@@ -238,58 +362,28 @@ Dự án này cần kết nối với **Backend Spring Boot** để hoạt độ
 
 ## 📧 Email Templates
 
-Hệ thống tích hợp **3 loại email template** gửi tự động qua backend Spring Boot (JavaMail / Thymeleaf):
+Hệ thống tích hợp **2 loại email template** gửi tự động qua backend (JavaMail + Thymeleaf):
 
-### 1. 🗓️ Email Duyệt Hồ Sơ + Lịch Phỏng Vấn
-> **Khi nào gửi:** Admin thay đổi trạng thái resume sang `APPROVED`
+### 1. 📅 Email Duyệt Hồ Sơ + Lịch Phỏng Vấn
+> Kích hoạt khi Admin chuyển trạng thái resume sang `APPROVED`
 
-**Luồng xử lý:**
-1. Admin mở chi tiết hồ sơ ứng viên → chọn status `APPROVED`
-2. Hệ thống hiện **Modal nhập lịch phỏng vấn** (ngày + giờ, không cho chọn ngày quá khứ)
-3. Admin xác nhận → FE gọi 2 API tuần tự:
-   - `PUT /api/v1/resumes` — cập nhật status → `APPROVED`
-   - `POST /api/v1/email/approve` — gửi email kèm thông tin lịch phỏng vấn
+1. Admin chọn status `APPROVED` → Modal nhập ngày/giờ phỏng vấn
+2. Xác nhận → gọi 2 API tuần tự:
+   - `PUT /api/v1/resumes` — cập nhật status
+   - `POST /api/v1/email/approve` — gửi email kèm lịch phỏng vấn
 
-**Payload gửi đến backend:**
 ```json
-{
-  "resumeId": "string",
-  "interviewDate": "DD/MM/YYYY",
-  "interviewTime": "HH:mm"
-}
+{ "resumeId": "string", "interviewDate": "DD/MM/YYYY", "interviewTime": "HH:mm" }
 ```
-
-**Nội dung email:** Thông báo ứng viên được duyệt + ngày giờ phỏng vấn cụ thể.
-
----
 
 ### 2. 💼 Email Giới Thiệu Việc Làm Theo Kỹ Năng
-> **Khi nào gửi:** Người dùng đăng ký nhận thông báo ("Nhận Job qua Email")
+> Backend Scheduler chạy định kỳ gửi job phù hợp cho Subscribers
 
-**Luồng xử lý:**
-1. Người dùng vào **Quản lý tài khoản** → tab **"Nhận Job qua Email"**
-2. Chọn danh sách kỹ năng quan tâm → lưu vào Subscribers
-3. Backend tự động gửi email định kỳ với danh sách job phù hợp
-
-**API liên quan:**
 ```
 POST /api/v1/subscribers        → Đăng ký nhận email
-POST /api/v1/subscribers/skills → Lấy danh sách kỹ năng đã đăng ký
+POST /api/v1/subscribers/skills → Lấy kỹ năng đã đăng ký
 PUT  /api/v1/subscribers        → Cập nhật kỹ năng
-GET  /api/v1/email              → Trigger gửi email giới thiệu (test/manual)
-```
-
----
-
-### 3. 🔑 Email OTP Quên Mật Khẩu
-> **Khi nào gửi:** Người dùng click "Quên mật khẩu" ở trang đăng nhập
-
-**Luồng xử lý:**
-```
-Nhập email → POST /api/v1/auth/forgot-password
-          → Nhận OTP qua email
-          → POST /api/v1/auth/verify-otp
-          → Đặt mật khẩu mới: POST /api/v1/auth/reset-password
+GET  /api/v1/email              → Trigger thủ công (test)
 ```
 
 ---
@@ -312,5 +406,3 @@ Dự án được phát triển nâng cao thêm cho mục đích **học tập v
 ---
 
 <p align="center">Made with ❤️ by <strong>Ngô Quốc Thắng</strong></p>
-
-
