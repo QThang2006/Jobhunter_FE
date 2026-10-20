@@ -113,7 +113,7 @@ const LayoutAdmin = () => {
                     icon: <AliwangwangOutlined />
                 }] : []),
 
-                ...(viewShift || user.role.name === 'SUPER_ADMIN' || ACL_ENABLE === 'false' ? [{
+                ...(viewShift ? [{
                     label: <Link to='/admin/shift'>Ca Làm Việc</Link>,
                     key: '/admin/shift',
                     icon: <FieldTimeOutlined />

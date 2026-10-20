@@ -44,19 +44,11 @@ import {
     UserOutlined
 } from "@ant-design/icons";
 import { useWebSocket } from "@/context/websocket.context";
-import ShiftCalendarView from "@/components/share/shift/shift.calendar.view";
+import ShiftCalendarView, { getShiftColor } from "@/components/share/shift/shift.calendar.view";
 import Access from "@/components/share/access";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 
 dayjs.extend(customParseFormat);
-
-const SHIFT_PRESETS = [
-    { label: 'Ca Sáng (06:00 - 14:00)', name: 'Ca Sáng', start: '06:00', end: '14:00', color: 'orange' },
-    { label: 'Ca Chiều (14:00 - 22:00)', name: 'Ca Chiều', start: '14:00', end: '22:00', color: 'blue' },
-    { label: 'Ca Tối (18:00 - 23:00)', name: 'Ca Tối', start: '18:00', end: '23:00', color: 'cyan' },
-    { label: 'Ca Đêm (22:00 - 06:00)', name: 'Ca Đêm', start: '22:00', end: '06:00', color: 'purple' },
-    { label: 'Full-time (08:00 - 17:00)', name: 'Full-time', start: '08:00', end: '17:00', color: 'green' },
-];
 
 const ShiftPage = () => {
     const tableRef = useRef<ActionType>();
@@ -318,9 +310,9 @@ const ShiftPage = () => {
             title: 'Ca Làm',
             dataIndex: 'shiftName',
             render: (_text, record) => {
-                const preset = SHIFT_PRESETS.find(p => p.name === record.shiftName);
+                const color = getShiftColor(record.shiftName);
                 return (
-                    <Tag color={preset ? preset.color : 'gold'} style={{ fontWeight: 500, fontSize: 13 }}>
+                    <Tag color={color} style={{ fontWeight: 500, fontSize: 13 }}>
                         {record.shiftName}
                     </Tag>
                 );
@@ -611,29 +603,6 @@ const ShiftPage = () => {
                             </Form.Item>
                         </Col>
                     </Row>
-
-                    {/* Presets nhanh */}
-                    <div style={{ marginBottom: 12 }}>
-                        <span style={{ fontSize: 13, color: '#7a6b61', marginRight: 8 }}>Chọn ca mẫu:</span>
-                        <Space wrap size={[6, 6]}>
-                            {SHIFT_PRESETS.map((p) => (
-                                <Tag
-                                    key={p.name}
-                                    color={p.color}
-                                    style={{ cursor: 'pointer', padding: '3px 8px' }}
-                                    onClick={() => {
-                                        createForm.setFieldsValue({
-                                            shiftName: p.name,
-                                            startTime: dayjs(p.start, 'HH:mm'),
-                                            endTime: dayjs(p.end, 'HH:mm')
-                                        });
-                                    }}
-                                >
-                                    {p.name} ({p.start}-{p.end})
-                                </Tag>
-                            ))}
-                        </Space>
-                    </div>
 
                     <Row gutter={16}>
                         <Col span={24} md={8}>

@@ -8,6 +8,7 @@ import ModuleApi from "./module.api";
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { resetSingleRole } from "@/redux/slice/roleSlide";
+import { fetchAccount } from "@/redux/slice/accountSlide";
 import { groupByPermission } from "@/config/utils";
 
 interface IProps {
@@ -47,6 +48,7 @@ const ModalRole = (props: IProps) => {
             const res = await callUpdateRole(role, singleRole.id);
             if (res.data) {
                 message.success("Cập nhật role thành công");
+                dispatch(fetchAccount());
                 handleReset();
                 reloadTable();
             } else {
@@ -63,6 +65,7 @@ const ModalRole = (props: IProps) => {
             const res = await callCreateRole(role);
             if (res.data) {
                 message.success("Thêm mới role thành công");
+                dispatch(fetchAccount());
                 handleReset();
                 reloadTable();
             } else {

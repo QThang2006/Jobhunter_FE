@@ -76,14 +76,14 @@ const Header = (props: any) => {
             key: 'manage-account',
             icon: <ContactsOutlined />
         },
-        {
+        ...((user.company?.id || user.role?.permissions?.some(p => p.module === 'SHIFTS')) ? [{
             label: <Link
                 to={"/my-shifts"}
                 onClick={() => setOpenMobileMenu(false)}
             >Lịch ca làm việc</Link>,
             key: 'my-shifts',
             icon: <ScheduleOutlined />
-        },
+        }] : []),
         ...(user.role?.permissions?.length ? [{
             label: <Link
                 to={"/admin"}

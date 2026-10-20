@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Tag, Space, Select, Card, Button, Modal, Tooltip, Row, Col, Badge, Empty, Popconfirm } from 'antd';
+import { Calendar, Tag, Space, Button, Modal, Tooltip, Row, Col, Popconfirm } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { IWorkShift, IUser } from '@/types/backend';
@@ -48,24 +48,11 @@ const ShiftCalendarView = (props: IProps) => {
         onDeleteShift
     } = props;
 
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | number | 'ALL'>('ALL');
-    const [selectedShiftType, setSelectedShiftType] = useState<string>('ALL');
     const [detailModalShift, setDetailModalShift] = useState<IWorkShift | null>(null);
-
-    // Filter shifts based on employee and shift type
-    const filteredShifts = shifts.filter(s => {
-        if (selectedEmployeeId !== 'ALL' && s.user?.id !== selectedEmployeeId) {
-            return false;
-        }
-        if (selectedShiftType !== 'ALL' && !s.shiftName?.toLowerCase().includes(selectedShiftType.toLowerCase())) {
-            return false;
-        }
-        return true;
-    });
 
     const dateCellRender = (currentDate: Dayjs) => {
         const dateStr = currentDate.format('YYYY-MM-DD');
-        const dayShifts = filteredShifts.filter(s => s.shiftDate === dateStr);
+        const dayShifts = shifts.filter(s => s.shiftDate === dateStr);
         const isToday = currentDate.isSame(dayjs(), 'day');
 
         return (
@@ -165,71 +152,6 @@ const ShiftCalendarView = (props: IProps) => {
 
     return (
         <div>
-            {/* Header controls & filters */}
-            <Card
-                size="small"
-                style={{
-                    marginBottom: 16,
-                    border: '1px solid #ebd9c8',
-                    borderRadius: 10,
-                    background: '#fffaf5'
-                }}
-            >
-                <Row gutter={[16, 12]} align="middle" justify="space-between">
-                    <Col xs={24} md={14}>
-                        <Space wrap size={[12, 8]}>
-                            {isAdmin && employees.length > 0 && (
-                                <Select
-                                    style={{ width: 220 }}
-                                    placeholder="Lọc theo nhân viên"
-                                    value={selectedEmployeeId}
-                                    onChange={(val) => setSelectedEmployeeId(val)}
-                                    options={[
-                                        { label: 'Tất cả nhân viên', value: 'ALL' },
-                                        ...employees.map(e => ({
-                                            label: `${e.name} (${e.email})`,
-                                            value: e.id as any
-                                        }))
-                                    ]}
-                                    showSearch
-                                    optionFilterProp="label"
-                                />
-                            )}
-
-                            <Select
-                                style={{ width: 170 }}
-                                placeholder="Loại ca làm việc"
-                                value={selectedShiftType}
-                                onChange={(val) => setSelectedShiftType(val)}
-                                options={[
-                                    { label: 'Tất cả ca làm', value: 'ALL' },
-                                    { label: 'Ca Sáng (06:00-14:00)', value: 'sáng' },
-                                    { label: 'Ca Chiều (14:00-22:00)', value: 'chiều' },
-                                    { label: 'Ca Tối (18:00-23:00)', value: 'tối' },
-                                    { label: 'Ca Đêm (22:00-06:00)', value: 'đêm' },
-                                    { label: 'Full-time (08:00-17:00)', value: 'full' },
-                                ]}
-                            />
-
-                            <span style={{ fontSize: 13, color: '#5c4a3d', fontWeight: 500 }}>
-                                Tổng số ca: <strong style={{ color: '#d46b08' }}>{filteredShifts.length}</strong>
-                            </span>
-                        </Space>
-                    </Col>
-
-                    {/* Legend */}
-                    <Col xs={24} md={10} style={{ textAlign: 'right' }}>
-                        <Space wrap size={[8, 4]}>
-                            <Tag color="orange" style={{ margin: 0 }}>🌅 Sáng</Tag>
-                            <Tag color="blue" style={{ margin: 0 }}>☀️ Chiều</Tag>
-                            <Tag color="cyan" style={{ margin: 0 }}>🌙 Tối</Tag>
-                            <Tag color="purple" style={{ margin: 0 }}>🦉 Đêm</Tag>
-                            <Tag color="green" style={{ margin: 0 }}>⏱️ Full-time</Tag>
-                        </Space>
-                    </Col>
-                </Row>
-            </Card>
-
             {/* Calendar */}
             <div style={{
                 background: '#ffffff',
