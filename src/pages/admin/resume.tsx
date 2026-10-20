@@ -2,7 +2,7 @@ import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IResume } from "@/types/backend";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Space, message, notification } from "antd";
+import { Space, message, notification, Tag } from "antd";
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteResume } from "@/config/api";
@@ -102,6 +102,27 @@ const ResumePage = () => {
             title: 'Trạng Thái',
             dataIndex: 'status',
             sorter: true,
+            render: (text, record) => {
+                let color = 'default';
+                let label = record.status || 'PENDING';
+                if (record.status === 'PENDING') color = 'gold';
+                if (record.status === 'REVIEWING') color = 'blue';
+                if (record.status === 'APPROVED') color = 'green';
+                if (record.status === 'REJECTED') color = 'red';
+
+                return (
+                    <Space direction="vertical" size={2}>
+                        <Tag color={color} style={{ fontWeight: 500, borderRadius: 4 }}>
+                            {label}
+                        </Tag>
+                        {record.interviewDate && (
+                            <span style={{ fontSize: 11, color: '#1677ff' }}>
+                                🕒 {record.interviewTime} ({record.interviewDate})
+                            </span>
+                        )}
+                    </Space>
+                );
+            },
             renderFormItem: (item, props, form) => (
                 <ProFormSelect
                     showSearch
@@ -113,7 +134,7 @@ const ResumePage = () => {
                         APPROVED: 'APPROVED',
                         REJECTED: 'REJECTED',
                     }}
-                    placeholder="Chọn level"
+                    placeholder="Chọn trạng thái"
                 />
             ),
         },

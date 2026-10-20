@@ -123,6 +123,11 @@ export interface IResume {
     userId: string;
     url: string;
     status: string;
+    meetLink?: string;
+    interviewDate?: string;
+    interviewTime?: string;
+    interviewType?: 'ONLINE_MEET' | 'OFFLINE';
+    note?: string;
     companyId: string | {
         id: string;
         name: string;
