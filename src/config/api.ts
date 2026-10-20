@@ -222,11 +222,19 @@ export const callFetchResumeByUser = () => {
 /**
  * Send approval email with interview schedule
  */
-export const callSendApprovalEmail = (resumeId: string, interviewDate: string, interviewTime: string) => {
+export const callSendApprovalEmail = (
+    resumeId: string | number,
+    interviewDate: string,
+    interviewTime: string,
+    interviewType: 'ONLINE_MEET' | 'OFFLINE' = 'ONLINE_MEET',
+    note?: string
+) => {
     return axios.post<IBackendRes<any>>('/api/v1/email/approve', {
         resumeId,
         interviewDate,
-        interviewTime
+        interviewTime,
+        interviewType,
+        note
     });
 }
 

@@ -1,0 +1,144 @@
+{
+  "name": "JobHunter - Tao Link Google Meet & Gui Mail Phong Van",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "interview-meet",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook Nhan Thong Tin",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "interview-meet"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || $json;\n\n// Lay thong tin tu request body\nconst resumeId = body.resumeId;\nconst candidateName = body.candidateName || \"Ứng viên\";\nconst candidateEmail = body.candidateEmail || body.email;\nconst interviewerEmail = body.interviewerEmail || \"\";\nconst companyName = body.companyName || \"Tiệm Bánh\";\nconst jobTitle = body.jobTitle || \"Nhân viên làm bánh\";\nconst dateRaw = body.interviewDate || \"\"; // DD/MM/YYYY hoac YYYY-MM-DD\nconst timeRaw = body.interviewTime || \"09:00\"; // HH:mm\nconst durationMinutes = Number(body.durationMinutes) || 45;\nconst note = body.note || \"Phỏng vấn chuyên môn và trao đổi định hướng làm việc.\";\n\n// Parse ngay gio\nlet day, month, year;\nif (dateRaw.includes('/')) {\n  const parts = dateRaw.split('/');\n  day = parts[0].padStart(2, '0');\n  month = parts[1].padStart(2, '0');\n  year = parts[2];\n} else if (dateRaw.includes('-')) {\n  const parts = dateRaw.split('-');\n  year = parts[0];\n  month = parts[1].padStart(2, '0');\n  day = parts[2].padStart(2, '0');\n} else {\n  const now = new Date();\n  year = now.getFullYear();\n  month = String(now.getMonth() + 1).padStart(2, '0');\n  day = String(now.getDate()).padStart(2, '0');\n}\n\n// Tinh thoi gian bat dau va ket thuc theo mui gio Viet Nam (+07:00)\nconst startIso = `${year}-${month}-${day}T${timeRaw}:00+07:00`;\nconst startDate = new Date(startIso);\nconst endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);\n\nconst pad = (n) => String(n).padStart(2, '0');\nconst endIso = `${endDate.getFullYear()}-${pad(endDate.getMonth() + 1)}-${pad(endDate.getDate())}T${pad(endDate.getHours())}:${pad(endDate.getMinutes())}:00+07:00`;\n\nreturn {\n  json: {\n    resumeId,\n    candidateName,\n    candidateEmail,\n    interviewerEmail,\n    companyName,\n    jobTitle,\n    interviewDateFormatted: `${day}/${month}/${year}`,\n    interviewTimeFormatted: timeRaw,\n    startDateTime: startIso,\n    endDateTime: endIso,\n    durationMinutes,\n    note\n  }\n};"
+      },
+      "id": "2",
+      "name": "Format Thoi Gian & Du Lieu",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "start": "={{ $json.startDateTime }}",
+        "end": "={{ $json.endDateTime }}",
+        "additionalFields": {
+          "summary": "=Phỏng vấn Online: {{ $json.candidateName }} - {{ $json.jobTitle }} ({{ $json.companyName }})",
+          "description": "=Buổi phỏng vấn trực tuyến qua Google Meet.\n\n- Vị trí: {{ $json.jobTitle }}\n- Đơn vị: {{ $json.companyName }}\n- Ứng viên: {{ $json.candidateName }} ({{ $json.candidateEmail }})\n- Thời gian: {{ $json.interviewTimeFormatted }} ngày {{ $json.interviewDateFormatted }} ({{ $json.durationMinutes }} phút)\n- Nội dung: {{ $json.note }}\n\n* Vui lòng tham gia đúng giờ và kiểm tra micro/camera trước 5 phút.",
+          "attendees": "={{ [$json.candidateEmail, $json.interviewerEmail].filter(Boolean) }}",
+          "conferenceDataUi": {
+            "conferenceDataValues": {
+              "conferenceSolution": "hangoutsMeet"
+            }
+          }
+        }
+      },
+      "id": "3",
+      "name": "Tao Google Meet Tren Calendar",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Format Thoi Gian & Du Lieu').item.json.candidateEmail }}",
+        "subject": "=🥐 Thư mời phỏng vấn trực tuyến (Google Meet) - {{ $('Format Thoi Gian & Du Lieu').item.json.companyName }}",
+        "message": "=<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <style>\n    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 24px; color: #111827; }\n    .card { max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; padding: 32px 28px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }\n    .header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #f3f4f6; }\n    .title { font-size: 20px; font-weight: 700; color: #111827; margin: 8px 0 4px; }\n    .subtitle { font-size: 14px; color: #6b7280; margin: 0; }\n    .info-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 18px; margin: 24px 0; }\n    .info-item { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px; }\n    .info-item:last-child { margin-bottom: 0; }\n    .info-label { color: #6b7280; }\n    .info-value { font-weight: 600; color: #111827; }\n    .btn-container { text-align: center; margin: 28px 0; }\n    .meet-btn { display: inline-block; background-color: #1677ff; color: #ffffff !important; text-decoration: none; padding: 12px 28px; border-radius: 6px; font-size: 15px; font-weight: 600; box-shadow: 0 2px 6px rgba(22, 119, 255, 0.25); }\n    .tips { font-size: 13px; color: #6b7280; line-height: 1.6; border-top: 1px solid #f3f4f6; padding-top: 16px; }\n    .footer { text-align: center; font-size: 12px; color: #9ca3af; margin-top: 24px; }\n  </style>\n</head>\n<body>\n  <div class=\"card\">\n    <div class=\"header\">\n      <div style=\"font-size: 28px;\">📅</div>\n      <h1 class=\"title\">Thư Mời Phỏng Vấn Trực Tuyến</h1>\n      <p class=\"subtitle\">Đơn vị tuyển dụng: <strong>{{ $('Format Thoi Gian & Du Lieu').item.json.companyName }}</strong></p>\n    </div>\n\n    <p style=\"font-size: 14.5px; line-height: 1.6; margin-top: 20px;\">\n      Xin chào <strong>{{ $('Format Thoi Gian & Du Lieu').item.json.candidateName }}</strong>,\n    </p>\n    <p style=\"font-size: 14px; line-height: 1.6; color: #374151;\">\n      Chúc mừng bạn! Hồ sơ ứng tuyển của bạn cho vị trí <strong>{{ $('Format Thoi Gian & Du Lieu').item.json.jobTitle }}</strong> đã được nhà tuyển dụng xem xét và đánh giá cao. Chúng tôi trân trọng mời bạn tham gia buổi phỏng vấn trực tuyến với thông tin chi tiết như sau:\n    </p>\n\n    <div class=\"info-box\">\n      <div class=\"info-item\">\n        <span class=\"info-label\">Vị trí ứng tuyển:</span>\n        <span class=\"info-value\">{{ $('Format Thoi Gian & Du Lieu').item.json.jobTitle }}</span>\n      </div>\n      <div class=\"info-item\">\n        <span class=\"info-label\">Thời gian:</span>\n        <span class=\"info-value\">{{ $('Format Thoi Gian & Du Lieu').item.json.interviewTimeFormatted }} - Ngày {{ $('Format Thoi Gian & Du Lieu').item.json.interviewDateFormatted }}</span>\n      </div>\n      <div class=\"info-item\">\n        <span class=\"info-label\">Thời lượng:</span>\n        <span class=\"info-value\">{{ $('Format Thoi Gian & Du Lieu').item.json.durationMinutes }} phút</span>\n      </div>\n      <div class=\"info-item\">\n        <span class=\"info-label\">Hình thức:</span>\n        <span class=\"info-value\">Online qua Google Meet</span>\n      </div>\n    </div>\n\n    <div class=\"btn-container\">\n      <a href=\"{{ $json.hangoutLink || $json.conferenceData?.entryPoints?.[0]?.uri }}\" target=\"_blank\" class=\"meet-btn\">\n        🚀 Tham Gia Google Meet\n      </a>\n      <div style=\"margin-top: 10px; font-size: 12.5px; color: #6b7280;\">\n        Link Meet: <a href=\"{{ $json.hangoutLink || $json.conferenceData?.entryPoints?.[0]?.uri }}\" style=\"color: #1677ff;\">{{ $json.hangoutLink || $json.conferenceData?.entryPoints?.[0]?.uri }}</a>\n      </div>\n    </div>\n\n    <div class=\"tips\">\n      <strong>📌 Lưu ý trước buổi phỏng vấn:</strong>\n      <ul style=\"margin: 6px 0 0; padding-left: 20px;\">\n        <li>Vui lòng kiểm tra kết nối mạng, micro và camera trước 5-10 phút.</li>\n        <li>Chọn không gian yên tĩnh và đủ ánh sáng để buổi trao đổi diễn ra thuận lợi.</li>\n        <li>Chuẩn bị sẵn CV hoặc các câu hỏi bạn muốn trao đổi thêm với tiệm bánh.</li>\n      </ul>\n    </div>\n\n    <div class=\"footer\">\n      © {{ new Date().getFullYear() }} {{ $('Format Thoi Gian & Du Lieu').item.json.companyName }} • Nền tảng kết nối việc làm BakeJobs\n    </div>\n  </div>\n</body>\n</html>"
+      },
+      "id": "4",
+      "name": "Gui Email kem Link Meet",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Đã tạo lịch phỏng vấn Google Meet và gửi email mời phỏng vấn thành công!\",\n  \"meetLink\": \"{{ $('Tao Google Meet Tren Calendar').item.json.hangoutLink || $('Tao Google Meet Tren Calendar').item.json.conferenceData?.entryPoints?.[0]?.uri }}\",\n  \"eventId\": \"{{ $('Tao Google Meet Tren Calendar').item.json.id }}\",\n  \"eventUrl\": \"{{ $('Tao Google Meet Tren Calendar').item.json.htmlLink }}\",\n  \"candidateName\": \"{{ $('Format Thoi Gian & Du Lieu').item.json.candidateName }}\",\n  \"candidateEmail\": \"{{ $('Format Thoi Gian & Du Lieu').item.json.candidateEmail }}\",\n  \"interviewDate\": \"{{ $('Format Thoi Gian & Du Lieu').item.json.interviewDateFormatted }}\",\n  \"interviewTime\": \"{{ $('Format Thoi Gian & Du Lieu').item.json.interviewTimeFormatted }}\"\n}",
+        "options": {}
+      },
+      "id": "5",
+      "name": "Tra Ket Qua Ve He Thong",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Nhan Thong Tin": {
+      "main": [
+        [
+          {
+            "node": "Format Thoi Gian & Du Lieu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Thoi Gian & Du Lieu": {
+      "main": [
+        [
+          {
+            "node": "Tao Google Meet Tren Calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tao Google Meet Tren Calendar": {
+      "main": [
+        [
+          {
+            "node": "Gui Email kem Link Meet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gui Email kem Link Meet": {
+      "main": [
+        [
+          {
+            "node": "Tra Ket Qua Ve He Thong",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
