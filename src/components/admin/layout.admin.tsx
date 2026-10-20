@@ -294,7 +294,7 @@ const LayoutAdmin = () => {
                     collapsed={collapsed}
                     onCollapse={(value) => setCollapsed(value)}>
                     <div style={{ height: 32, margin: 16, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <GiCroissant style={{ color: '#2563eb', fontSize: '20px', marginRight: 6 }} />
+                        <GiCroissant style={{ color: '#1677ff', fontSize: '20px', marginRight: 6 }} />
                         <strong style={{ color: '#111827', letterSpacing: '0.5px' }}>BAKEJOBS</strong>
                     </div>
                     <Menu

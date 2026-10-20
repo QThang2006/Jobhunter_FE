@@ -135,11 +135,9 @@ const SearchClient = () => {
                                 icon={<SearchOutlined />}
                                 onClick={() => form.submit()}
                                 style={{
-                                    fontWeight: 600,
-                                    borderRadius: '8px',
+                                    fontWeight: 500,
+                                    borderRadius: 6,
                                     height: '38px',
-                                    background: '#3b82f6',
-                                    borderColor: '#3b82f6'
                                 }}
                             >
                                 Tìm Việc

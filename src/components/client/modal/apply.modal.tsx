@@ -120,11 +120,8 @@ const ApplyModal = (props: IProps) => {
             cancelText="Hủy"
             okButtonProps={{
                 style: {
-                    background: '#3b82f6',
-                    borderColor: '#3b82f6',
-                    color: '#ffffff',
-                    fontWeight: 500,
-                    borderRadius: 6
+                    borderRadius: 6,
+                    fontWeight: 500
                 }
             }}
             confirmLoading={isSubmitting}

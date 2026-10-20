@@ -14,7 +14,7 @@ const MyShiftsPage = () => {
                             title: <Link to="/"><HomeOutlined /> Trang chủ</Link>,
                         },
                         {
-                            title: <span><ScheduleOutlined style={{ color: '#3b82f6' }} /> Lịch ca làm việc của tôi</span>,
+                            title: <span><ScheduleOutlined style={{ color: '#1677ff' }} /> Lịch ca làm việc của tôi</span>,
                         },
                     ]}
                 />
@@ -36,7 +36,7 @@ const MyShiftsPage = () => {
                     alignItems: 'center',
                     gap: 8
                 }}>
-                    <ScheduleOutlined style={{ color: '#3b82f6' }} />
+                    <ScheduleOutlined style={{ color: '#1677ff' }} />
                     Lịch Ca Làm Việc Nhân Viên
                 </h1>
 

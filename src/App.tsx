@@ -184,8 +184,8 @@ export default function App() {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#3b82f6',
-          colorLink: '#3b82f6',
+          colorPrimary: '#1677ff',
+          colorLink: '#1677ff',
           borderRadius: 6,
         },
       }}

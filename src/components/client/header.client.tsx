@@ -131,7 +131,7 @@ const Header = (props: any) => {
                 <div className={styles["container"]}>
                     <div className={styles["header-wrapper"]}>
                         <div className={styles['brand']} onClick={() => navigate('/')}>
-                            <GiCroissant className={styles['logo-icon']} title='BakeJobs' style={{ color: '#3b82f6', fontSize: '28px' }} />
+                            <GiCroissant className={styles['logo-icon']} title='BakeJobs' style={{ color: '#1677ff', fontSize: '28px' }} />
                             <span className={styles['logo-text']}>BakeJobs</span>
                         </div>
 
@@ -139,7 +139,7 @@ const Header = (props: any) => {
                             <ConfigProvider
                                 theme={{
                                     token: {
-                                        colorPrimary: '#3b82f6',
+                                        colorPrimary: '#1677ff',
                                         colorBgContainer: 'transparent',
                                         colorText: '#374151',
                                     },
@@ -166,7 +166,7 @@ const Header = (props: any) => {
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
                                                 <span className={styles['user-name-text']}>{user?.name}</span>
-                                                <Avatar style={{ backgroundColor: '#3b82f6' }}> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                                <Avatar style={{ backgroundColor: '#1677ff' }}> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
                                             </Space>
                                         </Dropdown>
                                     </Space>

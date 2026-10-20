@@ -301,7 +301,7 @@ const ShiftPage = () => {
             valueType: 'date',
             render: (_text, record) => (
                 <Space>
-                    <CalendarOutlined style={{ color: '#2563eb' }} />
+                    <CalendarOutlined style={{ color: '#1677ff' }} />
                     <span style={{ fontWeight: 600 }}>{dayjs(record.shiftDate).format('DD/MM/YYYY')}</span>
                 </Space>
             ),
@@ -335,7 +335,7 @@ const ShiftPage = () => {
             render: (_text, record) => (
                 <div>
                     <div style={{ fontWeight: 600, color: '#111827' }}>
-                        <UserOutlined style={{ marginRight: 6, color: '#2563eb' }} />
+                        <UserOutlined style={{ marginRight: 6, color: '#1677ff' }} />
                         {record.user?.name || 'Chưa gán'}
                     </div>
                     {record.user?.email && (
@@ -391,8 +391,6 @@ const ShiftPage = () => {
                                 icon={<SwapOutlined />}
                                 onClick={() => handleOpenTransfer(record)}
                                 style={{
-                                    background: '#3b82f6',
-                                    borderColor: '#3b82f6',
                                     borderRadius: 6
                                 }}
                             >
@@ -485,10 +483,8 @@ const ShiftPage = () => {
                                 icon={<PlusOutlined />}
                                 onClick={() => handleOpenCreate()}
                                 style={{
-                                    background: '#3b82f6',
-                                    borderColor: '#3b82f6',
-                                    fontWeight: 600,
-                                    borderRadius: 8
+                                    fontWeight: 500,
+                                    borderRadius: 6
                                 }}
                             >
                                 Tạo Ca Làm Mới
@@ -542,13 +538,13 @@ const ShiftPage = () => {
 
             {/* Modal Tạo Ca Làm Việc */}
             <Modal
-                title={<Space><FieldTimeOutlined style={{ color: '#3b82f6' }} /><span>Tạo Ca Làm Việc Mới</span></Space>}
+                title={<Space><FieldTimeOutlined style={{ color: '#1677ff' }} /><span>Tạo Ca Làm Việc Mới</span></Space>}
                 open={isCreateOpen}
                 onCancel={() => setIsCreateOpen(false)}
                 onOk={() => createForm.submit()}
                 okText="Tạo Ca Làm"
                 cancelText="Hủy"
-                okButtonProps={{ style: { background: '#3b82f6', borderColor: '#3b82f6' } }}
+                okButtonProps={{ style: { borderRadius: 6 } }}
                 width={650}
                 destroyOnClose
             >
@@ -647,7 +643,7 @@ const ShiftPage = () => {
             <Modal
                 title={
                     <Space>
-                        <SwapOutlined style={{ color: '#3b82f6' }} />
+                        <SwapOutlined style={{ color: '#1677ff' }} />
                         <span>Chuyển Giao Ca Làm Việc Cho Nhân Viên Khác</span>
                     </Space>
                 }
@@ -656,7 +652,7 @@ const ShiftPage = () => {
                 onOk={() => transferForm.submit()}
                 okText="Xác Nhận Chuyển Ca"
                 cancelText="Hủy"
-                okButtonProps={{ style: { background: '#3b82f6', borderColor: '#3b82f6' } }}
+                okButtonProps={{ style: { borderRadius: 6 } }}
                 width={560}
                 destroyOnClose
             >
@@ -674,7 +670,7 @@ const ShiftPage = () => {
                         <div style={{ fontSize: 13, color: '#6b7280' }}>
                             Ngày: {dayjs(selectedShift.shiftDate).format('DD/MM/YYYY')} • Tiệm: {selectedShift.company?.name}
                         </div>
-                        <div style={{ fontSize: 13, color: '#2563eb', marginTop: 4 }}>
+                        <div style={{ fontSize: 13, color: '#1677ff', marginTop: 4 }}>
                             Nhân viên đang đảm nhận: <strong>{selectedShift.user?.name}</strong> ({selectedShift.user?.email})
                         </div>
                     </div>

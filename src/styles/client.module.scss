@@ -97,7 +97,7 @@
         cursor: pointer;
 
         .logo-icon {
-            color: #2563eb;
+            color: #1677ff;
             font-size: 28px;
             transition: transform 0.2s ease;
             &:hover {
@@ -131,7 +131,7 @@
                 font-weight: 500;
 
                 &:hover {
-                    color: #2563eb;
+                    color: #1677ff;
                 }
             }
 
@@ -140,7 +140,7 @@
                 cursor: pointer;
                 font-weight: 500;
                 &:hover {
-                    color: #2563eb;
+                    color: #1677ff;
                 }
             }
         }
@@ -158,7 +158,7 @@
             color: #374151;
 
             &:hover {
-                color: #2563eb;
+                color: #1677ff;
             }
         }
     }
@@ -197,13 +197,13 @@
         }
 
         a {
-            color: #2563eb;
+            color: #1677ff;
             font-weight: 500;
             font-size: 14px;
             transition: color 0.2s ease;
 
             &:hover {
-                color: #1d4ed8;
+                color: #4096ff;
                 text-decoration: underline;
             }
         }
@@ -218,19 +218,19 @@
 
     .job-card-item {
         background: #ffffff;
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid #e5e7eb;
         transition: all 0.25s ease;
         height: 100%;
         cursor: pointer;
 
         &:hover {
-            border-color: #93c5fd;
+            border-color: #91caff;
             transform: translateY(-2px);
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 
             .job-title {
-                color: #2563eb !important;
+                color: #1677ff !important;
             }
         }
 
@@ -330,13 +330,13 @@
         }
 
         a {
-            color: #2563eb;
+            color: #1677ff;
             font-weight: 500;
             font-size: 14px;
             transition: color 0.2s ease;
 
             &:hover {
-                color: #1d4ed8;
+                color: #4096ff;
                 text-decoration: underline;
             }
         }
@@ -351,7 +351,7 @@
 
     .company-card-item {
         background: #ffffff;
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid #e5e7eb;
         overflow: hidden;
         transition: all 0.25s ease;
@@ -360,7 +360,7 @@
         flex-direction: column;
 
         &:hover {
-            border-color: #93c5fd;
+            border-color: #91caff;
             transform: translateY(-3px);
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
         }
@@ -502,13 +502,13 @@
         font-weight: 600;
         padding: 11px 24px;
         border: 0;
-        border-radius: 8px;
-        background-color: #3b82f6;
+        border-radius: 6px;
+        background-color: #1677ff;
         transition: background-color 0.2s ease;
         outline: 0;
 
         &:hover {
-            background-color: #2563eb;
+            background-color: #4096ff;
         }
     }
 
@@ -666,7 +666,7 @@
             gap: 6px;
 
             .logo-icon-mini {
-                color: #2563eb;
+                color: #1677ff;
                 font-size: 20px;
             }
 
@@ -705,7 +705,7 @@
             transition: color 0.2s ease;
 
             &:hover {
-                color: #2563eb;
+                color: #1677ff;
             }
         }
 

@@ -69,22 +69,26 @@ const ClientJobDetailPage = (props: any) => {
                                 </h1>
 
                                 <div style={{ marginBottom: 16 }}>
-                                    <button
+                                    <Button
+                                        type="primary"
+                                        size="large"
                                         onClick={() => setIsModalOpen(true)}
-                                        className={styles["btn-apply"]}
                                         disabled={Boolean(isExpired || isNotStarted)}
-                                        style={
-                                            isExpired || isNotStarted
-                                                ? { background: "#ccc", cursor: "not-allowed" }
-                                                : {}
-                                        }
+                                        style={{
+                                            width: "100%",
+                                            maxWidth: 320,
+                                            height: 42,
+                                            fontSize: 15,
+                                            fontWeight: 500,
+                                            borderRadius: 6
+                                        }}
                                     >
                                         {isExpired
                                             ? "Đã hết hạn tuyển"
                                             : isNotStarted
                                                 ? "Chưa mở tuyển"
                                                 : "Ứng Tuyển Ca Này"}
-                                    </button>
+                                    </Button>
                                 </div>
 
                                 <div className={styles["skills"]}>
@@ -153,11 +157,7 @@ const ClientJobDetailPage = (props: any) => {
                                             }}
                                             style={{
                                                 marginTop: 8,
-                                                borderColor: '#93c5fd',
-                                                background: '#eff6ff',
-                                                color: '#2563eb',
                                                 borderRadius: 6,
-                                                fontWeight: 500
                                             }}
                                         >
                                             Xem Tiệm Bánh

@@ -27,7 +27,7 @@ interface IProps {
 
 export const getShiftColor = (shiftName: string) => {
     const name = (shiftName || '').toLowerCase();
-    if (name.includes('sáng')) return '#2563eb';
+    if (name.includes('sáng')) return '#1677ff';
     if (name.includes('chiều')) return '#0284c7';
     if (name.includes('tối')) return '#0f766e';
     if (name.includes('đêm')) return '#6d28d9';
@@ -88,7 +88,7 @@ const ShiftCalendarView = (props: IProps) => {
                                     </span>
                                     {isTransferred && (
                                         <Tooltip title="Ca làm đã được chuyển">
-                                            <SwapOutlined style={{ color: '#2563eb', fontSize: 10 }} />
+                                            <SwapOutlined style={{ color: '#1677ff', fontSize: 10 }} />
                                         </Tooltip>
                                     )}
                                 </div>
@@ -104,7 +104,7 @@ const ShiftCalendarView = (props: IProps) => {
                         <div style={{
                             fontSize: 11,
                             fontWeight: 600,
-                            color: '#2563eb',
+                            color: '#1677ff',
                             textAlign: 'center',
                             background: '#f3f4f6',
                             borderRadius: 3,
@@ -173,7 +173,7 @@ const ShiftCalendarView = (props: IProps) => {
             <Modal
                 title={
                     <Space>
-                        <FieldTimeOutlined style={{ color: '#2563eb' }} />
+                        <FieldTimeOutlined style={{ color: '#1677ff' }} />
                         <span>Thông Tin Chi Tiết Ca Làm Việc</span>
                     </Space>
                 }
@@ -193,7 +193,7 @@ const ShiftCalendarView = (props: IProps) => {
                                 setDetailModalShift(null);
                                 onOpenTransfer && onOpenTransfer(s);
                             }}
-                            style={{ background: '#3b82f6', borderColor: '#3b82f6' }}
+                            style={{ borderRadius: 6 }}
                         >
                             Chuyển Ca Này
                         </Button>,
@@ -247,7 +247,7 @@ const ShiftCalendarView = (props: IProps) => {
                                     {detailModalShift.shiftName}
                                 </span>
                                 <div style={{ color: '#6b7280', fontSize: 13, marginTop: 2 }}>
-                                    <ClockCircleOutlined style={{ marginRight: 6, color: '#2563eb' }} />
+                                    <ClockCircleOutlined style={{ marginRight: 6, color: '#1677ff' }} />
                                     {detailModalShift.startTime || '--:--'} - {detailModalShift.endTime || '--:--'}
                                 </div>
                             </div>
@@ -270,7 +270,7 @@ const ShiftCalendarView = (props: IProps) => {
                             <Col span={12}>
                                 <div style={{ fontSize: 12, color: '#6b7280' }}>Ngày làm việc</div>
                                 <div style={{ fontWeight: 600, color: '#111827', fontSize: 14 }}>
-                                    <CalendarOutlined style={{ marginRight: 6, color: '#2563eb' }} />
+                                    <CalendarOutlined style={{ marginRight: 6, color: '#1677ff' }} />
                                     {dayjs(detailModalShift.shiftDate).format('DD/MM/YYYY')} ({dayjs(detailModalShift.shiftDate).format('dddd')})
                                 </div>
                             </Col>
@@ -278,7 +278,7 @@ const ShiftCalendarView = (props: IProps) => {
                             <Col span={12}>
                                 <div style={{ fontSize: 12, color: '#6b7280' }}>Nhân viên đảm nhận</div>
                                 <div style={{ fontWeight: 600, color: '#111827', fontSize: 14 }}>
-                                    <UserOutlined style={{ marginRight: 6, color: '#2563eb' }} />
+                                    <UserOutlined style={{ marginRight: 6, color: '#1677ff' }} />
                                     {detailModalShift.user?.name || 'Chưa gán'}
                                 </div>
                                 {detailModalShift.user?.email && (
@@ -289,7 +289,7 @@ const ShiftCalendarView = (props: IProps) => {
                             <Col span={24}>
                                 <div style={{ fontSize: 12, color: '#6b7280' }}>Tiệm bánh</div>
                                 <div style={{ fontWeight: 600, color: '#111827' }}>
-                                    <ShopOutlined style={{ marginRight: 6, color: '#2563eb' }} />
+                                    <ShopOutlined style={{ marginRight: 6, color: '#1677ff' }} />
                                     {detailModalShift.company?.name || '--'}
                                 </div>
                             </Col>
