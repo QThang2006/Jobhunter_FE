@@ -174,7 +174,7 @@ const ViewDetailResume = (props: IProps) => {
 
             {/* Modal xếp lịch thử việc */}
             <Modal
-                title={<span style={{ color: '#873800' }}>🥐 Xếp Lịch Thử Việc Tại Tiệm Bánh (Trial Shift)</span>}
+                title={<span style={{ color: '#111827', fontWeight: 600 }}>Xếp Lịch Thử Việc / Phỏng Vấn</span>}
                 open={isModalOpen}
                 onOk={handleInterviewSubmit}
                 onCancel={() => {
@@ -218,12 +218,12 @@ const ViewDetailResume = (props: IProps) => {
 
                     <div style={{
                         padding: '12px 16px',
-                        background: '#fffbe6',
+                        background: '#f9fafb',
                         borderRadius: '8px',
-                        border: '1px solid #ffe58f'
+                        border: '1px solid #e5e7eb'
                     }}>
-                        <p style={{ margin: 0, fontSize: '13px', color: '#873800', lineHeight: 1.5 }}>
-                            💡 <strong>Tự động hóa:</strong> Hệ thống sẽ tự động gửi <strong>Email Thư Mời Thử Việc</strong> đến ứng viên với đầy đủ ngày giờ, địa chỉ tiệm bánh và dặn dò tác phong bếp (tạp dề, giày chống trượt, vệ sinh ATTP).
+                        <p style={{ margin: 0, fontSize: '13px', color: '#4b5563', lineHeight: 1.5 }}>
+                            <strong>Thông báo:</strong> Hệ thống sẽ tự động gửi <strong>Email Thư Mời Thử Việc</strong> đến ứng viên với thông tin ngày giờ và địa chỉ làm việc.
                         </p>
                     </div>
                 </Form>

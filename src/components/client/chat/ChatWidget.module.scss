@@ -14,24 +14,25 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #d46b08 0%, #873800 100%);
+  background: #1f2937;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   font-size: 28px;
 
   &:hover {
     transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 6px 20px rgba(212, 107, 8, 0.4);
+    background: #111827;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   }
 
   &.open {
     transform: rotate(45deg);
-    background: #ff4d4f;
+    background: #ef4444;
   }
 }
 
@@ -39,14 +40,14 @@
   width: 380px;
   height: 550px;
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
   margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid #e5e7eb;
 
   @media (max-width: 480px) {
     width: 90vw;
@@ -56,8 +57,8 @@
 }
 
 .header {
-  padding: 18px 20px;
-  background: linear-gradient(135deg, #d46b08 0%, #873800 100%);
+  padding: 16px 20px;
+  background: #1f2937;
   color: white;
   display: flex;
   align-items: center;
@@ -65,7 +66,7 @@
 
   .title {
     font-weight: 600;
-    font-size: 16px;
+    font-size: 15px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -74,7 +75,7 @@
   .status {
     width: 8px;
     height: 8px;
-    background: #4ade80;
+    background: #10b981;
     border-radius: 50%;
     margin-left: 6px;
     box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
@@ -85,7 +86,7 @@
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background: #f9f9fa;
+  background: #f9fafb;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -99,16 +100,16 @@
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.1);
+    background: #d1d5db;
     border-radius: 3px;
   }
 }
 
 .messageBubble {
   max-width: 80%;
-  padding: 12px 16px;
-  border-radius: 18px;
-  font-size: 14px;
+  padding: 11px 15px;
+  border-radius: 14px;
+  font-size: 13.5px;
   line-height: 1.5;
   position: relative;
   word-wrap: break-word;
@@ -116,7 +117,7 @@
 
   &.user {
     align-self: flex-end;
-    background: linear-gradient(135deg, #d46b08 0%, #873800 100%);
+    background: #2563eb;
     color: white;
     border-bottom-right-radius: 4px;
   }
@@ -126,40 +127,40 @@
     background: white;
     color: #1f2937;
     border-bottom-left-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border: 1px solid #eef2f6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid #e5e7eb;
   }
 }
 
 .inputArea {
-  padding: 15px;
+  padding: 14px 16px;
   background: white;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #e5e7eb;
   display: flex;
   gap: 10px;
   align-items: center;
 
   input {
     flex: 1;
-    border: 1px solid #e2e8f0;
-    padding: 12px 16px;
-    border-radius: 25px;
+    border: 1px solid #d1d5db;
+    padding: 10px 14px;
+    border-radius: 20px;
     outline: none;
     transition: all 0.2s;
-    font-size: 14px;
+    font-size: 13.5px;
 
     &:focus {
-      border-color: #d46b08;
-      box-shadow: 0 0 0 3px rgba(212, 107, 8, 0.15);
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
   }
 
   button {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     border: none;
-    background: #d46b08;
+    background: #2563eb;
     color: white;
     display: flex;
     align-items: center;
@@ -168,12 +169,13 @@
     transition: all 0.2s;
 
     &:hover {
-      background: #b35602;
+      background: #1d4ed8;
       transform: scale(1.05);
     }
     
     &:disabled {
-      background: #ccc;
+      background: #e5e7eb;
+      color: #9ca3af;
       cursor: not-allowed;
     }
   }
@@ -186,11 +188,12 @@
   background: white;
   border-radius: 12px;
   width: fit-content;
+  border: 1px solid #e5e7eb;
   
   span {
     width: 6px;
     height: 6px;
-    background: #d46b08;
+    background: #2563eb;
     border-radius: 50%;
     animation: bounce 1.4s infinite ease-in-out both;
 
@@ -201,26 +204,26 @@
 
 .jobCardMini {
   background: white;
-  border: 1px solid #eee;
-  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 12px;
   margin-top: 8px;
   cursor: pointer;
   transition: all 0.2s;
   
   &:hover {
-    border-color: #d46b08;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-color: #93c5fd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
 
   h4 {
     margin: 0 0 4px 0;
-    color: #1a1a1a;
+    color: #111827;
     font-size: 14px;
   }
   
   .salary {
-    color: #10b981;
+    color: #059669;
     font-weight: 600;
     font-size: 13px;
     margin: 0;
@@ -228,7 +231,7 @@
 
   .meta {
     font-size: 12px;
-    color: #666;
+    color: #6b7280;
     display: flex;
     gap: 8px;
     margin-top: 6px;

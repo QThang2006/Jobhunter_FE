@@ -14,7 +14,7 @@ const MyShiftsPage = () => {
                             title: <Link to="/"><HomeOutlined /> Trang chủ</Link>,
                         },
                         {
-                            title: <span><ScheduleOutlined style={{ color: '#d46b08' }} /> Lịch ca làm việc của tôi</span>,
+                            title: <span><ScheduleOutlined style={{ color: '#2563eb' }} /> Lịch ca làm việc của tôi</span>,
                         },
                     ]}
                 />
@@ -22,21 +22,21 @@ const MyShiftsPage = () => {
 
             <div style={{
                 background: '#ffffff',
-                border: '1px solid #ebd9c8',
+                border: '1px solid #e5e7eb',
                 borderRadius: 12,
                 padding: '24px 28px',
-                boxShadow: '0 2px 10px rgba(180, 115, 60, 0.04)'
+                boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)'
             }}>
                 <h1 style={{
                     fontSize: 22,
                     fontWeight: 700,
-                    color: '#4a2c11',
+                    color: '#111827',
                     marginBottom: 16,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8
                 }}>
-                    <ScheduleOutlined style={{ color: '#d46b08' }} />
+                    <ScheduleOutlined style={{ color: '#2563eb' }} />
                     Lịch Ca Làm Việc Nhân Viên
                 </h1>
 

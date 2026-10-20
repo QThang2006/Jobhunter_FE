@@ -89,7 +89,7 @@ const ClientJobDetailPage = (props: any) => {
 
                                 <div className={styles["skills"]}>
                                     {jobDetail?.skills?.map((item, index) => (
-                                        <Tag key={`${index}-key`} color="gold">
+                                        <Tag key={`${index}-key`}>
                                             {item.name}
                                         </Tag>
                                     ))}
@@ -101,7 +101,7 @@ const ClientJobDetailPage = (props: any) => {
                                 </div>
 
                                 <div className={styles["location"]}>
-                                    <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 6 }} />
+                                    <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 6 }} />
                                     <span>{getLocationName(jobDetail.location)}</span>
                                 </div>
 
@@ -139,7 +139,7 @@ const ClientJobDetailPage = (props: any) => {
                                     </h3>
                                     {jobDetail.company?.address && (
                                         <div className={styles["company-address"]}>
-                                            <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                            <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 4 }} />
                                             {jobDetail.company?.address}
                                         </div>
                                     )}
@@ -153,8 +153,8 @@ const ClientJobDetailPage = (props: any) => {
                                             }}
                                             style={{
                                                 marginTop: 8,
-                                                borderColor: '#d46b08',
-                                                color: '#d46b08',
+                                                borderColor: '#d1d5db',
+                                                color: '#374151',
                                                 borderRadius: 6,
                                                 fontWeight: 500
                                             }}

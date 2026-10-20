@@ -37,20 +37,20 @@
     }
 
     ::-webkit-scrollbar-track {
-        background: rgb(255, 255, 255);
-        border: thin solid rgb(238, 238, 238);
-        box-shadow: 0px 0px 3px #dfdfdf inset;
+        background: #ffffff;
+        border: thin solid #e5e7eb;
+        box-shadow: 0px 0px 3px #f3f4f6 inset;
         border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb {
-        background: #ccc;
-        border: thin solid #ccc;
+        background: #d1d5db;
+        border: thin solid #d1d5db;
         border-radius: 10px;
     }
 
     ::-webkit-scrollbar-thumb:hover {
-        background: #7d7d7d;
+        background: #9ca3af;
     }
 
 }
@@ -78,9 +78,9 @@
     display: block;
     width: 100%;
     height: 58px;
-    background-color: #fffaf5;
-    border-bottom: 1px solid #ebd9c8;
-    box-shadow: 0 2px 8px rgba(135, 56, 0, 0.04);
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 
     .header-wrapper {
         display: flex;
@@ -97,7 +97,7 @@
         cursor: pointer;
 
         .logo-icon {
-            color: #d46b08;
+            color: #2563eb;
             font-size: 28px;
             transition: transform 0.2s ease;
             &:hover {
@@ -106,7 +106,7 @@
         }
 
         .logo-text {
-            color: #5c3a21;
+            color: #111827;
             font-size: 21px;
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -126,21 +126,21 @@
 
             a {
                 cursor: pointer;
-                color: #5c4a3d;
+                color: #4b5563;
                 text-decoration: none;
                 font-weight: 500;
 
                 &:hover {
-                    color: #d46b08;
+                    color: #2563eb;
                 }
             }
 
             .user-name-text {
-                color: #5c4a3d;
+                color: #374151;
                 cursor: pointer;
                 font-weight: 500;
                 &:hover {
-                    color: #d46b08;
+                    color: #2563eb;
                 }
             }
         }
@@ -150,15 +150,15 @@
         display: none;
         align-items: center;
         gap: 16px;
-        color: #5c3a21;
+        color: #374151;
 
         .hamburger-icon {
             font-size: 22px;
             cursor: pointer;
-            color: #5c3a21;
+            color: #374151;
 
             &:hover {
-                color: #d46b08;
+                color: #2563eb;
             }
         }
     }
@@ -191,19 +191,19 @@
         .title {
             font-size: 22px;
             font-weight: 700;
-            color: #4a2c11;
+            color: #111827;
             margin: 0;
             line-height: 1.3;
         }
 
         a {
-            color: #d46b08;
+            color: #2563eb;
             font-weight: 500;
             font-size: 14px;
             transition: color 0.2s ease;
 
             &:hover {
-                color: #873800;
+                color: #1d4ed8;
                 text-decoration: underline;
             }
         }
@@ -217,19 +217,20 @@
     }
 
     .job-card-item {
+        background: #ffffff;
         border-radius: 10px;
-        border: 1px solid #ebd9c8;
+        border: 1px solid #e5e7eb;
         transition: all 0.25s ease;
         height: 100%;
         cursor: pointer;
 
         &:hover {
-            border-color: #d46b08;
+            border-color: #93c5fd;
             transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(180, 115, 60, 0.1);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 
             .job-title {
-                color: #d46b08 !important;
+                color: #2563eb !important;
             }
         }
 
@@ -250,8 +251,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #fffaf5;
-            border: 1px solid #ebd9c8;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 4px;
             flex-shrink: 0;
@@ -269,7 +270,7 @@
 
             .job-title {
                 overflow: hidden;
-                color: #4a2c11;
+                color: #111827;
                 font-weight: 600;
                 text-overflow: ellipsis;
                 text-align: left;
@@ -285,7 +286,7 @@
             .job-location {
                 padding-bottom: 4px;
                 font-size: 13px;
-                color: #7a6b61;
+                color: #6b7280;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -294,13 +295,13 @@
             .job-salary {
                 font-size: 13.5px;
                 font-weight: 600;
-                color: #d46b08;
+                color: #059669;
                 padding-bottom: 4px;
             }
 
             .job-updatedAt {
                 font-size: 12px;
-                color: #919191;
+                color: #9ca3af;
             }
         }
     }
@@ -323,19 +324,19 @@
         .title {
             font-size: 22px;
             font-weight: 700;
-            color: #4a2c11;
+            color: #111827;
             margin: 0;
             line-height: 1.3;
         }
 
         a {
-            color: #d46b08;
+            color: #2563eb;
             font-weight: 500;
             font-size: 14px;
             transition: color 0.2s ease;
 
             &:hover {
-                color: #873800;
+                color: #1d4ed8;
                 text-decoration: underline;
             }
         }
@@ -349,8 +350,9 @@
     }
 
     .company-card-item {
+        background: #ffffff;
         border-radius: 10px;
-        border: 1px solid #ebd9c8;
+        border: 1px solid #e5e7eb;
         overflow: hidden;
         transition: all 0.25s ease;
         height: 100%;
@@ -358,9 +360,9 @@
         flex-direction: column;
 
         &:hover {
-            border-color: #d46b08;
+            border-color: #93c5fd;
             transform: translateY(-3px);
-            box-shadow: 0 6px 18px rgba(180, 115, 60, 0.12);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
         }
 
         :global(.ant-card-body) {
@@ -375,7 +377,7 @@
         .company-card-name {
             font-size: 15px;
             font-weight: 700;
-            color: #4a2c11;
+            color: #111827;
             margin: 0 0 6px 0;
             line-height: 1.3;
             overflow: hidden;
@@ -385,7 +387,7 @@
 
         .company-card-address {
             font-size: 12.5px;
-            color: #7a6b61;
+            color: #6b7280;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -394,12 +396,12 @@
 
     .card-customize {
         height: 135px;
-        background: #fffaf5;
+        background: #f9fafb;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 12px;
-        border-bottom: 1px solid #faf0e6;
+        border-bottom: 1px solid #e5e7eb;
 
         img {
             max-width: 100%;
@@ -427,7 +429,7 @@
     .title {
         font-size: 22px;
         font-weight: 700;
-        color: #4a2c11;
+        color: #111827;
         margin: 0;
         line-height: 1.3;
     }
@@ -442,10 +444,10 @@
 
     .detail-card-wrapper {
         background: #ffffff;
-        border: 1px solid #ebd9c8;
+        border: 1px solid #e5e7eb;
         border-radius: 12px;
         padding: 26px 30px;
-        box-shadow: 0 2px 10px rgba(180, 115, 60, 0.04);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     }
 
     iframe, embed, video, object {
@@ -467,7 +469,7 @@
 
     .header {
         margin: 0 0 14px 0;
-        color: #4a2c11;
+        color: #111827;
         font-size: 24px;
         font-weight: 700;
         line-height: 1.35;
@@ -501,12 +503,12 @@
         padding: 11px 24px;
         border: 0;
         border-radius: 8px;
-        background-color: #d46b08;
+        background-color: #1f2937;
         transition: background-color 0.2s ease;
         outline: 0;
 
         &:hover {
-            background-color: #b35602;
+            background-color: #111827;
         }
     }
 
@@ -524,9 +526,9 @@
             font-size: 12.5px;
             line-height: 18px;
             border-radius: 4px;
-            background: #fff7e6;
-            border-color: #ffd591;
-            color: #d46b08;
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #374151;
             font-weight: 500;
             display: inline-block;
         }
@@ -536,37 +538,37 @@
         padding: 10px 0 4px;
         font-size: 17px;
         font-weight: 700;
-        color: #d46b08;
+        color: #059669;
     }
 
     .location {
         padding-bottom: 6px;
         font-size: 14.5px;
-        color: #5c4a3d;
+        color: #4b5563;
         word-break: break-word;
     }
 
     .time-meta {
         font-size: 14px;
-        color: #6b5b52;
+        color: #6b7280;
     }
 
     .section-title {
         font-size: 16px;
         font-weight: 700;
-        color: #4a2c11;
+        color: #111827;
         margin: 18px 0 10px;
     }
 
     .job-desc-content {
-        color: #4a382e;
+        color: #374151;
         font-size: 14.5px;
         line-height: 1.7;
     }
 
     .company-sidebar-card {
-        background: #fffaf5;
-        border: 1px solid #ebd9c8;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
         border-radius: 10px;
         padding: 24px 20px;
         text-align: center;
@@ -585,13 +587,13 @@
         .company-title {
             font-size: 18px;
             font-weight: 700;
-            color: #4a2c11;
+            color: #111827;
             margin: 0;
         }
 
         .company-address {
             font-size: 13.5px;
-            color: #7a6b61;
+            color: #6b7280;
             line-height: 1.5;
         }
     }
@@ -608,14 +610,14 @@
         .hero-title {
             font-size: 28px;
             font-weight: 700;
-            color: #4a2c11;
+            color: #111827;
             margin-bottom: 8px;
             letter-spacing: -0.3px;
         }
 
         .hero-subtitle {
             font-size: 15px;
-            color: #6b5b52;
+            color: #6b7280;
             margin: 0 auto;
             max-width: 620px;
             line-height: 1.6;
@@ -624,14 +626,14 @@
 
     .search-box-card {
         background: #ffffff;
-        border: 1px solid #ebd9c8;
+        border: 1px solid #e5e7eb;
         border-radius: 12px;
         padding: 22px 24px;
-        box-shadow: 0 4px 20px rgba(180, 115, 60, 0.08);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         transition: box-shadow 0.25s ease;
 
         &:hover {
-            box-shadow: 0 6px 24px rgba(180, 115, 60, 0.12);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         }
     }
 
@@ -651,11 +653,11 @@
     }
 }
 
-/* ==================== FOOTER SECTION (SLIM 1 ÄOáº N á»ž CUá»I) ==================== */
+/* ==================== FOOTER SECTION ==================== */
 .footer-section {
-    background-color: #faf6f0;
-    color: #6b5b52;
-    border-top: 1px solid #ebd9c8;
+    background-color: #f9fafb;
+    color: #6b7280;
+    border-top: 1px solid #e5e7eb;
     padding: 14px 0;
     margin-top: 24px;
     font-size: 13px;
@@ -681,12 +683,12 @@
             gap: 6px;
 
             .logo-icon-mini {
-                color: #d46b08;
+                color: #2563eb;
                 font-size: 20px;
             }
 
             .logo-text-mini {
-                color: #5c3a21;
+                color: #111827;
                 font-size: 17px;
                 font-weight: 700;
                 letter-spacing: 0.5px;
@@ -694,12 +696,12 @@
         }
 
         .footer-separator {
-            color: #d4c2b2;
+            color: #d1d5db;
             font-size: 12px;
         }
 
         .footer-desc-mini {
-            color: #7a6b61;
+            color: #6b7280;
             font-size: 13px;
         }
     }
@@ -714,23 +716,23 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            color: #5c4a3d;
+            color: #4b5563;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease;
 
             &:hover {
-                color: #d46b08;
+                color: #2563eb;
             }
         }
 
         .divider-dot {
-            color: #d4c2b2;
+            color: #d1d5db;
             font-size: 11px;
         }
 
         .copyright-mini {
-            color: #8c7b70;
+            color: #9ca3af;
             font-size: 12.5px;
         }
     }

@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
-import { Calendar, Tag, Space, Button, Modal, Tooltip, Row, Col, Popconfirm } from 'antd';
+import { Calendar, Tag, Tooltip, Modal, Row, Col, Space, Button, Popconfirm } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { IWorkShift, IUser } from '@/types/backend';
 import {
-    CalendarOutlined,
-    ClockCircleOutlined,
-    DeleteOutlined,
-    EditOutlined,
     FieldTimeOutlined,
-    PlusOutlined,
-    ShopOutlined,
+    UserOutlined,
     SwapOutlined,
-    UserOutlined
+    ShopOutlined,
+    ClockCircleOutlined,
+    CalendarOutlined,
+    EditOutlined,
+    DeleteOutlined
 } from '@ant-design/icons';
+import { IWorkShift, IUser } from '@/types/backend';
 
 interface IProps {
     shifts: IWorkShift[];
@@ -28,12 +27,12 @@ interface IProps {
 
 export const getShiftColor = (shiftName: string) => {
     const name = (shiftName || '').toLowerCase();
-    if (name.includes('sáng')) return '#d46b08'; // Nâu cam nướng bánh
-    if (name.includes('chiều')) return '#1677ff'; // Xanh dương
-    if (name.includes('tối')) return '#13c2c2';  // Cyan
-    if (name.includes('đêm')) return '#722ed1';  // Tím
-    if (name.includes('full')) return '#52c41a'; // Xanh lá
-    return '#fa8c16';
+    if (name.includes('sáng')) return '#2563eb';
+    if (name.includes('chiều')) return '#0284c7';
+    if (name.includes('tối')) return '#0f766e';
+    if (name.includes('đêm')) return '#6d28d9';
+    if (name.includes('full')) return '#059669';
+    return '#4b5563';
 };
 
 const ShiftCalendarView = (props: IProps) => {
@@ -70,8 +69,8 @@ const ShiftCalendarView = (props: IProps) => {
                                     setDetailModalShift(item);
                                 }}
                                 style={{
-                                    background: isTransferred ? '#fff7e6' : '#fffaf5',
-                                    border: `1px solid ${isTransferred ? '#ffa940' : '#ebd9c8'}`,
+                                    background: isTransferred ? '#eff6ff' : '#f9fafb',
+                                    border: `1px solid ${isTransferred ? '#bfdbfe' : '#e5e7eb'}`,
                                     borderLeft: `4px solid ${color}`,
                                     borderRadius: 4,
                                     padding: '2px 5px',
@@ -79,7 +78,7 @@ const ShiftCalendarView = (props: IProps) => {
                                     lineHeight: 1.35,
                                     cursor: 'pointer',
                                     transition: 'all 0.2s',
-                                    boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
                                     overflow: 'hidden'
                                 }}
                             >
@@ -89,11 +88,11 @@ const ShiftCalendarView = (props: IProps) => {
                                     </span>
                                     {isTransferred && (
                                         <Tooltip title="Ca làm đã được chuyển">
-                                            <SwapOutlined style={{ color: '#d46b08', fontSize: 10 }} />
+                                            <SwapOutlined style={{ color: '#2563eb', fontSize: 10 }} />
                                         </Tooltip>
                                     )}
                                 </div>
-                                <div style={{ color: '#5c4a3d', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                <div style={{ color: '#4b5563', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                                     {item.startTime && item.endTime ? `${item.startTime}-${item.endTime}` : ''}
                                     {isAdmin && item.user?.name ? ` • ${item.user.name}` : ''}
                                 </div>
@@ -105,9 +104,9 @@ const ShiftCalendarView = (props: IProps) => {
                         <div style={{
                             fontSize: 11,
                             fontWeight: 600,
-                            color: '#d46b08',
+                            color: '#2563eb',
                             textAlign: 'center',
-                            background: '#fffaf5',
+                            background: '#f3f4f6',
                             borderRadius: 3,
                             padding: '1px 0'
                         }}>
@@ -128,12 +127,12 @@ const ShiftCalendarView = (props: IProps) => {
                             marginTop: 4,
                             textAlign: 'center',
                             fontSize: 11,
-                            color: '#8c7b70',
+                            color: '#6b7280',
                             cursor: 'pointer',
                             padding: '2px 0',
                             borderRadius: 3,
-                            border: '1px dashed #ebd9c8',
-                            background: '#faf6f0'
+                            border: '1px dashed #d1d5db',
+                            background: '#f9fafb'
                         }}
                     >
                         + Thêm ca
@@ -155,10 +154,10 @@ const ShiftCalendarView = (props: IProps) => {
             {/* Calendar */}
             <div style={{
                 background: '#ffffff',
-                border: '1px solid #ebd9c8',
+                border: '1px solid #e5e7eb',
                 borderRadius: 12,
                 padding: '16px 20px',
-                boxShadow: '0 2px 10px rgba(180, 115, 60, 0.04)'
+                boxShadow: '0 1px 4px rgba(0, 0, 0, 0.05)'
             }}>
                 <Calendar
                     cellRender={cellRender}
@@ -174,7 +173,7 @@ const ShiftCalendarView = (props: IProps) => {
             <Modal
                 title={
                     <Space>
-                        <FieldTimeOutlined style={{ color: '#d46b08' }} />
+                        <FieldTimeOutlined style={{ color: '#2563eb' }} />
                         <span>Thông Tin Chi Tiết Ca Làm Việc</span>
                     </Space>
                 }
@@ -194,7 +193,7 @@ const ShiftCalendarView = (props: IProps) => {
                                 setDetailModalShift(null);
                                 onOpenTransfer && onOpenTransfer(s);
                             }}
-                            style={{ background: '#d46b08', borderColor: '#d46b08' }}
+                            style={{ background: '#2563eb', borderColor: '#2563eb' }}
                         >
                             Chuyển Ca Này
                         </Button>,
@@ -235,8 +234,8 @@ const ShiftCalendarView = (props: IProps) => {
                 {detailModalShift && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 14, paddingTop: 10 }}>
                         <div style={{
-                            background: '#fffaf5',
-                            border: '1px solid #ebd9c8',
+                            background: '#f9fafb',
+                            border: '1px solid #e5e7eb',
                             borderRadius: 8,
                             padding: '14px 18px',
                             display: 'flex',
@@ -244,11 +243,11 @@ const ShiftCalendarView = (props: IProps) => {
                             justifyContent: 'space-between'
                         }}>
                             <div>
-                                <span style={{ fontSize: 18, fontWeight: 700, color: '#4a2c11' }}>
+                                <span style={{ fontSize: 18, fontWeight: 700, color: '#111827' }}>
                                     {detailModalShift.shiftName}
                                 </span>
-                                <div style={{ color: '#7a6b61', fontSize: 13, marginTop: 2 }}>
-                                    <ClockCircleOutlined style={{ marginRight: 6, color: '#d46b08' }} />
+                                <div style={{ color: '#6b7280', fontSize: 13, marginTop: 2 }}>
+                                    <ClockCircleOutlined style={{ marginRight: 6, color: '#2563eb' }} />
                                     {detailModalShift.startTime || '--:--'} - {detailModalShift.endTime || '--:--'}
                                 </div>
                             </div>
@@ -269,40 +268,40 @@ const ShiftCalendarView = (props: IProps) => {
 
                         <Row gutter={[12, 12]}>
                             <Col span={12}>
-                                <div style={{ fontSize: 12, color: '#8c7b70' }}>Ngày làm việc</div>
-                                <div style={{ fontWeight: 600, color: '#4a2c11', fontSize: 14 }}>
-                                    <CalendarOutlined style={{ marginRight: 6, color: '#d46b08' }} />
+                                <div style={{ fontSize: 12, color: '#6b7280' }}>Ngày làm việc</div>
+                                <div style={{ fontWeight: 600, color: '#111827', fontSize: 14 }}>
+                                    <CalendarOutlined style={{ marginRight: 6, color: '#2563eb' }} />
                                     {dayjs(detailModalShift.shiftDate).format('DD/MM/YYYY')} ({dayjs(detailModalShift.shiftDate).format('dddd')})
                                 </div>
                             </Col>
 
                             <Col span={12}>
-                                <div style={{ fontSize: 12, color: '#8c7b70' }}>Nhân viên đảm nhận</div>
-                                <div style={{ fontWeight: 600, color: '#4a2c11', fontSize: 14 }}>
-                                    <UserOutlined style={{ marginRight: 6, color: '#d46b08' }} />
+                                <div style={{ fontSize: 12, color: '#6b7280' }}>Nhân viên đảm nhận</div>
+                                <div style={{ fontWeight: 600, color: '#111827', fontSize: 14 }}>
+                                    <UserOutlined style={{ marginRight: 6, color: '#2563eb' }} />
                                     {detailModalShift.user?.name || 'Chưa gán'}
                                 </div>
                                 {detailModalShift.user?.email && (
-                                    <div style={{ fontSize: 12, color: '#8c7b70' }}>{detailModalShift.user.email}</div>
+                                    <div style={{ fontSize: 12, color: '#6b7280' }}>{detailModalShift.user.email}</div>
                                 )}
                             </Col>
 
                             <Col span={24}>
-                                <div style={{ fontSize: 12, color: '#8c7b70' }}>Tiệm bánh</div>
-                                <div style={{ fontWeight: 600, color: '#4a2c11' }}>
-                                    <ShopOutlined style={{ marginRight: 6, color: '#d46b08' }} />
+                                <div style={{ fontSize: 12, color: '#6b7280' }}>Tiệm bánh</div>
+                                <div style={{ fontWeight: 600, color: '#111827' }}>
+                                    <ShopOutlined style={{ marginRight: 6, color: '#2563eb' }} />
                                     {detailModalShift.company?.name || '--'}
                                 </div>
                             </Col>
 
                             <Col span={24}>
-                                <div style={{ fontSize: 12, color: '#8c7b70' }}>Ghi chú nhiệm vụ / Nhật ký</div>
+                                <div style={{ fontSize: 12, color: '#6b7280' }}>Ghi chú nhiệm vụ / Nhật ký</div>
                                 <div style={{
-                                    background: '#faf6f0',
-                                    border: '1px solid #ebd9c8',
+                                    background: '#f9fafb',
+                                    border: '1px solid #e5e7eb',
                                     borderRadius: 6,
                                     padding: '8px 12px',
-                                    color: '#4a382e',
+                                    color: '#374151',
                                     marginTop: 4,
                                     fontSize: 13,
                                     lineHeight: 1.5

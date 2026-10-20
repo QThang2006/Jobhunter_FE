@@ -142,11 +142,11 @@ const JobCard = (props: IProps) => {
                                             <div className={styles["card-job-right"]}>
                                                 <div className={styles["job-title"]}>{item.level ? `[${item.level}] ` : ''}{item.name}</div>
                                                 <div className={styles["job-location"]}>
-                                                    <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                                    <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 4 }} />
                                                     <span>{getLocationName(item.location)}</span>
                                                 </div>
                                                 <div className={styles["job-salary"]}>
-                                                    <ThunderboltOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                                    <ThunderboltOutlined style={{ color: '#059669', marginRight: 4 }} />
                                                     <span>{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
                                                 </div>
                                                 <div className={styles["job-updatedAt"]}>Hạn nộp: {dayjs(item.endDate).format('DD/MM/YYYY')}</div>

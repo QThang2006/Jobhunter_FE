@@ -301,7 +301,7 @@ const ShiftPage = () => {
             valueType: 'date',
             render: (_text, record) => (
                 <Space>
-                    <CalendarOutlined style={{ color: '#d46b08' }} />
+                    <CalendarOutlined style={{ color: '#2563eb' }} />
                     <span style={{ fontWeight: 600 }}>{dayjs(record.shiftDate).format('DD/MM/YYYY')}</span>
                 </Space>
             ),
@@ -324,7 +324,7 @@ const ShiftPage = () => {
             hideInSearch: true,
             render: (_text, record) => (
                 <Space>
-                    <FieldTimeOutlined style={{ color: '#8c7b70' }} />
+                    <FieldTimeOutlined style={{ color: '#6b7280' }} />
                     <span>{record.startTime || '--:--'} - {record.endTime || '--:--'}</span>
                 </Space>
             ),
@@ -334,12 +334,12 @@ const ShiftPage = () => {
             dataIndex: ['user', 'name'],
             render: (_text, record) => (
                 <div>
-                    <div style={{ fontWeight: 600, color: '#4a2c11' }}>
-                        <UserOutlined style={{ marginRight: 6, color: '#d46b08' }} />
+                    <div style={{ fontWeight: 600, color: '#111827' }}>
+                        <UserOutlined style={{ marginRight: 6, color: '#2563eb' }} />
                         {record.user?.name || 'Chưa gán'}
                     </div>
                     {record.user?.email && (
-                        <div style={{ fontSize: 12, color: '#8c7b70' }}>{record.user.email}</div>
+                        <div style={{ fontSize: 12, color: '#6b7280' }}>{record.user.email}</div>
                     )}
                 </div>
             ),
@@ -391,8 +391,8 @@ const ShiftPage = () => {
                                 icon={<SwapOutlined />}
                                 onClick={() => handleOpenTransfer(record)}
                                 style={{
-                                    background: '#d46b08',
-                                    borderColor: '#d46b08',
+                                    background: '#2563eb',
+                                    borderColor: '#2563eb',
                                     borderRadius: 6
                                 }}
                             >
@@ -452,16 +452,16 @@ const ShiftPage = () => {
                     flexWrap: 'wrap',
                     gap: 12,
                     background: '#ffffff',
-                    border: '1px solid #ebd9c8',
+                    border: '1px solid #e5e7eb',
                     borderRadius: 10,
                     padding: '14px 18px',
-                    boxShadow: '0 2px 8px rgba(180, 115, 60, 0.04)'
+                    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.04)'
                 }}>
                     <div>
-                        <h2 style={{ margin: 0, color: '#4a2c11', fontSize: 19, fontWeight: 700 }}>
+                        <h2 style={{ margin: 0, color: '#111827', fontSize: 19, fontWeight: 700 }}>
                             Quản Lý Ca Làm Việc Nhân Viên
                         </h2>
-                        <div style={{ color: '#7a6b61', fontSize: 13, marginTop: 2 }}>
+                        <div style={{ color: '#6b7280', fontSize: 13, marginTop: 2 }}>
                             Theo dõi lịch tổng thể của tiệm bánh, phân ca và điều phối chuyển ca cho nhân viên
                         </div>
                     </div>
@@ -485,8 +485,8 @@ const ShiftPage = () => {
                                 icon={<PlusOutlined />}
                                 onClick={() => handleOpenCreate()}
                                 style={{
-                                    background: '#d46b08',
-                                    borderColor: '#d46b08',
+                                    background: '#2563eb',
+                                    borderColor: '#2563eb',
                                     fontWeight: 600,
                                     borderRadius: 8
                                 }}
@@ -542,13 +542,13 @@ const ShiftPage = () => {
 
             {/* Modal Tạo Ca Làm Việc */}
             <Modal
-                title={<Space><FieldTimeOutlined style={{ color: '#d46b08' }} /><span>Tạo Ca Làm Việc Mới</span></Space>}
+                title={<Space><FieldTimeOutlined style={{ color: '#2563eb' }} /><span>Tạo Ca Làm Việc Mới</span></Space>}
                 open={isCreateOpen}
                 onCancel={() => setIsCreateOpen(false)}
                 onOk={() => createForm.submit()}
                 okText="Tạo Ca Làm"
                 cancelText="Hủy"
-                okButtonProps={{ style: { background: '#d46b08', borderColor: '#d46b08' } }}
+                okButtonProps={{ style: { background: '#2563eb', borderColor: '#2563eb' } }}
                 width={650}
                 destroyOnClose
             >
@@ -647,7 +647,7 @@ const ShiftPage = () => {
             <Modal
                 title={
                     <Space>
-                        <SwapOutlined style={{ color: '#d46b08' }} />
+                        <SwapOutlined style={{ color: '#2563eb' }} />
                         <span>Chuyển Giao Ca Làm Việc Cho Nhân Viên Khác</span>
                     </Space>
                 }
@@ -656,25 +656,25 @@ const ShiftPage = () => {
                 onOk={() => transferForm.submit()}
                 okText="Xác Nhận Chuyển Ca"
                 cancelText="Hủy"
-                okButtonProps={{ style: { background: '#d46b08', borderColor: '#d46b08' } }}
+                okButtonProps={{ style: { background: '#2563eb', borderColor: '#2563eb' } }}
                 width={560}
                 destroyOnClose
             >
                 {selectedShift && (
                     <div style={{
-                        background: '#fffaf5',
-                        border: '1px solid #ebd9c8',
+                        background: '#f9fafb',
+                        border: '1px solid #e5e7eb',
                         borderRadius: 8,
                         padding: '12px 16px',
                         marginBottom: 16
                     }}>
-                        <div style={{ fontWeight: 600, color: '#4a2c11', marginBottom: 4 }}>
+                        <div style={{ fontWeight: 600, color: '#111827', marginBottom: 4 }}>
                             Ca hiện tại: {selectedShift.shiftName} ({selectedShift.startTime} - {selectedShift.endTime})
                         </div>
-                        <div style={{ fontSize: 13, color: '#7a6b61' }}>
+                        <div style={{ fontSize: 13, color: '#6b7280' }}>
                             Ngày: {dayjs(selectedShift.shiftDate).format('DD/MM/YYYY')} • Tiệm: {selectedShift.company?.name}
                         </div>
-                        <div style={{ fontSize: 13, color: '#d46b08', marginTop: 4 }}>
+                        <div style={{ fontSize: 13, color: '#2563eb', marginTop: 4 }}>
                             Nhân viên đang đảm nhận: <strong>{selectedShift.user?.name}</strong> ({selectedShift.user?.email})
                         </div>
                     </div>

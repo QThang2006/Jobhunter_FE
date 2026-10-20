@@ -20,12 +20,12 @@ const Footer = () => {
 
                     <div className={styles['footer-contact-mini']}>
                         <a href="mailto:quocthangngo2006@gmail.com" className={styles['contact-item']}>
-                            <MailOutlined style={{ color: '#d46b08' }} />
+                            <MailOutlined style={{ color: '#6b7280' }} />
                             <span>quocthangngo2006@gmail.com</span>
                         </a>
                         <span className={styles['divider-dot']}>•</span>
                         <a href="tel:0338668016" className={styles['contact-item']}>
-                            <PhoneOutlined style={{ color: '#d46b08' }} />
+                            <PhoneOutlined style={{ color: '#6b7280' }} />
                             <span>0338668016</span>
                         </a>
                         <span className={styles['divider-dot']}>•</span>

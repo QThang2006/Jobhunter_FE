@@ -106,7 +106,7 @@ const SearchClient = () => {
                                     style={{ width: '100%' }}
                                     placeholder={
                                         <Space>
-                                            <ShopOutlined style={{ color: '#d46b08' }} />
+                                            <ShopOutlined style={{ color: '#6b7280' }} />
                                             <span>Vị trí, chuyên môn (Bánh kem, Bánh mì, Phụ bếp, Thu ngân...)</span>
                                         </Space>
                                     }
@@ -128,7 +128,7 @@ const SearchClient = () => {
                                     style={{ width: '100%' }}
                                     placeholder={
                                         <Space>
-                                            <EnvironmentOutlined style={{ color: '#d46b08' }} />
+                                            <EnvironmentOutlined style={{ color: '#6b7280' }} />
                                             <span>Khu vực, địa điểm...</span>
                                         </Space>
                                     }
@@ -147,8 +147,8 @@ const SearchClient = () => {
                                     fontWeight: 600,
                                     borderRadius: '8px',
                                     height: '38px',
-                                    background: '#d46b08',
-                                    borderColor: '#d46b08'
+                                    background: '#2563eb',
+                                    borderColor: '#2563eb'
                                 }}
                             >
                                 Tìm Việc

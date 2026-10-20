@@ -88,13 +88,13 @@ const UserShiftSchedule = () => {
                 return (
                     <Space direction="vertical" size={2}>
                         <Space>
-                            <CalendarOutlined style={{ color: isToday ? '#d46b08' : '#8c7b70' }} />
-                            <span style={{ fontWeight: isToday ? 700 : 500, color: isToday ? '#d46b08' : 'inherit' }}>
+                            <CalendarOutlined style={{ color: isToday ? '#2563eb' : '#6b7280' }} />
+                            <span style={{ fontWeight: isToday ? 700 : 500, color: isToday ? '#2563eb' : 'inherit' }}>
                                 {dayjs(record.shiftDate).format('DD/MM/YYYY')}
                             </span>
-                            {isToday && <Tag color="gold" style={{ margin: 0, fontSize: 11 }}>Hôm nay</Tag>}
+                            {isToday && <Tag color="blue" style={{ margin: 0, fontSize: 11 }}>Hôm nay</Tag>}
                         </Space>
-                        <span style={{ fontSize: 12, color: '#8c7b70' }}>
+                        <span style={{ fontSize: 12, color: '#6b7280' }}>
                             {dayjs(record.shiftDate).format('dddd')}
                         </span>
                     </Space>
@@ -106,7 +106,7 @@ const UserShiftSchedule = () => {
             dataIndex: 'shiftName',
             key: 'shiftName',
             render: (_t, record) => (
-                <Tag color="volcano" style={{ fontSize: 13, padding: '3px 8px' }}>
+                <Tag color="blue" style={{ fontSize: 13, padding: '3px 8px' }}>
                     {record.shiftName}
                 </Tag>
             ),
@@ -116,7 +116,7 @@ const UserShiftSchedule = () => {
             key: 'time',
             render: (_t, record) => (
                 <Space>
-                    <FieldTimeOutlined style={{ color: '#d46b08' }} />
+                    <FieldTimeOutlined style={{ color: '#2563eb' }} />
                     <span style={{ fontWeight: 600 }}>{record.startTime || '--:--'} - {record.endTime || '--:--'}</span>
                 </Space>
             ),
@@ -127,7 +127,7 @@ const UserShiftSchedule = () => {
             key: 'company',
             render: (_t, record) => (
                 <Space>
-                    <ShopOutlined style={{ color: '#d46b08' }} />
+                    <ShopOutlined style={{ color: '#6b7280' }} />
                     <span>{record.company?.name || '--'}</span>
                 </Space>
             ),
@@ -147,12 +147,12 @@ const UserShiftSchedule = () => {
                 return (
                     <div>
                         {isTransferred && (
-                            <div style={{ color: '#d46b08', fontSize: 12, fontWeight: 600, marginBottom: 2 }}>
+                            <div style={{ color: '#2563eb', fontSize: 12, fontWeight: 600, marginBottom: 2 }}>
                                 <SwapOutlined style={{ marginRight: 4 }} />
                                 Ca làm việc được chuyển giao
                             </div>
                         )}
-                        <span style={{ color: '#4a382e' }}>{record.note || 'Không có ghi chú'}</span>
+                        <span style={{ color: '#374151' }}>{record.note || 'Không có ghi chú'}</span>
                     </div>
                 );
             },
@@ -163,8 +163,8 @@ const UserShiftSchedule = () => {
         <div>
             {/* Header info & view toggle */}
             <div style={{
-                background: '#fffaf5',
-                border: '1px solid #ebd9c8',
+                background: '#f9fafb',
+                border: '1px solid #e5e7eb',
                 borderRadius: 8,
                 padding: '12px 16px',
                 marginBottom: 16,
@@ -175,10 +175,10 @@ const UserShiftSchedule = () => {
                 gap: 12
             }}>
                 <div>
-                    <div style={{ fontWeight: 700, color: '#4a2c11', fontSize: 15 }}>
+                    <div style={{ fontWeight: 700, color: '#111827', fontSize: 15 }}>
                         Lịch Phân Ca Làm Việc Của Bạn
                     </div>
-                    <div style={{ fontSize: 13, color: '#7a6b61', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: '#6b7280', marginTop: 2 }}>
                         Theo dõi ca làm theo tháng hoặc dạng danh sách. Mọi thay đổi hoặc chuyển ca sẽ được cập nhật tức thì.
                     </div>
                 </div>

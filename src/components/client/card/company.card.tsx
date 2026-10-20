@@ -98,7 +98,7 @@ const CompanyCard = (props: IProps) => {
                                         <h3 className={styles["company-card-name"]}>{item.name}</h3>
                                         {item.address && (
                                             <div className={styles["company-card-address"]}>
-                                                <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                                <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 4 }} />
                                                 <span>{item.address}</span>
                                             </div>
                                         )}

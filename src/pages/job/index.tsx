@@ -7,7 +7,7 @@ const ClientJobPage = () => {
     return (
         <div className={styles["container"]} style={{ paddingTop: 16, paddingBottom: 24, flex: 1, display: 'flex', flexDirection: 'column' }}>
             <SearchClient />
-            <Divider style={{ margin: "20px 0 16px", borderColor: '#ebd9c8' }} />
+            <Divider style={{ margin: "20px 0 16px", borderColor: '#e5e7eb' }} />
             <div style={{ flex: 1 }}>
                 <JobCard showPagination={true} />
             </div>

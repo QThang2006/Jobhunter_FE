@@ -131,7 +131,7 @@ const Header = (props: any) => {
                 <div className={styles["container"]}>
                     <div className={styles["header-wrapper"]}>
                         <div className={styles['brand']} onClick={() => navigate('/')}>
-                            <GiCroissant className={styles['logo-icon']} title='BakeJobs' style={{ color: '#fa8c16', fontSize: '28px' }} />
+                            <GiCroissant className={styles['logo-icon']} title='BakeJobs' style={{ color: '#2563eb', fontSize: '28px' }} />
                             <span className={styles['logo-text']}>BakeJobs</span>
                         </div>
 
@@ -139,9 +139,9 @@ const Header = (props: any) => {
                             <ConfigProvider
                                 theme={{
                                     token: {
-                                        colorPrimary: '#d46b08',
+                                        colorPrimary: '#2563eb',
                                         colorBgContainer: 'transparent',
-                                        colorText: '#5c4a3d',
+                                        colorText: '#374151',
                                     },
                                 }}
                             >
@@ -152,7 +152,7 @@ const Header = (props: any) => {
                                     style={{
                                         background: 'transparent',
                                         borderBottom: 'none',
-                                        color: '#5c4a3d'
+                                        color: '#374151'
                                     }}
                                 />
                             </ConfigProvider>
@@ -166,7 +166,7 @@ const Header = (props: any) => {
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
                                                 <span className={styles['user-name-text']}>{user?.name}</span>
-                                                <Avatar style={{ backgroundColor: '#d46b08' }}> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                                <Avatar style={{ backgroundColor: '#374151' }}> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
                                             </Space>
                                         </Dropdown>
                                     </Space>

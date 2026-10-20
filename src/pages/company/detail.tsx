@@ -43,11 +43,11 @@ const ClientCompanyDetailPage = () => {
                                 </h1>
 
                                 <div className={styles["location"]}>
-                                    <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 6 }} />
+                                    <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 6 }} />
                                     <span>{companyDetail?.address}</span>
                                 </div>
 
-                                <Divider style={{ borderColor: '#ebd9c8', margin: '18px 0' }} />
+                                <Divider style={{ borderColor: '#e5e7eb', margin: '18px 0' }} />
                                 <div className={styles["section-title"]}>Giới thiệu công ty</div>
                                 <div className={styles["job-desc-content"]}>
                                     {parse(companyDetail?.description ?? "")}
@@ -66,7 +66,7 @@ const ClientCompanyDetailPage = () => {
                                     </div>
                                     {companyDetail?.address && (
                                         <div className={styles["company-address"]}>
-                                            <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                            <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 4 }} />
                                             {companyDetail.address}
                                         </div>
                                     )}
