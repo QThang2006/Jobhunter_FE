@@ -75,15 +75,6 @@ const SearchClient = () => {
 
     return (
         <div className={styles["hero-search-wrapper"]}>
-            <div className={styles["hero-header"]}>
-                <h1 className={styles["hero-title"]}>
-                    Tìm Kiếm Việc Làm Ngành Bánh & F&B
-                </h1>
-                <p className={styles["hero-subtitle"]}>
-                    Kết nối thợ bánh, phụ bếp và nhân sự phục vụ với hệ thống tiệm bánh uy tín trên toàn quốc
-                </p>
-            </div>
-
             <div className={styles["search-box-card"]}>
                 <ProForm
                     form={form}
@@ -147,8 +138,8 @@ const SearchClient = () => {
                                     fontWeight: 600,
                                     borderRadius: '8px',
                                     height: '38px',
-                                    background: '#2563eb',
-                                    borderColor: '#2563eb'
+                                    background: '#3b82f6',
+                                    borderColor: '#3b82f6'
                                 }}
                             >
                                 Tìm Việc

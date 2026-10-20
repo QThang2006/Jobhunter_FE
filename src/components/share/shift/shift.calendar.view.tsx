@@ -193,7 +193,7 @@ const ShiftCalendarView = (props: IProps) => {
                                 setDetailModalShift(null);
                                 onOpenTransfer && onOpenTransfer(s);
                             }}
-                            style={{ background: '#2563eb', borderColor: '#2563eb' }}
+                            style={{ background: '#3b82f6', borderColor: '#3b82f6' }}
                         >
                             Chuyển Ca Này
                         </Button>,

@@ -153,8 +153,9 @@ const ClientJobDetailPage = (props: any) => {
                                             }}
                                             style={{
                                                 marginTop: 8,
-                                                borderColor: '#d1d5db',
-                                                color: '#374151',
+                                                borderColor: '#93c5fd',
+                                                background: '#eff6ff',
+                                                color: '#2563eb',
                                                 borderRadius: 6,
                                                 fontWeight: 500
                                             }}

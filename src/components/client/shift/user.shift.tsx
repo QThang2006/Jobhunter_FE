@@ -88,8 +88,8 @@ const UserShiftSchedule = () => {
                 return (
                     <Space direction="vertical" size={2}>
                         <Space>
-                            <CalendarOutlined style={{ color: isToday ? '#2563eb' : '#6b7280' }} />
-                            <span style={{ fontWeight: isToday ? 700 : 500, color: isToday ? '#2563eb' : 'inherit' }}>
+                            <CalendarOutlined style={{ color: isToday ? '#3b82f6' : '#6b7280' }} />
+                            <span style={{ fontWeight: isToday ? 700 : 500, color: isToday ? '#3b82f6' : 'inherit' }}>
                                 {dayjs(record.shiftDate).format('DD/MM/YYYY')}
                             </span>
                             {isToday && <Tag color="blue" style={{ margin: 0, fontSize: 11 }}>Hôm nay</Tag>}
@@ -116,7 +116,7 @@ const UserShiftSchedule = () => {
             key: 'time',
             render: (_t, record) => (
                 <Space>
-                    <FieldTimeOutlined style={{ color: '#2563eb' }} />
+                    <FieldTimeOutlined style={{ color: '#3b82f6' }} />
                     <span style={{ fontWeight: 600 }}>{record.startTime || '--:--'} - {record.endTime || '--:--'}</span>
                 </Space>
             ),
@@ -147,7 +147,7 @@ const UserShiftSchedule = () => {
                 return (
                     <div>
                         {isTransferred && (
-                            <div style={{ color: '#2563eb', fontSize: 12, fontWeight: 600, marginBottom: 2 }}>
+                            <div style={{ color: '#3b82f6', fontSize: 12, fontWeight: 600, marginBottom: 2 }}>
                                 <SwapOutlined style={{ marginRight: 4 }} />
                                 Ca làm việc được chuyển giao
                             </div>

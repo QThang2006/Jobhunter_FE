@@ -120,8 +120,8 @@ const ApplyModal = (props: IProps) => {
             cancelText="Hủy"
             okButtonProps={{
                 style: {
-                    background: '#1f2937',
-                    borderColor: '#1f2937',
+                    background: '#3b82f6',
+                    borderColor: '#3b82f6',
                     color: '#ffffff',
                     fontWeight: 500,
                     borderRadius: 6

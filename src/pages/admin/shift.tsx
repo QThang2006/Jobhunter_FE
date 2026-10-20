@@ -391,8 +391,8 @@ const ShiftPage = () => {
                                 icon={<SwapOutlined />}
                                 onClick={() => handleOpenTransfer(record)}
                                 style={{
-                                    background: '#2563eb',
-                                    borderColor: '#2563eb',
+                                    background: '#3b82f6',
+                                    borderColor: '#3b82f6',
                                     borderRadius: 6
                                 }}
                             >
@@ -485,8 +485,8 @@ const ShiftPage = () => {
                                 icon={<PlusOutlined />}
                                 onClick={() => handleOpenCreate()}
                                 style={{
-                                    background: '#2563eb',
-                                    borderColor: '#2563eb',
+                                    background: '#3b82f6',
+                                    borderColor: '#3b82f6',
                                     fontWeight: 600,
                                     borderRadius: 8
                                 }}
@@ -542,13 +542,13 @@ const ShiftPage = () => {
 
             {/* Modal Tạo Ca Làm Việc */}
             <Modal
-                title={<Space><FieldTimeOutlined style={{ color: '#2563eb' }} /><span>Tạo Ca Làm Việc Mới</span></Space>}
+                title={<Space><FieldTimeOutlined style={{ color: '#3b82f6' }} /><span>Tạo Ca Làm Việc Mới</span></Space>}
                 open={isCreateOpen}
                 onCancel={() => setIsCreateOpen(false)}
                 onOk={() => createForm.submit()}
                 okText="Tạo Ca Làm"
                 cancelText="Hủy"
-                okButtonProps={{ style: { background: '#2563eb', borderColor: '#2563eb' } }}
+                okButtonProps={{ style: { background: '#3b82f6', borderColor: '#3b82f6' } }}
                 width={650}
                 destroyOnClose
             >
@@ -647,7 +647,7 @@ const ShiftPage = () => {
             <Modal
                 title={
                     <Space>
-                        <SwapOutlined style={{ color: '#2563eb' }} />
+                        <SwapOutlined style={{ color: '#3b82f6' }} />
                         <span>Chuyển Giao Ca Làm Việc Cho Nhân Viên Khác</span>
                     </Space>
                 }
@@ -656,7 +656,7 @@ const ShiftPage = () => {
                 onOk={() => transferForm.submit()}
                 okText="Xác Nhận Chuyển Ca"
                 cancelText="Hủy"
-                okButtonProps={{ style: { background: '#2563eb', borderColor: '#2563eb' } }}
+                okButtonProps={{ style: { background: '#3b82f6', borderColor: '#3b82f6' } }}
                 width={560}
                 destroyOnClose
             >
