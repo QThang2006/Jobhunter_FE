@@ -1,10 +1,9 @@
 import { useAppSelector } from "@/redux/hooks";
 import { IJob } from "@/types/backend";
-import { ProForm, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
-import { Button, Checkbox, Col, ConfigProvider, Divider, Modal, Row, Upload, message, notification, Tag } from "antd";
+import { Button, Col, ConfigProvider, Divider, Form, Input, Modal, Row, Upload, message, notification, Tag, Alert } from "antd";
 import { useNavigate } from "react-router-dom";
 import viVN from 'antd/lib/locale/vi_VN';
-import { UploadOutlined, PhoneOutlined, ClockCircleOutlined, CalendarOutlined, PictureOutlined } from '@ant-design/icons';
+import { UploadOutlined, CheckCircleOutlined, ShopOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { callCreateResume, callUploadSingleFile } from "@/config/api";
 import { useState } from 'react';
@@ -16,32 +15,11 @@ interface IProps {
     jobDetail: IJob | null;
 }
 
-const SHIFT_OPTIONS = [
-    { label: "Ca sáng (06:00 - 12:00)", value: "Ca sáng (06:00 - 12:00)" },
-    { label: "Ca chiều (12:00 - 18:00)", value: "Ca chiều (12:00 - 18:00)" },
-    { label: "Ca tối (18:00 - 22:30)", value: "Ca tối (18:00 - 22:30)" },
-    { label: "Ca linh hoạt / Xoay ca", value: "Ca linh hoạt / Xoay ca" }
-];
-
-const DAY_OPTIONS = [
-    { label: "Thứ 2", value: "T2" },
-    { label: "Thứ 3", value: "T3" },
-    { label: "Thứ 4", value: "T4" },
-    { label: "Thứ 5", value: "T5" },
-    { label: "Thứ 6", value: "T6" },
-    { label: "Thứ 7", value: "T7" },
-    { label: "Chủ Nhật", value: "CN" }
-];
-
 const ApplyModal = (props: IProps) => {
     const { isModalOpen, setIsModalOpen, jobDetail } = props;
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
     const user = useAppSelector(state => state.account.user);
     const [urlCV, setUrlCV] = useState<string>("");
-    const [phone, setPhone] = useState<string>("");
-    const [selectedShifts, setSelectedShifts] = useState<string[]>([]);
-    const [selectedDays, setSelectedDays] = useState<string[]>([]);
-    const [note, setNote] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
     const navigate = useNavigate();
@@ -71,39 +49,19 @@ const ApplyModal = (props: IProps) => {
             return;
         }
 
-        if (!phone.trim()) {
-            message.error("Vui lòng nhập số điện thoại hoặc Zalo liên hệ!");
-            return;
-        }
-
-        if (selectedShifts.length === 0) {
-            message.error("Vui lòng chọn ít nhất một ca làm việc bạn có thể nhận!");
+        if (!urlCV) {
+            message.error("Vui lòng tải lên file CV của bạn trước khi nộp đơn!");
             return;
         }
 
         setIsSubmitting(true);
         try {
             if (jobDetail) {
-                // Đóng gói thông tin ca rảnh, sđt và ảnh/CV thành chuỗi payload JSON
-                const resumePayload = {
-                    file: urlCV || "",
-                    phone: phone.trim(),
-                    shifts: selectedShifts,
-                    days: selectedDays,
-                    note: note.trim()
-                };
-
-                const finalPayloadString = JSON.stringify(resumePayload);
-
-                const res = await callCreateResume(finalPayloadString, jobDetail?.id, user.email, user.id);
+                const res = await callCreateResume(urlCV, jobDetail?.id, user.email, user.id);
                 if (res.data) {
                     message.success("Nộp đơn ứng tuyển thành công! Tiệm bánh sẽ liên hệ bạn sớm nhất.");
                     setIsModalOpen(false);
-                    // Reset form
                     setUrlCV("");
-                    setSelectedShifts([]);
-                    setSelectedDays([]);
-                    setNote("");
                 } else {
                     notification.error({
                         message: 'Có lỗi xảy ra',
@@ -124,7 +82,7 @@ const ApplyModal = (props: IProps) => {
     const propsUpload: UploadProps = {
         maxCount: 1,
         multiple: false,
-        accept: "application/pdf,application/msword, .doc, .docx, image/*",
+        accept: "application/pdf,application/msword, .doc, .docx",
         async customRequest({ file, onSuccess, onError }: any) {
             const res = await callUploadSingleFile(file, "resume");
             if (res && res.data) {
@@ -150,7 +108,7 @@ const ApplyModal = (props: IProps) => {
     return (
         <Modal
             title={
-                <div style={{ color: '#873800', fontSize: '18px', fontWeight: 600 }}>
+                <div style={{ color: '#4a2c11', fontSize: '17px', fontWeight: 700 }}>
                     🥐 Ứng Tuyển Vị Trí: {jobDetail?.name}
                 </div>
             }
@@ -159,131 +117,119 @@ const ApplyModal = (props: IProps) => {
             onCancel={() => setIsModalOpen(false)}
             maskClosable={false}
             okText={isAuthenticated ? "Nộp Đơn Ứng Tuyển" : "Đăng Nhập Ngay"}
+            cancelText="Hủy"
+            okButtonProps={{
+                style: {
+                    background: '#d46b08',
+                    borderColor: '#d46b08',
+                    fontWeight: 600,
+                    borderRadius: 6
+                }
+            }}
             confirmLoading={isSubmitting}
             destroyOnClose={true}
-            width={650}
+            width={560}
         >
-            <Divider style={{ margin: '12px 0' }} />
+            <Divider style={{ margin: '12px 0 16px 0' }} />
             {isAuthenticated ? (
-                <div>
-                    <ConfigProvider locale={viVN}>
-                        <div style={{
-                            background: '#fffbe6',
-                            border: '1px solid #ffe58f',
-                            borderRadius: '8px',
-                            padding: '12px 16px',
-                            marginBottom: '16px'
-                        }}>
-                            <div>Ứng tuyển tại: <strong style={{ color: '#873800' }}>{jobDetail?.company?.name}</strong></div>
-                            <div>Địa điểm làm việc: <strong>{jobDetail?.location}</strong></div>
+                <ConfigProvider locale={viVN}>
+                    {/* Thông tin tiệm bánh & vị trí */}
+                    <div style={{
+                        background: '#fffaf5',
+                        border: '1px solid #ebd9c8',
+                        borderRadius: '8px',
+                        padding: '14px 16px',
+                        marginBottom: '20px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '6px'
+                    }}>
+                        <div style={{ fontSize: '14px', color: '#4a2c11' }}>
+                            <ShopOutlined style={{ color: '#d46b08', marginRight: 6 }} />
+                            Ứng tuyển tại: <strong style={{ color: '#d46b08' }}>{jobDetail?.company?.name || 'Tiệm Bánh'}</strong>
                         </div>
+                        <div style={{ fontSize: '13px', color: '#7a6b61' }}>
+                            <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 6 }} />
+                            Địa điểm làm việc: <strong>{jobDetail?.location || 'Chưa cập nhật'}</strong>
+                        </div>
+                    </div>
 
-                        <Row gutter={[12, 14]}>
+                    <Form layout="vertical">
+                        <Row gutter={16}>
                             <Col span={12}>
-                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>
-                                    Email liên hệ:
-                                </label>
-                                <input
-                                    type="text"
-                                    value={user?.email || ''}
-                                    disabled
-                                    style={{
-                                        width: '100%',
-                                        padding: '7px 11px',
-                                        background: '#f5f5f5',
-                                        border: '1px solid #d9d9d9',
-                                        borderRadius: '6px'
-                                    }}
-                                />
+                                <Form.Item label="Tên Ứng Viên" style={{ marginBottom: 16 }}>
+                                    <Input
+                                        value={user?.name || ''}
+                                        disabled
+                                        style={{
+                                            background: '#f9f6f0',
+                                            color: '#4a2c11',
+                                            borderRadius: 6
+                                        }}
+                                    />
+                                </Form.Item>
                             </Col>
 
                             <Col span={12}>
-                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>
-                                    <span style={{ color: '#ff4d4f' }}>* </span>
-                                    <PhoneOutlined /> Số điện thoại / Zalo:
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="VD: 0905123456"
-                                    value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '7px 11px',
-                                        border: '1px solid #d9d9d9',
-                                        borderRadius: '6px'
-                                    }}
-                                />
-                            </Col>
-
-                            <Col span={24}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>
-                                    <span style={{ color: '#ff4d4f' }}>* </span>
-                                    <ClockCircleOutlined /> Ca làm việc bạn có thể nhận:
-                                </label>
-                                <Checkbox.Group
-                                    options={SHIFT_OPTIONS}
-                                    value={selectedShifts}
-                                    onChange={(checked) => setSelectedShifts(checked as string[])}
-                                />
-                            </Col>
-
-                            <Col span={24}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>
-                                    <CalendarOutlined /> Các ngày trong tuần bạn có thể đi làm:
-                                </label>
-                                <Checkbox.Group
-                                    options={DAY_OPTIONS}
-                                    value={selectedDays}
-                                    onChange={(checked) => setSelectedDays(checked as string[])}
-                                />
-                            </Col>
-
-                            <Col span={24}>
-                                <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>
-                                    <PictureOutlined /> Đính kèm CV hoặc Ảnh sản phẩm bánh tự làm (nếu có):
-                                </label>
-                                <Upload {...propsUpload}>
-                                    <Button icon={<UploadOutlined />}>
-                                        Tải lên file (*.pdf, *.docx, ảnh *.png, *.jpg &lt; 10MB)
-                                    </Button>
-                                </Upload>
-                                {urlCV && (
-                                    <div style={{ marginTop: '6px' }}>
-                                        <Tag color="success">Đã tải lên: {urlCV}</Tag>
-                                    </div>
-                                )}
-                            </Col>
-
-                            <Col span={24}>
-                                <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>
-                                    Ghi chú thêm (Kinh nghiệm, thời gian có thể bắt đầu đi làm...):
-                                </label>
-                                <textarea
-                                    rows={3}
-                                    placeholder="VD: Em từng có 6 tháng làm phụ bếp bánh mì, có thể bắt đầu đi làm ngay..."
-                                    value={note}
-                                    onChange={(e) => setNote(e.target.value)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '7px 11px',
-                                        border: '1px solid #d9d9d9',
-                                        borderRadius: '6px',
-                                        fontFamily: 'inherit'
-                                    }}
-                                />
+                                <Form.Item label="Email Liên Hệ" style={{ marginBottom: 16 }}>
+                                    <Input
+                                        value={user?.email || ''}
+                                        disabled
+                                        style={{
+                                            background: '#f9f6f0',
+                                            color: '#4a2c11',
+                                            borderRadius: 6
+                                        }}
+                                    />
+                                </Form.Item>
                             </Col>
                         </Row>
-                    </ConfigProvider>
-                </div>
+
+                        <Form.Item
+                            label={
+                                <span>
+                                    <span style={{ color: '#ff4d4f', marginRight: 4 }}>*</span>
+                                    File CV Ứng Tuyển:
+                                </span>
+                            }
+                            required
+                            style={{ marginBottom: 16 }}
+                            extra="Định dạng hỗ trợ: .pdf, .doc, .docx (Dung lượng < 10MB)"
+                        >
+                            <Upload {...propsUpload}>
+                                <Button
+                                    icon={<UploadOutlined />}
+                                    style={{
+                                        borderColor: '#d46b08',
+                                        color: '#d46b08',
+                                        borderRadius: 6
+                                    }}
+                                >
+                                    Tải Lên File CV
+                                </Button>
+                            </Upload>
+
+                            {urlCV && (
+                                <div style={{ marginTop: '10px' }}>
+                                    <Tag color="success" icon={<CheckCircleOutlined />} style={{ padding: '4px 10px', fontSize: 13 }}>
+                                        File đã chọn: {urlCV}
+                                    </Tag>
+                                </div>
+                            )}
+                        </Form.Item>
+                    </Form>
+                </ConfigProvider>
             ) : (
-                <div style={{ padding: '20px 0', textAlign: 'center' }}>
-                    <p style={{ fontSize: '15px', color: '#666' }}>
-                        Bạn cần đăng nhập tài khoản Ứng viên để có thể nộp đơn xin việc tại tiệm bánh.
-                    </p>
+                <div style={{ padding: '24px 0', textAlign: 'center' }}>
+                    <Alert
+                        message="Yêu cầu đăng nhập"
+                        description="Bạn cần đăng nhập tài khoản để có thể nộp hồ sơ ứng tuyển vào tiệm bánh này."
+                        type="info"
+                        showIcon
+                    />
                 </div>
             )}
-            <Divider style={{ margin: '14px 0 6px 0' }} />
+            <Divider style={{ margin: '16px 0 0 0' }} />
         </Modal>
     );
 };

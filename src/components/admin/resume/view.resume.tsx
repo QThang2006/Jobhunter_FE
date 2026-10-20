@@ -1,9 +1,9 @@
 import { callUpdateResumeStatus, callSendApprovalEmail } from "@/config/api";
 import { IResume } from "@/types/backend";
-import { Badge, Button, Descriptions, Drawer, Form, Select, message, notification, Modal, DatePicker, TimePicker, Tag, Image, Space } from "antd";
+import { Button, Descriptions, Drawer, Form, Select, message, notification, Modal, DatePicker, TimePicker } from "antd";
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
-import { PhoneOutlined, ClockCircleOutlined, CalendarOutlined, FileTextOutlined, PictureOutlined } from '@ant-design/icons';
+import { FileTextOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 interface IProps {
@@ -103,21 +103,17 @@ const ViewDetailResume = (props: IProps) => {
         return () => form.resetFields();
     }, [dataInit]);
 
-    // Phân tích dữ liệu trong cột `url` (có thể là chuỗi file name hoặc JSON thông tin ca rảnh)
-    let payload: any = null;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     let fileName = dataInit?.url || '';
-    if (dataInit?.url && dataInit.url.startsWith('{')) {
+    if (fileName.startsWith('{')) {
         try {
-            payload = JSON.parse(dataInit.url);
-            fileName = payload?.file || '';
+            const parsed = JSON.parse(fileName);
+            fileName = parsed?.file || '';
         } catch (e) {
-            payload = null;
+            // keep raw
         }
     }
-
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const fileUrl = fileName ? `${backendUrl}/storage/resume/${fileName}` : '';
-    const isImageFile = fileName ? /\.(jpg|jpeg|png|webp|gif)$/i.test(fileName) : false;
 
     return (
         <>
@@ -135,7 +131,7 @@ const ViewDetailResume = (props: IProps) => {
                     </Button>
                 }
             >
-                <Descriptions title="Thông tin cơ bản" bordered column={2} layout="vertical">
+                <Descriptions title="Thông tin hồ sơ ứng tuyển" bordered column={2} layout="vertical">
                     <Descriptions.Item label="Email Ứng Viên">{dataInit?.email}</Descriptions.Item>
                     <Descriptions.Item label="Trạng thái xử lý">
                         <Form form={form}>
@@ -158,85 +154,22 @@ const ViewDetailResume = (props: IProps) => {
                         {dataInit?.companyName || dataInit?.company?.name || 'Tiệm Bánh'}
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Số điện thoại / Zalo">
-                        {payload?.phone ? (
-                            <span style={{ color: '#0958d9', fontWeight: 600 }}>
-                                <PhoneOutlined /> {payload.phone}
-                            </span>
-                        ) : 'Chưa cập nhật'}
-                    </Descriptions.Item>
-
                     <Descriptions.Item label="Ngày nộp hồ sơ">
                         {dataInit && dataInit.createdAt ? dayjs(dataInit.createdAt).format('DD/MM/YYYY HH:mm') : ""}
                     </Descriptions.Item>
-                </Descriptions>
 
-                {/* Khung thông tin Ca làm việc rảnh & Portfolio ảnh bánh */}
-                <div style={{ marginTop: '20px' }}>
-                    <Descriptions title="Lịch rảnh & Kỹ năng làm bánh" bordered column={1} layout="vertical">
-                        <Descriptions.Item label={<span><ClockCircleOutlined /> Ca làm việc ứng viên có thể nhận:</span>}>
-                            {payload?.shifts && payload.shifts.length > 0 ? (
-                                <Space wrap>
-                                    {payload.shifts.map((s: string, idx: number) => (
-                                        <Tag color="orange" key={idx} style={{ fontSize: '13px', padding: '3px 8px' }}>
-                                            {s}
-                                        </Tag>
-                                    ))}
-                                </Space>
-                            ) : (
-                                <span style={{ color: '#999' }}>Chưa đăng ký ca cố định (Linh hoạt)</span>
-                            )}
-                        </Descriptions.Item>
-
-                        <Descriptions.Item label={<span><CalendarOutlined /> Các ngày trong tuần có thể đi làm:</span>}>
-                            {payload?.days && payload.days.length > 0 ? (
-                                <Space wrap>
-                                    {payload.days.map((d: string, idx: number) => (
-                                        <Tag color="cyan" key={idx} style={{ fontWeight: 600 }}>{d}</Tag>
-                                    ))}
-                                </Space>
-                            ) : (
-                                <span style={{ color: '#999' }}>Tất cả các ngày</span>
-                            )}
-                        </Descriptions.Item>
-
-                        {payload?.note && (
-                            <Descriptions.Item label="Ghi chú kinh nghiệm từ ứng viên:">
-                                <div style={{ background: '#fafafa', padding: '8px 12px', borderRadius: '6px', fontStyle: 'italic' }}>
-                                    "{payload.note}"
-                                </div>
-                            </Descriptions.Item>
+                    <Descriptions.Item label="File CV Đính Kèm">
+                        {fileUrl ? (
+                            <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                                <Button icon={<FileTextOutlined />} type="dashed">
+                                    Xem / Tải File CV ({fileName})
+                                </Button>
+                            </a>
+                        ) : (
+                            <span style={{ color: '#999' }}>Không đính kèm file</span>
                         )}
-
-                        <Descriptions.Item label={<span><PictureOutlined /> Ảnh mẫu bánh / File CV đính kèm:</span>}>
-                            {fileUrl ? (
-                                <div>
-                                    {isImageFile ? (
-                                        <div>
-                                            <div style={{ marginBottom: '8px', color: '#52c41a', fontWeight: 500 }}>
-                                                📷 Ảnh tác phẩm bánh do thợ bánh tự làm:
-                                            </div>
-                                            <Image
-                                                src={fileUrl}
-                                                alt="Mẫu bánh"
-                                                style={{ maxHeight: 200, borderRadius: 8, objectFit: 'cover' }}
-                                                fallback="https://via.placeholder.com/200?text=Banh+Mau"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-                                            <Button icon={<FileTextOutlined />} type="dashed">
-                                                Xem File CV Đính Kèm ({fileName})
-                                            </Button>
-                                        </a>
-                                    )}
-                                </div>
-                            ) : (
-                                <span style={{ color: '#999' }}>Không đính kèm file</span>
-                            )}
-                        </Descriptions.Item>
-                    </Descriptions>
-                </div>
+                    </Descriptions.Item>
+                </Descriptions>
             </Drawer>
 
             {/* Modal xếp lịch thử việc */}
