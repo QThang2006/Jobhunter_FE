@@ -31,7 +31,12 @@ export interface IAccount {
                 method: string;
                 module: string;
             }[]
-        }
+        };
+        company?: {
+            id: string | number;
+            name: string;
+            logo?: string;
+        };
     }
 }
 
@@ -187,4 +192,32 @@ export interface INotification {
     status: string; // APPROVED | REJECTED | REVIEWING | PENDING
     read: boolean;  // Java boolean isRead → Jackson serializes getter isRead() → "read"
     createdAt: string;
+}
+
+export type WorkShiftStatus = 'ASSIGNED' | 'CONFIRMED' | 'COMPLETED' | 'TRANSFERRED' | 'CANCELLED';
+
+export interface IWorkShift {
+    id?: string | number;
+    shiftDate: string; // YYYY-MM-DD
+    shiftName: string;
+    startTime?: string;
+    endTime?: string;
+    note?: string;
+    status: WorkShiftStatus;
+    user?: {
+        id: string | number;
+        name: string;
+        email: string;
+    };
+    company?: {
+        id: string | number;
+        name: string;
+        logo?: string;
+    };
+    job?: {
+        id: string | number;
+        name: string;
+    };
+    createdAt?: string;
+    updatedAt?: string;
 }

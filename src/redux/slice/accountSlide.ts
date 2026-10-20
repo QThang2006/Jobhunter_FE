@@ -29,7 +29,12 @@ interface IState {
                 method: string;
                 module: string;
             }[]
-        }
+        };
+        company?: {
+            id?: string | number;
+            name?: string;
+            logo?: string;
+        };
     };
     activeMenu: string;
 }

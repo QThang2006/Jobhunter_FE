@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IWorkShift } from '@/types/backend';
 import axios from 'config/axios-customize';
 
 /**
@@ -330,3 +330,35 @@ export const callMarkNotificationAsRead = (id: number) => {
 export const callMarkAllNotificationsAsRead = () => {
     return axios.put<IBackendRes<void>>('/api/v1/notifications/read-all');
 }
+
+/**
+ * Module Work Shift (Ca làm việc)
+ */
+export const callCreateWorkShift = (data: any) => {
+    return axios.post<IBackendRes<IWorkShift>>('/api/v1/shifts', data);
+};
+
+export const callUpdateWorkShift = (id: string | number, data: any) => {
+    return axios.put<IBackendRes<IWorkShift>>(`/api/v1/shifts/${id}`, data);
+};
+
+export const callTransferWorkShift = (data: { shiftId: number | string; newUserId: number | string; newShiftDate?: string; reason?: string }) => {
+    return axios.post<IBackendRes<IWorkShift>>('/api/v1/shifts/transfer', data);
+};
+
+export const callDeleteWorkShift = (id: string | number) => {
+    return axios.delete<IBackendRes<void>>(`/api/v1/shifts/${id}`);
+};
+
+export const callFetchWorkShift = (query: string) => {
+    return axios.get<IBackendRes<IModelPaginate<IWorkShift>>>(`/api/v1/shifts?${query}`);
+};
+
+export const callFetchMyWorkShifts = (query: string = 'page=1&size=20&sort=shiftDate,desc') => {
+    return axios.get<IBackendRes<IModelPaginate<IWorkShift>>>(`/api/v1/shifts/my-shifts?${query}`);
+};
+
+export const callFetchCompanyEmployees = (companyId?: string | number) => {
+    const q = companyId ? `?companyId=${companyId}` : '';
+    return axios.get<IBackendRes<IUser[]>>(`/api/v1/shifts/employees${q}`);
+};

@@ -9,6 +9,7 @@ import { MonitorOutlined } from "@ant-design/icons";
 import { SKILLS_LIST } from "@/config/utils";
 import { useAppSelector } from "@/redux/hooks";
 import { useWebSocket } from "@/context/websocket.context";
+import UserShiftSchedule from "@/components/client/shift/user.shift";
 
 interface IProps {
     open: boolean;
@@ -383,6 +384,11 @@ const ManageAccount = (props: IProps) => {
             key: 'user-resume',
             label: `CV của tôi`,
             children: <UserResume />,
+        },
+        {
+            key: 'user-shift',
+            label: `Lịch ca làm của tôi`,
+            children: <UserShiftSchedule />,
         },
         {
             key: 'email-by-skills',

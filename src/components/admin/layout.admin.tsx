@@ -14,6 +14,7 @@ import {
     CloseOutlined,
     LogoutOutlined,
     HomeOutlined,
+    FieldTimeOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Dropdown, Space, message, Avatar, Button, Drawer, Typography } from 'antd';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -105,6 +106,12 @@ const LayoutAdmin = () => {
                     label: <Link to='/admin/resume'>Hồ Sơ Ứng Tuyển</Link>,
                     key: '/admin/resume',
                     icon: <AliwangwangOutlined />
+                }] : []),
+
+                ...(viewResume || viewUser || user.role.name === 'SUPER_ADMIN' || ACL_ENABLE === 'false' ? [{
+                    label: <Link to='/admin/shift'>Ca Làm Việc</Link>,
+                    key: '/admin/shift',
+                    icon: <FieldTimeOutlined />
                 }] : []),
                 ...(viewPermission || ACL_ENABLE === 'false' ? [{
                     label: <Link to='/admin/permission'>Quyền Hạn</Link>,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { HomeOutlined, ShopOutlined, ApartmentOutlined, ContactsOutlined, FireOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined } from '@ant-design/icons';
+import { HomeOutlined, ShopOutlined, ApartmentOutlined, ContactsOutlined, FireOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined, ScheduleOutlined } from '@ant-design/icons';
 import { Avatar, Drawer, Dropdown, MenuProps, Space, message } from 'antd';
 import { Menu, ConfigProvider } from 'antd';
 import styles from '@/styles/client.module.scss';
@@ -75,6 +75,14 @@ const Header = (props: any) => {
             >Quản lý tài khoản</label>,
             key: 'manage-account',
             icon: <ContactsOutlined />
+        },
+        {
+            label: <Link
+                to={"/my-shifts"}
+                onClick={() => setOpenMobileMenu(false)}
+            >Lịch ca làm việc</Link>,
+            key: 'my-shifts',
+            icon: <ScheduleOutlined />
         },
         ...(user.role?.permissions?.length ? [{
             label: <Link

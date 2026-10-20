@@ -32,6 +32,8 @@ import ClientJobDetailPage from './pages/job/detail';
 import ClientCompanyPage from './pages/company';
 import ClientCompanyDetailPage from './pages/company/detail';
 import JobTabs from './pages/admin/job/job.tabs';
+import ShiftPage from './pages/admin/shift';
+import MyShiftsPage from './pages/shift/my-shifts';
 import ChatWidget from 'components/client/chat/ChatWidget';
 
 const LayoutClient = () => {
@@ -84,7 +86,8 @@ export default function App() {
         { path: "job", element: <ClientJobPage /> },
         { path: "job/:id", element: <ClientJobDetailPage /> },
         { path: "company", element: <ClientCompanyPage /> },
-        { path: "company/:id", element: <ClientCompanyDetailPage /> }
+        { path: "company/:id", element: <ClientCompanyDetailPage /> },
+        { path: "my-shifts", element: <ProtectedRoute><MyShiftsPage /></ProtectedRoute> }
       ],
     },
 
@@ -133,6 +136,13 @@ export default function App() {
           element:
             <ProtectedRoute>
               <ResumePage />
+            </ProtectedRoute>
+        },
+        {
+          path: "shift",
+          element:
+            <ProtectedRoute>
+              <ShiftPage />
             </ProtectedRoute>
         },
         {
