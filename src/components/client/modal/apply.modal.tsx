@@ -108,8 +108,8 @@ const ApplyModal = (props: IProps) => {
     return (
         <Modal
             title={
-                <div style={{ color: '#4a2c11', fontSize: '17px', fontWeight: 700 }}>
-                    🥐 Ứng Tuyển Vị Trí: {jobDetail?.name}
+                <div style={{ color: '#111827', fontSize: '17px', fontWeight: 600 }}>
+                    Ứng Tuyển Vị Trí: {jobDetail?.name}
                 </div>
             }
             open={isModalOpen}
@@ -120,50 +120,55 @@ const ApplyModal = (props: IProps) => {
             cancelText="Hủy"
             okButtonProps={{
                 style: {
-                    background: '#d46b08',
-                    borderColor: '#d46b08',
-                    fontWeight: 600,
+                    background: '#1f2937',
+                    borderColor: '#1f2937',
+                    color: '#ffffff',
+                    fontWeight: 500,
                     borderRadius: 6
                 }
             }}
             confirmLoading={isSubmitting}
             destroyOnClose={true}
-            width={560}
+            width={540}
         >
-            <Divider style={{ margin: '12px 0 16px 0' }} />
+            <Divider style={{ margin: '12px 0 16px 0', borderColor: '#f0f0f0' }} />
             {isAuthenticated ? (
                 <ConfigProvider locale={viVN}>
-                    {/* Thông tin tiệm bánh & vị trí */}
+                    {/* Thẻ tóm tắt thông tin: trắng xám nhạt tinh tế */}
                     <div style={{
-                        background: '#fffaf5',
-                        border: '1px solid #ebd9c8',
+                        background: '#f9fafb',
+                        border: '1px solid #e5e7eb',
                         borderRadius: '8px',
-                        padding: '14px 16px',
+                        padding: '12px 16px',
                         marginBottom: '20px',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '6px'
+                        gap: '5px'
                     }}>
-                        <div style={{ fontSize: '14px', color: '#4a2c11' }}>
-                            <ShopOutlined style={{ color: '#d46b08', marginRight: 6 }} />
-                            Ứng tuyển tại: <strong style={{ color: '#d46b08' }}>{jobDetail?.company?.name || 'Tiệm Bánh'}</strong>
+                        <div style={{ fontSize: '14px', color: '#374151' }}>
+                            <ShopOutlined style={{ color: '#6b7280', marginRight: 8 }} />
+                            Đơn vị tuyển dụng: <strong style={{ color: '#111827' }}>{jobDetail?.company?.name || 'Chưa cập nhật'}</strong>
                         </div>
-                        <div style={{ fontSize: '13px', color: '#7a6b61' }}>
-                            <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 6 }} />
-                            Địa điểm làm việc: <strong>{jobDetail?.location || 'Chưa cập nhật'}</strong>
+                        <div style={{ fontSize: '13px', color: '#6b7280' }}>
+                            <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 8 }} />
+                            Địa điểm làm việc: <span>{jobDetail?.location || 'Chưa cập nhật'}</span>
                         </div>
                     </div>
 
                     <Form layout="vertical">
                         <Row gutter={16}>
                             <Col span={12}>
-                                <Form.Item label="Tên Ứng Viên" style={{ marginBottom: 16 }}>
+                                <Form.Item
+                                    label={<span style={{ fontWeight: 500, color: '#374151' }}>Tên Ứng Viên</span>}
+                                    style={{ marginBottom: 16 }}
+                                >
                                     <Input
                                         value={user?.name || ''}
                                         disabled
                                         style={{
-                                            background: '#f9f6f0',
-                                            color: '#4a2c11',
+                                            background: '#f3f4f6',
+                                            color: '#374151',
+                                            border: '1px solid #e5e7eb',
                                             borderRadius: 6
                                         }}
                                     />
@@ -171,13 +176,17 @@ const ApplyModal = (props: IProps) => {
                             </Col>
 
                             <Col span={12}>
-                                <Form.Item label="Email Liên Hệ" style={{ marginBottom: 16 }}>
+                                <Form.Item
+                                    label={<span style={{ fontWeight: 500, color: '#374151' }}>Email Liên Hệ</span>}
+                                    style={{ marginBottom: 16 }}
+                                >
                                     <Input
                                         value={user?.email || ''}
                                         disabled
                                         style={{
-                                            background: '#f9f6f0',
-                                            color: '#4a2c11',
+                                            background: '#f3f4f6',
+                                            color: '#374151',
+                                            border: '1px solid #e5e7eb',
                                             borderRadius: 6
                                         }}
                                     />
@@ -187,31 +196,43 @@ const ApplyModal = (props: IProps) => {
 
                         <Form.Item
                             label={
-                                <span>
-                                    <span style={{ color: '#ff4d4f', marginRight: 4 }}>*</span>
+                                <span style={{ fontWeight: 500, color: '#374151' }}>
+                                    <span style={{ color: '#ef4444', marginRight: 4 }}>*</span>
                                     File CV Ứng Tuyển:
                                 </span>
                             }
                             required
                             style={{ marginBottom: 16 }}
-                            extra="Định dạng hỗ trợ: .pdf, .doc, .docx (Dung lượng < 10MB)"
+                            extra={<span style={{ color: '#6b7280', fontSize: 12 }}>Định dạng hỗ trợ: .pdf, .doc, .docx (Dung lượng &lt; 10MB)</span>}
                         >
                             <Upload {...propsUpload}>
                                 <Button
-                                    icon={<UploadOutlined />}
+                                    icon={<UploadOutlined style={{ color: '#6b7280' }} />}
                                     style={{
-                                        borderColor: '#d46b08',
-                                        color: '#d46b08',
-                                        borderRadius: 6
+                                        background: '#ffffff',
+                                        borderColor: '#d1d5db',
+                                        color: '#374151',
+                                        borderRadius: 6,
+                                        fontWeight: 500
                                     }}
                                 >
-                                    Tải Lên File CV
+                                    Chọn File CV Đính Kèm
                                 </Button>
                             </Upload>
 
                             {urlCV && (
                                 <div style={{ marginTop: '10px' }}>
-                                    <Tag color="success" icon={<CheckCircleOutlined />} style={{ padding: '4px 10px', fontSize: 13 }}>
+                                    <Tag
+                                        icon={<CheckCircleOutlined style={{ color: '#059669' }} />}
+                                        style={{
+                                            padding: '4px 10px',
+                                            fontSize: 13,
+                                            background: '#f0fdf4',
+                                            border: '1px solid #bbf7d0',
+                                            color: '#166534',
+                                            borderRadius: 4
+                                        }}
+                                    >
                                         File đã chọn: {urlCV}
                                     </Tag>
                                 </div>
@@ -223,13 +244,13 @@ const ApplyModal = (props: IProps) => {
                 <div style={{ padding: '24px 0', textAlign: 'center' }}>
                     <Alert
                         message="Yêu cầu đăng nhập"
-                        description="Bạn cần đăng nhập tài khoản để có thể nộp hồ sơ ứng tuyển vào tiệm bánh này."
+                        description="Bạn cần đăng nhập tài khoản để có thể nộp hồ sơ ứng tuyển vào vị trí này."
                         type="info"
                         showIcon
                     />
                 </div>
             )}
-            <Divider style={{ margin: '16px 0 0 0' }} />
+            <Divider style={{ margin: '16px 0 0 0', borderColor: '#f0f0f0' }} />
         </Modal>
     );
 };

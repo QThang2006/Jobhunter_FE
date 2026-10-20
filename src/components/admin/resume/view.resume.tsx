@@ -118,7 +118,7 @@ const ViewDetailResume = (props: IProps) => {
     return (
         <>
             <Drawer
-                title={<span style={{ color: '#873800', fontWeight: 600 }}>🥐 Chi Tiết Đơn Ứng Tuyển Tiệm Bánh</span>}
+                title={<span style={{ color: '#111827', fontWeight: 600 }}>Chi Tiết Đơn Ứng Tuyển</span>}
                 placement="right"
                 onClose={() => { onClose(false); setDataInit(null); }}
                 open={open}
@@ -126,7 +126,7 @@ const ViewDetailResume = (props: IProps) => {
                 maskClosable={false}
                 destroyOnClose
                 extra={
-                    <Button loading={isSubmit} type="primary" onClick={handleChangeStatus} style={{ background: '#d46b08' }}>
+                    <Button loading={isSubmit} type="primary" onClick={handleChangeStatus} style={{ background: '#1f2937', borderColor: '#1f2937' }}>
                         Cập Nhật Trạng Thái
                     </Button>
                 }
@@ -147,7 +147,7 @@ const ViewDetailResume = (props: IProps) => {
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Vị trí ứng tuyển">
-                        <strong style={{ color: '#873800' }}>{dataInit?.job?.name}</strong>
+                        <strong style={{ color: '#111827' }}>{dataInit?.job?.name}</strong>
                     </Descriptions.Item>
 
                     <Descriptions.Item label="Tiệm bánh / Chi nhánh">
