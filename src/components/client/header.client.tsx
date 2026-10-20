@@ -152,7 +152,7 @@ const Header = (props: any) => {
                                         <NotificationBell theme="dark" />
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
-                                                <span className={styles['user-name-text']}>Welcome {user?.name}</span>
+                                                <span className={styles['user-name-text']}>{user?.name}</span>
                                                 <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
                                             </Space>
                                         </Dropdown>
