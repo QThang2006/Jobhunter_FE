@@ -78,6 +78,11 @@ const LayoutAdmin = () => {
                 item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath
                 && item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
             )
+
+            const viewShift = permissions?.find(item =>
+                item.apiPath === ALL_PERMISSIONS.SHIFTS.GET_PAGINATE.apiPath
+                && item.method === ALL_PERMISSIONS.SHIFTS.GET_PAGINATE.method
+            )
             const full = [
                 ...(user.role.name === 'SUPER_ADMIN' || ACL_ENABLE === 'false' ? [{
                     label: <Link to='/admin'>Dashboard</Link>,
@@ -108,7 +113,7 @@ const LayoutAdmin = () => {
                     icon: <AliwangwangOutlined />
                 }] : []),
 
-                ...(viewResume || viewUser || user.role.name === 'SUPER_ADMIN' || ACL_ENABLE === 'false' ? [{
+                ...(viewShift || user.role.name === 'SUPER_ADMIN' || ACL_ENABLE === 'false' ? [{
                     label: <Link to='/admin/shift'>Ca Làm Việc</Link>,
                     key: '/admin/shift',
                     icon: <FieldTimeOutlined />

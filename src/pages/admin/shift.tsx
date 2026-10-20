@@ -45,6 +45,8 @@ import {
 } from "@ant-design/icons";
 import { useWebSocket } from "@/context/websocket.context";
 import ShiftCalendarView from "@/components/share/shift/shift.calendar.view";
+import Access from "@/components/share/access";
+import { ALL_PERMISSIONS } from "@/config/permissions";
 
 dayjs.extend(customParseFormat);
 
@@ -386,99 +388,122 @@ const ShiftPage = () => {
             width: 170,
             render: (_text, record) => (
                 <Space size="small">
-                    <Tooltip title="Chuyển ca cho nhân viên khác">
-                        <Button
-                            size="small"
-                            type="primary"
-                            icon={<SwapOutlined />}
-                            onClick={() => handleOpenTransfer(record)}
-                            style={{
-                                background: '#d46b08',
-                                borderColor: '#d46b08',
-                                borderRadius: 6
-                            }}
-                        >
-                            Chuyển ca
-                        </Button>
-                    </Tooltip>
-                    <Tooltip title="Chỉnh sửa ca">
-                        <Button
-                            size="small"
-                            type="text"
-                            icon={<EditOutlined style={{ color: '#1677ff' }} />}
-                            onClick={() => handleOpenEdit(record)}
-                        />
-                    </Tooltip>
-                    <Popconfirm
-                        title="Xóa ca làm việc"
-                        description="Bạn có chắc chắn muốn xóa ca làm này?"
-                        onConfirm={() => record.id && handleDeleteShift(record.id)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                        okButtonProps={{ danger: true }}
+                    <Access
+                        permission={ALL_PERMISSIONS.SHIFTS.TRANSFER}
+                        hideChildren
                     >
-                        <Button
-                            size="small"
-                            type="text"
-                            danger
-                            icon={<DeleteOutlined />}
-                        />
-                    </Popconfirm>
+                        <Tooltip title="Chuyển ca cho nhân viên khác">
+                            <Button
+                                size="small"
+                                type="primary"
+                                icon={<SwapOutlined />}
+                                onClick={() => handleOpenTransfer(record)}
+                                style={{
+                                    background: '#d46b08',
+                                    borderColor: '#d46b08',
+                                    borderRadius: 6
+                                }}
+                            >
+                                Chuyển ca
+                            </Button>
+                        </Tooltip>
+                    </Access>
+                    <Access
+                        permission={ALL_PERMISSIONS.SHIFTS.UPDATE}
+                        hideChildren
+                    >
+                        <Tooltip title="Chỉnh sửa ca">
+                            <Button
+                                size="small"
+                                type="text"
+                                icon={<EditOutlined style={{ color: '#1677ff' }} />}
+                                onClick={() => handleOpenEdit(record)}
+                            />
+                        </Tooltip>
+                    </Access>
+                    <Access
+                        permission={ALL_PERMISSIONS.SHIFTS.DELETE}
+                        hideChildren
+                    >
+                        <Popconfirm
+                            title="Xóa ca làm việc"
+                            description="Bạn có chắc chắn muốn xóa ca làm này?"
+                            onConfirm={() => record.id && handleDeleteShift(record.id)}
+                            okText="Xóa"
+                            cancelText="Hủy"
+                            okButtonProps={{ danger: true }}
+                        >
+                            <Button
+                                size="small"
+                                type="text"
+                                danger
+                                icon={<DeleteOutlined />}
+                            />
+                        </Popconfirm>
+                    </Access>
                 </Space>
             ),
         },
     ];
 
     return (
-        <div>
-            {/* Top Toolbar / Mode Switch */}
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 16,
-                flexWrap: 'wrap',
-                gap: 12,
-                background: '#ffffff',
-                border: '1px solid #ebd9c8',
-                borderRadius: 10,
-                padding: '14px 18px',
-                boxShadow: '0 2px 8px rgba(180, 115, 60, 0.04)'
-            }}>
-                <div>
-                    <h2 style={{ margin: 0, color: '#4a2c11', fontSize: 19, fontWeight: 700 }}>
-                        Quản Lý Ca Làm Việc Nhân Viên
-                    </h2>
-                    <div style={{ color: '#7a6b61', fontSize: 13, marginTop: 2 }}>
-                        Theo dõi lịch tổng thể của tiệm bánh, phân ca và điều phối chuyển ca cho nhân viên
+        <Access
+            permission={ALL_PERMISSIONS.SHIFTS.GET_PAGINATE}
+        >
+            <div>
+                {/* Top Toolbar / Mode Switch */}
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                    flexWrap: 'wrap',
+                    gap: 12,
+                    background: '#ffffff',
+                    border: '1px solid #ebd9c8',
+                    borderRadius: 10,
+                    padding: '14px 18px',
+                    boxShadow: '0 2px 8px rgba(180, 115, 60, 0.04)'
+                }}>
+                    <div>
+                        <h2 style={{ margin: 0, color: '#4a2c11', fontSize: 19, fontWeight: 700 }}>
+                            Quản Lý Ca Làm Việc Nhân Viên
+                        </h2>
+                        <div style={{ color: '#7a6b61', fontSize: 13, marginTop: 2 }}>
+                            Theo dõi lịch tổng thể của tiệm bánh, phân ca và điều phối chuyển ca cho nhân viên
+                        </div>
                     </div>
+
+                    <Space size="middle" wrap>
+                        <Segmented
+                            value={viewMode}
+                            onChange={(val: any) => setViewMode(val)}
+                            options={[
+                                { label: 'Lịch Tổng Thể', value: 'calendar', icon: <CalendarOutlined /> },
+                                { label: 'Dạng Bảng', value: 'table', icon: <TableOutlined /> },
+                            ]}
+                        />
+
+                        <Access
+                            permission={ALL_PERMISSIONS.SHIFTS.CREATE}
+                            hideChildren
+                        >
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() => handleOpenCreate()}
+                                style={{
+                                    background: '#d46b08',
+                                    borderColor: '#d46b08',
+                                    fontWeight: 600,
+                                    borderRadius: 8
+                                }}
+                            >
+                                Tạo Ca Làm Mới
+                            </Button>
+                        </Access>
+                    </Space>
                 </div>
-
-                <Space size="middle" wrap>
-                    <Segmented
-                        value={viewMode}
-                        onChange={(val: any) => setViewMode(val)}
-                        options={[
-                            { label: 'Lịch Tổng Thể', value: 'calendar', icon: <CalendarOutlined /> },
-                            { label: 'Dạng Bảng', value: 'table', icon: <TableOutlined /> },
-                        ]}
-                    />
-
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => handleOpenCreate()}
-                        style={{
-                            background: '#d46b08',
-                            borderColor: '#d46b08',
-                            fontWeight: 600,
-                            borderRadius: 8
-                        }}
-                    >
-                        Tạo Ca Làm Mới
-                    </Button>
-                </Space>
-            </div>
 
             {/* View Mode: Calendar vs Table */}
             {viewMode === 'calendar' ? (
@@ -796,6 +821,7 @@ const ShiftPage = () => {
                 </Form>
             </Modal>
         </div>
+        </Access>
     );
 };
 
