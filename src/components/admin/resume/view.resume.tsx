@@ -291,18 +291,24 @@ const ViewDetailResume = (props: IProps) => {
                     {dataInit?.interviewDate && (
                         <>
                             <Descriptions.Item label="Lịch hẹn phỏng vấn">
-                                <Tag color="geekblue" style={{ fontSize: 13, padding: '4px 8px' }}>
+                                <span style={{ fontSize: 13, padding: '4px 10px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 4, fontWeight: 500, color: '#111827', display: 'inline-block' }}>
                                     🕒 {dataInit.interviewTime} ngày {dataInit.interviewDate}
-                                </Tag>
+                                </span>
                             </Descriptions.Item>
 
                             <Descriptions.Item label="Hình thức phỏng vấn">
                                 {dataInit?.interviewType === 'OFFLINE' ? (
-                                    <Tag color="orange" icon={<ShopOutlined />} style={{ fontSize: 13, padding: '4px 8px' }}>
+                                    <Tag
+                                        icon={<ShopOutlined style={{ color: '#4b5563' }} />}
+                                        style={{ fontSize: 13, padding: '4px 10px', background: '#f9fafb', border: '1px solid #e5e7eb', color: '#374151', borderRadius: 4 }}
+                                    >
                                         Trực tiếp tại tiệm bánh
                                     </Tag>
                                 ) : (
-                                    <Tag color="blue" icon={<VideoCameraOutlined />} style={{ fontSize: 13, padding: '4px 8px' }}>
+                                    <Tag
+                                        icon={<VideoCameraOutlined style={{ color: '#1677ff' }} />}
+                                        style={{ fontSize: 13, padding: '4px 10px', background: '#f0f5ff', border: '1px solid #d6e4ff', color: '#0958d9', borderRadius: 4 }}
+                                    >
                                         Online (Google Meet)
                                     </Tag>
                                 )}

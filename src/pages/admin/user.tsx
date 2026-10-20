@@ -104,7 +104,7 @@ const UserPage = () => {
         {
             title: 'CreatedAt',
             dataIndex: 'createdAt',
-            width: 200,
+            width: 170,
             sorter: true,
             render: (text, record, index, action) => {
                 return (
@@ -116,7 +116,7 @@ const UserPage = () => {
         {
             title: 'UpdatedAt',
             dataIndex: 'updatedAt',
-            width: 200,
+            width: 170,
             sorter: true,
             render: (text, record, index, action) => {
                 return (
@@ -129,17 +129,19 @@ const UserPage = () => {
 
             title: 'Actions',
             hideInSearch: true,
-            width: 50,
+            width: 80,
+            align: "center",
             render: (_value, entity, _index, _action) => (
-                <Space>
-                    < Access
+                <Space size={12}>
+                    <Access
                         permission={ALL_PERMISSIONS.USERS.UPDATE}
                         hideChildren
                     >
                         <EditOutlined
                             style={{
-                                fontSize: 20,
-                                color: '#ffa500',
+                                fontSize: 18,
+                                color: '#1677ff',
+                                cursor: 'pointer',
                             }}
                             type=""
                             onClick={() => {
@@ -147,7 +149,7 @@ const UserPage = () => {
                                 setDataInit(entity);
                             }}
                         />
-                    </Access >
+                    </Access>
 
                     <Access
                         permission={ALL_PERMISSIONS.USERS.DELETE}
@@ -161,17 +163,17 @@ const UserPage = () => {
                             okText="Xác nhận"
                             cancelText="Hủy"
                         >
-                            <span style={{ cursor: "pointer", margin: "0 10px" }}>
+                            <span style={{ cursor: "pointer" }}>
                                 <DeleteOutlined
                                     style={{
-                                        fontSize: 20,
+                                        fontSize: 18,
                                         color: '#ff4d4f',
                                     }}
                                 />
                             </span>
                         </Popconfirm>
                     </Access>
-                </Space >
+                </Space>
             ),
 
         },
@@ -235,7 +237,6 @@ const UserPage = () => {
                         const query = buildQuery(params, sort, filter);
                         dispatch(fetchUser({ query }))
                     }}
-                    scroll={{ x: true }}
                     pagination={
                         {
                             current: meta.page,

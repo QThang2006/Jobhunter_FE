@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Tag, Button, Space, Tooltip, message, Segmented, Row, Col, Badge, Empty, Spin } from 'antd';
+import { Card, Tag, Button, Space, Tooltip, message, Segmented, Badge, Spin } from 'antd';
 import {
     LeftOutlined,
     RightOutlined,
@@ -9,8 +9,7 @@ import {
     CopyOutlined,
     EyeOutlined,
     ReloadOutlined,
-    UserOutlined,
-    CheckCircleOutlined
+    UserOutlined
 } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import isoWeek from 'dayjs/plugin/isoWeek';
@@ -52,7 +51,6 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
     const fetchInterviews = async () => {
         setLoading(true);
         try {
-            // Lấy danh sách hồ sơ (tối đa 200 bản ghi mới nhất)
             const res = await callFetchResume('page=1&size=200&sort=updatedAt,desc');
             if (res && res.data && res.data.result) {
                 setResumes(res.data.result);
@@ -114,7 +112,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
 
     return (
         <div style={{ padding: '4px 0 20px 0' }}>
-            {/* Thanh công cụ điều hướng & Bộ lọc */}
+            {/* Thanh công cụ điều hướng & Bộ lọc (Đồng bộ trắng/xám/xanh dương nhạt) */}
             <div
                 style={{
                     display: 'flex',
@@ -122,17 +120,17 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: 16,
-                    padding: '16px 20px',
+                    padding: '14px 18px',
                     background: '#ffffff',
                     border: '1px solid #e5e7eb',
                     borderRadius: 8,
                     marginBottom: 16,
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)'
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.02)'
                 }}
             >
                 {/* Điều hướng tuần */}
                 <Space wrap size={12}>
-                    <Space>
+                    <Space size={6}>
                         <Button
                             icon={<LeftOutlined />}
                             onClick={() => setCurrentDate(currentDate.subtract(1, 'week'))}
@@ -155,31 +153,83 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                         </Button>
                     </Space>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 8 }}>
-                        <CalendarOutlined style={{ color: '#1677ff', fontSize: 18 }} />
-                        <span style={{ fontSize: 15, fontWeight: 600, color: '#111827' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 6 }}>
+                        <CalendarOutlined style={{ color: '#1677ff', fontSize: 17 }} />
+                        <span style={{ fontSize: 14, fontWeight: 600, color: '#111827' }}>
                             {startOfWeek.format('DD/MM/YYYY')} — {endOfWeek.format('DD/MM/YYYY')}
                         </span>
-                        <Tag color="blue" style={{ borderRadius: 4, marginLeft: 4 }}>
+                        <span
+                            style={{
+                                fontSize: 12,
+                                fontWeight: 500,
+                                padding: '2px 8px',
+                                background: '#f3f4f6',
+                                border: '1px solid #e5e7eb',
+                                color: '#4b5563',
+                                borderRadius: 6
+                            }}
+                        >
                             Tuần {currentDate.isoWeek()}
-                        </Tag>
+                        </span>
                     </div>
                 </Space>
 
-                {/* Thống kê & Bộ lọc hình thức */}
-                <Space wrap size={14}>
-                    <Space size={6}>
-                        <Tag color="default" style={{ padding: '3px 8px', borderRadius: 4 }}>
-                            Tổng: <strong>{thisWeekResumes.length}</strong> cuộc hẹn
-                        </Tag>
-                        <Tag color="blue" style={{ padding: '3px 8px', borderRadius: 4 }}>
-                            <VideoCameraOutlined style={{ marginRight: 4 }} />
-                            Online: <strong>{countOnline}</strong>
-                        </Tag>
-                        <Tag color="orange" style={{ padding: '3px 8px', borderRadius: 4 }}>
-                            <ShopOutlined style={{ marginRight: 4 }} />
-                            Tại tiệm: <strong>{countOffline}</strong>
-                        </Tag>
+                {/* Thống kê đồng bộ một phong cách (trắng xám nhã nhặn, không màu mè) */}
+                <Space wrap size={12}>
+                    <Space size={8}>
+                        <div
+                            style={{
+                                padding: '4px 10px',
+                                background: '#f9fafb',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: 6,
+                                fontSize: 13,
+                                color: '#374151',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6
+                            }}
+                        >
+                            <span>Tổng:</span>
+                            <strong style={{ color: '#111827' }}>{thisWeekResumes.length}</strong>
+                            <span style={{ color: '#6b7280', fontSize: 12 }}>cuộc hẹn</span>
+                        </div>
+
+                        <div
+                            style={{
+                                padding: '4px 10px',
+                                background: '#f9fafb',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: 6,
+                                fontSize: 13,
+                                color: '#374151',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6
+                            }}
+                        >
+                            <VideoCameraOutlined style={{ color: '#6b7280' }} />
+                            <span>Online:</span>
+                            <strong style={{ color: '#111827' }}>{countOnline}</strong>
+                        </div>
+
+                        <div
+                            style={{
+                                padding: '4px 10px',
+                                background: '#f9fafb',
+                                border: '1px solid #e5e7eb',
+                                borderRadius: 6,
+                                fontSize: 13,
+                                color: '#374151',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6
+                            }}
+                        >
+                            <ShopOutlined style={{ color: '#6b7280' }} />
+                            <span>Tại tiệm:</span>
+                            <strong style={{ color: '#111827' }}>{countOffline}</strong>
+                        </div>
                     </Space>
 
                     <Segmented
@@ -208,7 +258,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                 <div
                     style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(7, minmax(200px, 1fr))',
+                        gridTemplateColumns: 'repeat(7, minmax(180px, 1fr))',
                         gap: 12,
                         overflowX: 'auto',
                         paddingBottom: 8
@@ -236,7 +286,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                     background: isToday ? '#fafcff' : '#f9fafb',
                                     border: isToday ? '1.5px solid #1677ff' : '1px solid #e5e7eb',
                                     borderRadius: 8,
-                                    minHeight: 520,
+                                    minHeight: 500,
                                     boxShadow: isToday ? '0 2px 8px rgba(22, 119, 255, 0.08)' : 'none',
                                     transition: 'all 0.2s ease'
                                 }}
@@ -244,7 +294,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                 {/* Header của Cột ngày */}
                                 <div
                                     style={{
-                                        padding: '12px 10px',
+                                        padding: '10px 10px',
                                         background: isToday ? '#1677ff' : '#ffffff',
                                         color: isToday ? '#ffffff' : '#111827',
                                         borderBottom: isToday ? 'none' : '1px solid #e5e7eb',
@@ -255,7 +305,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                     }}
                                 >
                                     <div>
-                                        <div style={{ fontWeight: 600, fontSize: 14 }}>
+                                        <div style={{ fontWeight: 600, fontSize: 13 }}>
                                             {item.label}
                                         </div>
                                         <div
@@ -270,14 +320,23 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                     </div>
                                     <div>
                                         {isToday ? (
-                                            <Tag color="cyan" style={{ margin: 0, borderRadius: 4, fontWeight: 500 }}>
+                                            <span
+                                                style={{
+                                                    fontSize: 11,
+                                                    fontWeight: 600,
+                                                    color: '#1677ff',
+                                                    background: '#ffffff',
+                                                    padding: '2px 6px',
+                                                    borderRadius: 4
+                                                }}
+                                            >
                                                 Hôm Nay
-                                            </Tag>
+                                            </span>
                                         ) : (
                                             <Badge
                                                 count={dayInterviews.length}
                                                 style={{
-                                                    backgroundColor: dayInterviews.length > 0 ? '#1677ff' : '#d1d5db',
+                                                    backgroundColor: dayInterviews.length > 0 ? '#1677ff' : '#9ca3af',
                                                     color: '#ffffff'
                                                 }}
                                             />
@@ -320,7 +379,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                                 }}
                                                 bodyStyle={{ padding: '10px 12px' }}
                                             >
-                                                {/* Header của Card: Giờ hẹn & Tag hình thức */}
+                                                {/* Header của Card: Giờ hẹn & Tag hình thức (đồng bộ màu) */}
                                                 <div
                                                     style={{
                                                         display: 'flex',
@@ -332,9 +391,10 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                                     <span
                                                         style={{
                                                             fontSize: 12,
-                                                            fontWeight: 700,
-                                                            color: '#0958d9',
-                                                            background: '#e6f4ff',
+                                                            fontWeight: 600,
+                                                            color: '#111827',
+                                                            background: '#f3f4f6',
+                                                            border: '1px solid #e5e7eb',
                                                             padding: '2px 6px',
                                                             borderRadius: 4
                                                         }}
@@ -344,19 +404,31 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
 
                                                     {interview.interviewType === 'OFFLINE' ? (
                                                         <Tag
-                                                            color="orange"
-                                                            icon={<ShopOutlined />}
-                                                            style={{ margin: 0, fontSize: 11, borderRadius: 4 }}
+                                                            icon={<ShopOutlined style={{ color: '#6b7280' }} />}
+                                                            style={{
+                                                                margin: 0,
+                                                                fontSize: 11,
+                                                                borderRadius: 4,
+                                                                background: '#f9fafb',
+                                                                border: '1px solid #e5e7eb',
+                                                                color: '#374151'
+                                                            }}
                                                         >
                                                             Tại tiệm
                                                         </Tag>
                                                     ) : (
                                                         <Tag
-                                                            color="blue"
-                                                            icon={<VideoCameraOutlined />}
-                                                            style={{ margin: 0, fontSize: 11, borderRadius: 4 }}
+                                                            icon={<VideoCameraOutlined style={{ color: '#1677ff' }} />}
+                                                            style={{
+                                                                margin: 0,
+                                                                fontSize: 11,
+                                                                borderRadius: 4,
+                                                                background: '#f9fafb',
+                                                                border: '1px solid #e5e7eb',
+                                                                color: '#374151'
+                                                            }}
                                                         >
-                                                            Meet
+                                                            Online Meet
                                                         </Tag>
                                                     )}
                                                 </div>
@@ -445,7 +517,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                                     </div>
                                                 )}
 
-                                                {/* Nút thao tác dưới Card */}
+                                                {/* Nút thao tác dưới Card (đồng bộ màu) */}
                                                 <div
                                                     style={{
                                                         display: 'flex',
