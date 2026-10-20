@@ -1,22 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Table, Tag, Empty, Card, Space, Badge, Alert } from 'antd';
+import { Table, Tag, Empty, Space, Segmented } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { IWorkShift } from '@/types/backend';
 import { callFetchMyWorkShifts } from '@/config/api';
 import dayjs from 'dayjs';
-import { CalendarOutlined, FieldTimeOutlined, ShopOutlined, SwapOutlined } from '@ant-design/icons';
+import { CalendarOutlined, FieldTimeOutlined, ShopOutlined, SwapOutlined, TableOutlined } from '@ant-design/icons';
 import { useWebSocket } from '@/context/websocket.context';
 import { useAppSelector } from '@/redux/hooks';
+import ShiftCalendarView from '@/components/share/shift/shift.calendar.view';
 
 const UserShiftSchedule = () => {
     const [shifts, setShifts] = useState<IWorkShift[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [viewMode, setViewMode] = useState<'calendar' | 'table'>('calendar');
     const user = useAppSelector(state => state.account.user);
     const { stompClient } = useWebSocket();
 
     const fetchShifts = useCallback(async () => {
         setLoading(true);
-        const res = await callFetchMyWorkShifts('page=1&size=50&sort=shiftDate,desc&sort=startTime,asc');
+        const res = await callFetchMyWorkShifts('page=1&size=200&sort=shiftDate,asc&sort=startTime,asc');
         if (res?.data?.result) {
             setShifts(res.data.result);
         }
@@ -83,7 +85,6 @@ const UserShiftSchedule = () => {
             key: 'shiftDate',
             render: (_t, record) => {
                 const isToday = dayjs(record.shiftDate).isSame(dayjs(), 'day');
-                const isPast = dayjs(record.shiftDate).isBefore(dayjs(), 'day');
                 return (
                     <Space direction="vertical" size={2}>
                         <Space>
@@ -160,35 +161,60 @@ const UserShiftSchedule = () => {
 
     return (
         <div>
+            {/* Header info & view toggle */}
             <div style={{
                 background: '#fffaf5',
                 border: '1px solid #ebd9c8',
                 borderRadius: 8,
                 padding: '12px 16px',
-                marginBottom: 16
+                marginBottom: 16,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: 12
             }}>
-                <div style={{ fontWeight: 600, color: '#4a2c11' }}>
-                    Lịch Phân Ca Làm Việc Của Bạn
+                <div>
+                    <div style={{ fontWeight: 700, color: '#4a2c11', fontSize: 15 }}>
+                        Lịch Phân Ca Làm Việc Của Bạn
+                    </div>
+                    <div style={{ fontSize: 13, color: '#7a6b61', marginTop: 2 }}>
+                        Theo dõi ca làm theo tháng hoặc dạng danh sách. Mọi thay đổi hoặc chuyển ca sẽ được cập nhật tức thì.
+                    </div>
                 </div>
-                <div style={{ fontSize: 13, color: '#7a6b61', marginTop: 2 }}>
-                    Danh sách ca làm việc được chủ tiệm phân công. Khi chủ tiệm điều phối hoặc chuyển ca, hệ thống sẽ tự động cập nhật và gửi thông báo theo thời gian thực.
-                </div>
+
+                <Segmented
+                    value={viewMode}
+                    onChange={(val: any) => setViewMode(val)}
+                    options={[
+                        { label: 'Lịch Tháng', value: 'calendar', icon: <CalendarOutlined /> },
+                        { label: 'Danh Sách', value: 'table', icon: <TableOutlined /> },
+                    ]}
+                />
             </div>
 
-            <Table<IWorkShift>
-                columns={columns}
-                dataSource={shifts}
-                rowKey="id"
-                loading={loading}
-                pagination={{
-                    pageSize: 8,
-                    responsive: true,
-                    showTotal: (total) => `Tổng cộng ${total} ca làm`,
-                }}
-                locale={{
-                    emptyText: <Empty description="Bạn chưa có ca làm việc nào được phân công" />
-                }}
-            />
+            {viewMode === 'calendar' ? (
+                <ShiftCalendarView
+                    shifts={shifts}
+                    loading={loading}
+                    isAdmin={false}
+                />
+            ) : (
+                <Table<IWorkShift>
+                    columns={columns}
+                    dataSource={shifts}
+                    rowKey="id"
+                    loading={loading}
+                    pagination={{
+                        pageSize: 8,
+                        responsive: true,
+                        showTotal: (total) => `Tổng cộng ${total} ca làm`,
+                    }}
+                    locale={{
+                        emptyText: <Empty description="Bạn chưa có ca làm việc nào được phân công" />
+                    }}
+                />
+            )}
         </div>
     );
 };

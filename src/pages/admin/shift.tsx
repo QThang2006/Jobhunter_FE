@@ -11,6 +11,7 @@ import {
     Modal,
     Popconfirm,
     Row,
+    Segmented,
     Select,
     Space,
     Tag,
@@ -20,6 +21,7 @@ import {
     notification
 } from "antd";
 import { useState, useRef, useEffect } from 'react';
+import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import {
@@ -38,9 +40,11 @@ import {
     FieldTimeOutlined,
     PlusOutlined,
     SwapOutlined,
+    TableOutlined,
     UserOutlined
 } from "@ant-design/icons";
 import { useWebSocket } from "@/context/websocket.context";
+import ShiftCalendarView from "@/components/share/shift/shift.calendar.view";
 
 dayjs.extend(customParseFormat);
 
@@ -56,12 +60,31 @@ const ShiftPage = () => {
     const tableRef = useRef<ActionType>();
     const user = useAppSelector(state => state.account.user);
 
+    // View mode: 'calendar' (Lịch tổng thể) or 'table' (Dạng bảng)
+    const [viewMode, setViewMode] = useState<'calendar' | 'table'>('calendar');
+    const [allShifts, setAllShifts] = useState<IWorkShift[]>([]);
+    const [loadingCalendar, setLoadingCalendar] = useState<boolean>(false);
+
+    const fetchAllShiftsForCalendar = async () => {
+        setLoadingCalendar(true);
+        const res = await callFetchWorkShift('page=1&size=500&sort=shiftDate,asc');
+        if (res?.data?.result) {
+            setAllShifts(res.data.result);
+        }
+        setLoadingCalendar(false);
+    };
+
+    useEffect(() => {
+        fetchAllShiftsForCalendar();
+    }, []);
+
     // WebSocket auto reload
     const { stompClient } = useWebSocket();
     useEffect(() => {
         if (stompClient && stompClient.connected) {
             const sub = stompClient.subscribe('/topic/shifts', () => {
                 tableRef.current?.reload();
+                fetchAllShiftsForCalendar();
             });
             return () => sub.unsubscribe();
         }
@@ -100,7 +123,7 @@ const ShiftPage = () => {
         }
     };
 
-    const handleOpenCreate = () => {
+    const handleOpenCreate = (date?: Dayjs) => {
         createForm.resetFields();
         const initialCompanyId = user?.company?.id;
         if (initialCompanyId) {
@@ -109,7 +132,7 @@ const ShiftPage = () => {
         } else if (companies.length > 0) {
             loadEmployees(companies[0].id);
         }
-        createForm.setFieldValue('shiftDate', dayjs());
+        createForm.setFieldValue('shiftDate', date || dayjs());
         createForm.setFieldValue('shiftName', 'Ca Sáng');
         createForm.setFieldValue('startTime', dayjs('06:00', 'HH:mm'));
         createForm.setFieldValue('endTime', dayjs('14:00', 'HH:mm'));
@@ -132,6 +155,7 @@ const ShiftPage = () => {
                 message.success('Phân ca làm việc thành công');
                 setIsCreateOpen(false);
                 tableRef.current?.reload();
+                fetchAllShiftsForCalendar();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
@@ -175,6 +199,7 @@ const ShiftPage = () => {
                 message.success('Cập nhật ca làm việc thành công');
                 setIsEditOpen(false);
                 tableRef.current?.reload();
+                fetchAllShiftsForCalendar();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
@@ -193,7 +218,6 @@ const ShiftPage = () => {
         setSelectedShift(record);
         transferForm.resetFields();
         transferForm.setFieldValue('newShiftDate', record.shiftDate ? dayjs(record.shiftDate, 'YYYY-MM-DD') : dayjs());
-        // Load employees of this company
         if (record.company?.id) {
             await loadEmployees(record.company.id);
         }
@@ -214,6 +238,7 @@ const ShiftPage = () => {
                 message.success('Chuyển ca làm việc thành công');
                 setIsTransferOpen(false);
                 tableRef.current?.reload();
+                fetchAllShiftsForCalendar();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
@@ -234,6 +259,7 @@ const ShiftPage = () => {
             if (res && +res.statusCode === 200) {
                 message.success('Xóa ca làm việc thành công');
                 tableRef.current?.reload();
+                fetchAllShiftsForCalendar();
             } else {
                 notification.error({
                     message: 'Có lỗi xảy ra',
@@ -405,39 +431,43 @@ const ShiftPage = () => {
 
     return (
         <div>
-            <DataTable<IWorkShift>
-                actionRef={tableRef}
-                headerTitle="Quản Lý Ca Làm Việc Nhân Viên"
-                rowKey="id"
-                columns={columns}
-                request={async (params, sort) => {
-                    let query = `page=${params.current}&size=${params.pageSize}`;
-                    if (params.shiftDate) {
-                        query += `&filter=shiftDate : '${params.shiftDate}'`;
-                    }
-                    if (params.status) {
-                        query += `&filter=status : '${params.status}'`;
-                    }
-                    if (sort && Object.keys(sort).length > 0) {
-                        const field = Object.keys(sort)[0];
-                        const order = sort[field] === 'ascend' ? 'asc' : 'desc';
-                        query += `&sort=${field},${order}`;
-                    } else {
-                        query += '&sort=shiftDate,desc&sort=startTime,asc';
-                    }
-                    const res = await callFetchWorkShift(query);
-                    return {
-                        data: res?.data?.result ?? [],
-                        success: true,
-                        total: res?.data?.meta?.total ?? 0,
-                    };
-                }}
-                toolBarRender={() => [
+            {/* Top Toolbar / Mode Switch */}
+            <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 16,
+                flexWrap: 'wrap',
+                gap: 12,
+                background: '#ffffff',
+                border: '1px solid #ebd9c8',
+                borderRadius: 10,
+                padding: '14px 18px',
+                boxShadow: '0 2px 8px rgba(180, 115, 60, 0.04)'
+            }}>
+                <div>
+                    <h2 style={{ margin: 0, color: '#4a2c11', fontSize: 19, fontWeight: 700 }}>
+                        Quản Lý Ca Làm Việc Nhân Viên
+                    </h2>
+                    <div style={{ color: '#7a6b61', fontSize: 13, marginTop: 2 }}>
+                        Theo dõi lịch tổng thể của tiệm bánh, phân ca và điều phối chuyển ca cho nhân viên
+                    </div>
+                </div>
+
+                <Space size="middle" wrap>
+                    <Segmented
+                        value={viewMode}
+                        onChange={(val: any) => setViewMode(val)}
+                        options={[
+                            { label: 'Lịch Tổng Thể', value: 'calendar', icon: <CalendarOutlined /> },
+                            { label: 'Dạng Bảng', value: 'table', icon: <TableOutlined /> },
+                        ]}
+                    />
+
                     <Button
-                        key="create"
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={handleOpenCreate}
+                        onClick={() => handleOpenCreate()}
                         style={{
                             background: '#d46b08',
                             borderColor: '#d46b08',
@@ -447,8 +477,51 @@ const ShiftPage = () => {
                     >
                         Tạo Ca Làm Mới
                     </Button>
-                ]}
-            />
+                </Space>
+            </div>
+
+            {/* View Mode: Calendar vs Table */}
+            {viewMode === 'calendar' ? (
+                <ShiftCalendarView
+                    shifts={allShifts}
+                    loading={loadingCalendar}
+                    isAdmin={true}
+                    employees={employees}
+                    onOpenCreateForDate={(date) => handleOpenCreate(date)}
+                    onOpenTransfer={(shift) => handleOpenTransfer(shift)}
+                    onOpenEdit={(shift) => handleOpenEdit(shift)}
+                    onDeleteShift={(id) => handleDeleteShift(id)}
+                />
+            ) : (
+                <DataTable<IWorkShift>
+                    actionRef={tableRef}
+                    headerTitle="Danh Sách Chi Tiết Ca Làm Việc"
+                    rowKey="id"
+                    columns={columns}
+                    request={async (params, sort) => {
+                        let query = `page=${params.current}&size=${params.pageSize}`;
+                        if (params.shiftDate) {
+                            query += `&filter=shiftDate : '${params.shiftDate}'`;
+                        }
+                        if (params.status) {
+                            query += `&filter=status : '${params.status}'`;
+                        }
+                        if (sort && Object.keys(sort).length > 0) {
+                            const field = Object.keys(sort)[0];
+                            const order = sort[field] === 'ascend' ? 'asc' : 'desc';
+                            query += `&sort=${field},${order}`;
+                        } else {
+                            query += '&sort=shiftDate,desc&sort=startTime,asc';
+                        }
+                        const res = await callFetchWorkShift(query);
+                        return {
+                            data: res?.data?.result ?? [],
+                            success: true,
+                            total: res?.data?.meta?.total ?? 0,
+                        };
+                    }}
+                />
+            )}
 
             {/* Modal Tạo Ca Làm Việc */}
             <Modal
