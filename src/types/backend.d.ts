@@ -128,6 +128,21 @@ export interface IResume {
     interviewTime?: string;
     interviewType?: 'ONLINE_MEET' | 'OFFLINE';
     note?: string;
+    companyName?: string;
+    company?: {
+        id?: string | number;
+        name: string;
+        logo?: string;
+    };
+    user?: {
+        id?: string | number;
+        name: string;
+        email?: string;
+    };
+    job?: {
+        id?: string | number;
+        name: string;
+    };
     companyId: string | {
         id: string;
         name: string;

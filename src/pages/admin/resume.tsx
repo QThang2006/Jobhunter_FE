@@ -2,17 +2,18 @@ import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IResume } from "@/types/backend";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Space, message, notification, Tag } from "antd";
+import { Space, message, notification, Tag, Tabs } from "antd";
 import { useState, useRef } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteResume } from "@/config/api";
 import queryString from 'query-string';
 import { fetchResume } from "@/redux/slice/resumeSlide";
 import ViewDetailResume from "@/components/admin/resume/view.resume";
+import InterviewSchedule from "@/components/admin/resume/interview.schedule";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import Access from "@/components/share/access";
 import { sfIn, sfAnd, sfGe, sfLe } from "spring-filter-query-builder";
-import { EditOutlined, DownloadOutlined } from "@ant-design/icons";
+import { EditOutlined, DownloadOutlined, CalendarOutlined, TableOutlined } from "@ant-design/icons";
 import { useWebSocket } from "@/context/websocket.context"; // Import hook
 import { useEffect } from "react";
 
@@ -46,6 +47,7 @@ const ResumePage = () => {
 
     const [dataInit, setDataInit] = useState<IResume | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
+    const [refreshSignal, setRefreshSignal] = useState<number>(0);
 
     const handleDeleteResume = async (id: string | undefined) => {
         if (id) {
@@ -64,6 +66,7 @@ const ResumePage = () => {
 
     const reloadTable = (resetPageIndex = false) => {
         tableRef?.current?.reload(resetPageIndex);
+        setRefreshSignal(prev => prev + 1);
     }
 
     const getFileDownloadUrl = (rawUrl?: string) => {
@@ -295,33 +298,67 @@ const ResumePage = () => {
             <Access
                 permission={ALL_PERMISSIONS.RESUMES.GET_PAGINATE}
             >
-                <DataTable<IResume>
-                    actionRef={tableRef}
-                    headerTitle="Danh sách Resumes"
-                    rowKey="id"
-                    loading={isFetching}
-                    columns={columns}
-                    dataSource={resumes}
-                    request={async (params, sort, filter): Promise<any> => {
-                        const query = buildQuery(params, sort, filter);
-                        dispatch(fetchResume({ query }))
-                    }}
-                    scroll={{ x: true }}
-                    pagination={
+                <Tabs
+                    defaultActiveKey="calendar"
+                    items={[
                         {
-                            current: meta.page,
-                            pageSize: meta.pageSize,
-                            showSizeChanger: true,
-                            total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                            key: 'calendar',
+                            label: (
+                                <span style={{ fontWeight: 500, fontSize: 14 }}>
+                                    <CalendarOutlined style={{ marginRight: 6 }} />
+                                    Lịch Phỏng Vấn (Tuần)
+                                </span>
+                            ),
+                            children: (
+                                <InterviewSchedule
+                                    onOpenResumeDetail={(record) => {
+                                        setDataInit(record);
+                                        setOpenViewDetail(true);
+                                    }}
+                                    refreshSignal={refreshSignal}
+                                />
+                            )
+                        },
+                        {
+                            key: 'table',
+                            label: (
+                                <span style={{ fontWeight: 500, fontSize: 14 }}>
+                                    <TableOutlined style={{ marginRight: 6 }} />
+                                    Danh Sách Hồ Sơ (CV)
+                                </span>
+                            ),
+                            children: (
+                                <DataTable<IResume>
+                                    actionRef={tableRef}
+                                    headerTitle="Danh sách Resumes"
+                                    rowKey="id"
+                                    loading={isFetching}
+                                    columns={columns}
+                                    dataSource={resumes}
+                                    request={async (params, sort, filter): Promise<any> => {
+                                        const query = buildQuery(params, sort, filter);
+                                        dispatch(fetchResume({ query }))
+                                    }}
+                                    scroll={{ x: true }}
+                                    pagination={
+                                        {
+                                            current: meta.page,
+                                            pageSize: meta.pageSize,
+                                            showSizeChanger: true,
+                                            total: meta.total,
+                                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
+                                        }
+                                    }
+                                    rowSelection={false}
+                                    toolBarRender={(_action, _rows): any => {
+                                        return (
+                                            <></>
+                                        );
+                                    }}
+                                />
+                            )
                         }
-                    }
-                    rowSelection={false}
-                    toolBarRender={(_action, _rows): any => {
-                        return (
-                            <></>
-                        );
-                    }}
+                    ]}
                 />
             </Access>
             <ViewDetailResume
@@ -331,7 +368,7 @@ const ResumePage = () => {
                 setDataInit={setDataInit}
                 reloadTable={reloadTable}
             />
-        </div >
+        </div>
     )
 }
 
