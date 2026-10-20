@@ -26,7 +26,7 @@ const JobCard = (props: IProps) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const [current, setCurrent] = useState(1);
-    const [pageSize, setPageSize] = useState(6);
+    const [pageSize, setPageSize] = useState(showPagination ? 8 : 6);
     const [total, setTotal] = useState(0);
     const [filter, setFilter] = useState("");
     const [sortQuery, setSortQuery] = useState("sort=startDate,desc");
@@ -113,7 +113,9 @@ const JobCard = (props: IProps) => {
                     <Row gutter={[20, 20]}>
                         <Col span={24}>
                             <div className={styles["dflex-header"]}>
-                                <span className={styles["title"]}>Việc Làm Tiệm Bánh Mới Nhất</span>
+                                <span className={styles["title"]}>
+                                    {showPagination ? "Danh Sách Việc Làm Ngành Bánh" : "Việc Làm Tiệm Bánh Mới Nhất"}
+                                </span>
                                 {!showPagination &&
                                     <Link to="job">Xem tất cả</Link>
                                 }
@@ -123,29 +125,37 @@ const JobCard = (props: IProps) => {
                         {displayJob?.map(item => {
                             return (
                                 <Col span={24} md={12} key={item.id}>
-                                    <Card size="small" title={null} hoverable
+                                    <Card
+                                        size="small"
+                                        title={null}
+                                        hoverable
+                                        className={styles["job-card-item"]}
                                         onClick={() => handleViewDetailJob(item)}
                                     >
                                         <div className={styles["card-job-content"]}>
                                             <div className={styles["card-job-left"]}>
                                                 <img
-                                                    alt="example"
+                                                    alt={item?.name || "Logo"}
                                                     src={`${item?.company?.logo}`}
                                                 />
                                             </div>
                                             <div className={styles["card-job-right"]}>
                                                 <div className={styles["job-title"]}>{item.level ? `[${item.level}] ` : ''}{item.name}</div>
-                                                <div className={styles["job-location"]}><EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{getLocationName(item.location)}</div>
-                                                <div><ThunderboltOutlined style={{ color: 'orange' }} />&nbsp;{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</div>
+                                                <div className={styles["job-location"]}>
+                                                    <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                                    <span>{getLocationName(item.location)}</span>
+                                                </div>
+                                                <div className={styles["job-salary"]}>
+                                                    <ThunderboltOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                                    <span>{(item.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
+                                                </div>
                                                 <div className={styles["job-updatedAt"]}>Hạn nộp: {dayjs(item.endDate).format('DD/MM/YYYY')}</div>
                                             </div>
                                         </div>
-
                                     </Card>
                                 </Col>
                             )
                         })}
-
 
                         {(!displayJob || displayJob && displayJob.length === 0)
                             && !isLoading &&
@@ -154,9 +164,8 @@ const JobCard = (props: IProps) => {
                             </div>
                         }
                     </Row>
-                    {showPagination && <>
-                        <div style={{ marginTop: 30 }}></div>
-                        <Row style={{ display: "flex", justifyContent: "center" }}>
+                    {showPagination && (
+                        <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
                             <Pagination
                                 current={current}
                                 total={total}
@@ -164,8 +173,8 @@ const JobCard = (props: IProps) => {
                                 responsive
                                 onChange={(p: number, s: number) => handleOnchangePage({ current: p, pageSize: s })}
                             />
-                        </Row>
-                    </>}
+                        </div>
+                    )}
                 </Spin>
             </div>
         </div>

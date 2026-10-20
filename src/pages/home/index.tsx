@@ -6,12 +6,11 @@ import CompanyCard from '@/components/client/card/company.card';
 
 const HomePage = () => {
     return (
-        <div className={`${styles["container"]} ${styles["home-section"]}`}>
+        <div className={`${styles["container"]} ${styles["home-section"]}`} style={{ paddingTop: 16, paddingBottom: 24 }}>
             <SearchClient />
-            <Divider style={{ margin: "36px 0 28px" }} />
+            <Divider style={{ margin: "24px 0 16px", borderColor: '#ebd9c8' }} />
             <CompanyCard />
-            <div style={{ margin: 40 }}></div>
-            <Divider style={{ margin: "36px 0 28px" }} />
+            <Divider style={{ margin: "28px 0 16px", borderColor: '#ebd9c8' }} />
             <JobCard />
         </div>
     );
