@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { ICompany } from "@/types/backend";
 import { callFetchCompanyById } from "@/config/api";
@@ -7,69 +7,77 @@ import parse from 'html-react-parser';
 import { Col, Divider, Row, Skeleton } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 
-
-const ClientCompanyDetailPage = (props: any) => {
+const ClientCompanyDetailPage = () => {
     const [companyDetail, setCompanyDetail] = useState<ICompany | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     let location = useLocation();
     let params = new URLSearchParams(location.search);
-    const id = params?.get("id"); // job id
+    const id = params?.get("id");
 
     useEffect(() => {
         const init = async () => {
             if (id) {
-                setIsLoading(true)
+                setIsLoading(true);
                 const res = await callFetchCompanyById(id);
                 if (res?.data) {
-                    setCompanyDetail(res.data)
+                    setCompanyDetail(res.data);
                 }
-                setIsLoading(false)
+                setIsLoading(false);
             }
-        }
+        };
         init();
     }, [id]);
 
     return (
         <div className={`${styles["container"]} ${styles["detail-job-section"]}`}>
-            {isLoading ?
-                <Skeleton />
-                :
-                <Row gutter={[20, 20]}>
-                    {companyDetail && companyDetail.id &&
-                        <>
+            {isLoading ? (
+                <Skeleton active />
+            ) : (
+                <div className={styles["detail-card-wrapper"]}>
+                    {companyDetail && companyDetail.id && (
+                        <Row gutter={[28, 24]}>
                             <Col span={24} md={16}>
-                                <div className={styles["header"]}>
+                                <h1 className={styles["header"]}>
                                     {companyDetail.name}
-                                </div>
+                                </h1>
 
                                 <div className={styles["location"]}>
-                                    <EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{(companyDetail?.address)}
+                                    <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 6 }} />
+                                    <span>{companyDetail?.address}</span>
                                 </div>
 
-                                <Divider />
-                                {parse(companyDetail?.description ?? "")}
+                                <Divider style={{ borderColor: '#ebd9c8', margin: '18px 0' }} />
+                                <div className={styles["section-title"]}>Giới thiệu công ty</div>
+                                <div className={styles["job-desc-content"]}>
+                                    {parse(companyDetail?.description ?? "")}
+                                </div>
                             </Col>
 
                             <Col span={24} md={8}>
-                                <div className={styles["company"]}>
-                                    <div>
-                                        <img
-                                            style={{ maxWidth: '100%', height: 'auto', objectFit: 'contain' }}
-                                            alt="example"
-                                            src={`${companyDetail?.logo}`}
-                                        />
-                                    </div>
-                                    <div>
+                                <div className={styles["company-sidebar-card"]}>
+                                    <img
+                                        className={styles["company-logo-img"]}
+                                        alt={companyDetail?.name || "Logo công ty"}
+                                        src={`${companyDetail?.logo}`}
+                                    />
+                                    <div className={styles["company-title"]}>
                                         {companyDetail?.name}
                                     </div>
+                                    {companyDetail?.address && (
+                                        <div className={styles["company-address"]}>
+                                            <EnvironmentOutlined style={{ color: '#d46b08', marginRight: 4 }} />
+                                            {companyDetail.address}
+                                        </div>
+                                    )}
                                 </div>
                             </Col>
-                        </>
-                    }
-                </Row>
-            }
+                        </Row>
+                    )}
+                </div>
+            )}
         </div>
-    )
-}
+    );
+};
+
 export default ClientCompanyDetailPage;

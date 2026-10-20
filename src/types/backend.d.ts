@@ -94,6 +94,7 @@ export interface IJob {
         id: string;
         name: string;
         logo?: string;
+        address?: string;
     }
     location: string;
     salary: number;
