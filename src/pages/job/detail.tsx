@@ -86,7 +86,7 @@ const ClientJobDetailPage = (props: any) => {
                                             ? "Đã hết hạn"
                                             : (jobDetail?.startDate && dayjs(jobDetail.startDate).isAfter(dayjs(), 'day')
                                                 ? "Chưa mở tuyển"
-                                                : "Apply Now")
+                                                : "Ứng Tuyển Ca Này")
                                         }
                                     </button>
                                 </div>

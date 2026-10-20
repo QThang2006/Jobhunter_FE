@@ -113,7 +113,7 @@ const JobCard = (props: IProps) => {
                     <Row gutter={[20, 20]}>
                         <Col span={24}>
                             <div className={styles["dflex-header"]}>
-                                <span className={styles["title"]}>Công Việc Mới Nhất</span>
+                                <span className={styles["title"]}>Việc Làm Tiệm Bánh Mới Nhất</span>
                                 {!showPagination &&
                                     <Link to="job">Xem tất cả</Link>
                                 }

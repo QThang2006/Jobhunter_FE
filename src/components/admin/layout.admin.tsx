@@ -25,6 +25,7 @@ import type { MenuProps } from 'antd';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import { ALL_PERMISSIONS } from '@/config/permissions';
 import NotificationBell from '@/components/share/notification-bell';
+import { GiCroissant } from 'react-icons/gi';
 
 const { Content, Sider } = Layout;
 const { Text } = Typography;
@@ -84,34 +85,34 @@ const LayoutAdmin = () => {
                 }] : []),
 
                 ...(viewCompany || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/company'>Company</Link>,
+                    label: <Link to='/admin/company'>Tiệm Bánh</Link>,
                     key: '/admin/company',
                     icon: <BankOutlined />,
                 }] : []),
 
                 ...(viewUser || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/user'>User</Link>,
+                    label: <Link to='/admin/user'>Người Dùng</Link>,
                     key: '/admin/user',
                     icon: <UserOutlined />
                 }] : []),
                 ...(viewJob || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/job'>Job</Link>,
+                    label: <Link to='/admin/job'>Việc Làm Bánh</Link>,
                     key: '/admin/job',
                     icon: <ScheduleOutlined />
                 }] : []),
 
                 ...(viewResume || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/resume'>Resume</Link>,
+                    label: <Link to='/admin/resume'>Hồ Sơ Ứng Tuyển</Link>,
                     key: '/admin/resume',
                     icon: <AliwangwangOutlined />
                 }] : []),
                 ...(viewPermission || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/permission'>Permission</Link>,
+                    label: <Link to='/admin/permission'>Quyền Hạn</Link>,
                     key: '/admin/permission',
                     icon: <ApiOutlined />
                 }] : []),
                 ...(viewRole || ACL_ENABLE === 'false' ? [{
-                    label: <Link to='/admin/role'>Role</Link>,
+                    label: <Link to='/admin/role'>Vai Trò</Link>,
                     key: '/admin/role',
                     icon: <ExceptionOutlined />
                 }] : []),
@@ -280,8 +281,9 @@ const LayoutAdmin = () => {
                     collapsible
                     collapsed={collapsed}
                     onCollapse={(value) => setCollapsed(value)}>
-                    <div style={{ height: 32, margin: 16, textAlign: 'center' }}>
-                        <BugOutlined />  ADMIN
+                    <div style={{ height: 32, margin: 16, textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <GiCroissant style={{ color: '#fa8c16', fontSize: '20px', marginRight: 6 }} />
+                        <strong style={{ color: '#873800', letterSpacing: '0.5px' }}>BAKEJOBS</strong>
                     </div>
                     <Menu
                         selectedKeys={[activeMenu]}

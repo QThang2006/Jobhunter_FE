@@ -83,7 +83,7 @@ const SearchClient = () => {
             }
         >
             <Row gutter={[12, 12]}>
-                <Col span={24}><h2>Việc Làm IT Cho Developer "Chất"</h2></Col>
+                <Col span={24}><h2>Việc Làm Ngành Bánh — Nhận Việc Theo Ca, Đi Làm Ngay!</h2></Col>
                 <Col span={24} md={14}>
                     <ProForm.Item
                         name="skills"
@@ -95,7 +95,7 @@ const SearchClient = () => {
                             style={{ width: '100%' }}
                             placeholder={
                                 <>
-                                    <MonitorOutlined /> Tìm theo kỹ năng...
+                                    <MonitorOutlined /> Kỹ năng làm bánh (Bắt kem, nướng, POS...)...
                                 </>
                             }
                             optionLabelProp="label"
@@ -114,7 +114,7 @@ const SearchClient = () => {
                             style={{ width: '100%' }}
                             placeholder={
                                 <>
-                                    <EnvironmentOutlined /> Địa điểm...
+                                    <EnvironmentOutlined /> Khu vực, địa điểm tiệm bánh...
                                 </>
                             }
                             optionLabelProp="label"
@@ -123,7 +123,7 @@ const SearchClient = () => {
                     </ProForm.Item>
                 </Col>
                 <Col span={24} sm={10} md={4}>
-                    <Button type='primary' block onClick={() => form.submit()}>Search</Button>
+                    <Button type='primary' block onClick={() => form.submit()}>Tìm Việc Làm</Button>
                 </Col>
             </Row>
         </ProForm>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { ConfigProvider } from 'antd';
 import {
   createBrowserRouter,
   Outlet,
@@ -170,8 +171,16 @@ export default function App() {
 
 
   return (
-    <>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#d46b08',
+          colorLink: '#d46b08',
+          borderRadius: 8,
+        },
+      }}
+    >
       <RouterProvider router={router} />
-    </>
+    </ConfigProvider>
   )
 }

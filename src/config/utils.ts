@@ -3,28 +3,24 @@ import { grey, green, blue, red, orange } from '@ant-design/colors';
 import groupBy from 'lodash/groupBy';
 import map from 'lodash/map';
 
-export const SKILLS_LIST =
-    [
-        { label: "React.JS", value: "REACT.JS" },
-        { label: "React Native", value: "REACT NATIVE" },
-        { label: "Vue.JS", value: "VUE.JS" },
-        { label: "Angular", value: "ANGULAR" },
-        { label: "Nest.JS", value: "NEST.JS" },
-        { label: "TypeScript", value: "TYPESCRIPT" },
-        { label: "Java", value: "JAVA" },
-        { label: "Java Spring", value: "JAVA SPRING" },
-        { label: "Frontend", value: "FRONTEND" },
-        { label: "Backend", value: "BACKEND" },
-        { label: "Fullstack", value: "FULLSTACK" }
-    ];
+export const SKILLS_LIST = [
+    { label: "Bắt bông kem & Chà láng", value: "DECOR_CREAM" },
+    { label: "Tạo hình Fondant", value: "FONDANT" },
+    { label: "Bánh mì men tự nhiên (Sourdough)", value: "SOURDOUGH" },
+    { label: "Bánh lạnh (Mousse, Tiramisu)", value: "PASTRY_COLD" },
+    { label: "Vận hành lò nướng đối lưu", value: "BAKING_OVEN" },
+    { label: "Thu ngân & Phần mềm POS", value: "CASHIER_POS" },
+    { label: "Pha chế Cafe / Barista cơ bản", value: "BARISTA_BASIC" },
+    { label: "Vệ sinh An toàn Thực phẩm (ATTP)", value: "FOOD_SAFETY" },
+    { label: "Quản lý nguyên liệu & Kho bánh", value: "INVENTORY" }
+];
 
-export const LOCATION_LIST =
-    [
-        { label: "Hà Nội", value: "HANOI" },
-        { label: "Hồ Chí Minh", value: "HOCHIMINH" },
-        { label: "Đà Nẵng", value: "DANANG" },
-        { label: "Others", value: "OTHER" },
-    ];
+export const LOCATION_LIST = [
+    { label: "Đà Nẵng", value: "DANANG" },
+    { label: "TP. Hồ Chí Minh", value: "HOCHIMINH" },
+    { label: "Hà Nội", value: "HANOI" },
+    { label: "Khu vực khác", value: "OTHER" },
+];
 
 export const nonAccentVietnamese = (str: string) => {
     str = str.replace(/A|Á|À|Ã|Ạ|Â|Ấ|Ầ|Ẫ|Ậ|Ă|Ắ|Ằ|Ẵ|Ặ/g, "A");
@@ -41,48 +37,42 @@ export const nonAccentVietnamese = (str: string) => {
     str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
     str = str.replace(/Đ/g, "D");
     str = str.replace(/đ/g, "d");
-    // Some system encode vietnamese combining accent as individual utf-8 characters
-    str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // Huyền sắc hỏi ngã nặng
-    str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // Â, Ê, Ă, Ơ, Ư
+    // Combining accents
+    str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, "");
+    str = str.replace(/\u02C6|\u0306|\u031B/g, "");
     return str;
-}
-
+};
 
 export const convertSlug = (str: string) => {
     str = nonAccentVietnamese(str);
     str = str.replace(/^\s+|\s+$/g, ''); // trim
     str = str.toLowerCase();
 
-    // remove accents, swap ñ for n, etc
-    const from = "ÁÄÂÀÃÅČÇĆĎÉĚËÈÊẼĔȆĞÍÌÎÏİŇÑÓÖÒÔÕØŘŔŠŞŤÚŮÜÙÛÝŸŽáäâàãåčçćďéěëèêẽĕȇğíìîïıňñóöòôõøðřŕšşťúůüùûýÿžþÞĐđßÆa·/_,:;";
-    const to = "AAAAAACCCDEEEEEEEEGIIIIINNOOOOOORRSSTUUUUUYYZaaaaaacccdeeeeeeeegiiiiinnooooooorrsstuuuuuyyzbBDdBAa------";
-    for (let i = 0, l = from.length; i < l; i++) {
-        str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
-    }
-
     str = str.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
         .replace(/\s+/g, '-') // collapse whitespace and replace by -
         .replace(/-+/g, '-'); // collapse dashes
 
     return str;
-}
+};
 
 export const getLocationName = (value: string) => {
+    if (!value) return 'Chưa cập nhật địa chỉ';
     const locationFilter = LOCATION_LIST.filter(item => item.value === value);
     if (locationFilter.length) return locationFilter[0].label;
-    return 'unknown'
-}
+    // Nếu là địa chỉ chi tiết do người tuyển dụng nhập tự do thì trả về nguyên chuỗi đó
+    return value;
+};
 
 export function colorMethod(method: "POST" | "PUT" | "GET" | "DELETE" | string) {
     switch (method) {
         case "POST":
-            return green[6]
+            return green[6];
         case "PUT":
-            return orange[6]
+            return orange[6];
         case "GET":
-            return blue[6]
+            return blue[6];
         case "DELETE":
-            return red[6]
+            return red[6];
         default:
             return grey[10];
     }

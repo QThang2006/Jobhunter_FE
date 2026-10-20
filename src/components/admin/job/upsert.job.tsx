@@ -244,12 +244,11 @@ const ViewUpsertJob = (props: any) => {
                             </Col>
 
                             <Col span={24} md={6}>
-                                <ProFormSelect
+                                <ProFormText
                                     name="location"
-                                    label="Địa điểm"
-                                    options={LOCATION_LIST.filter(item => item.value !== 'ALL')}
-                                    placeholder="Please select a location"
-                                    rules={[{ required: true, message: 'Vui lòng chọn địa điểm!' }]}
+                                    label="Địa chỉ làm việc"
+                                    placeholder="VD: 123 Trần Phú, Hải Châu, Đà Nẵng"
+                                    rules={[{ required: true, message: 'Vui lòng nhập địa chỉ làm việc!' }]}
                                 />
                             </Col>
                             <Col span={24} md={6}>

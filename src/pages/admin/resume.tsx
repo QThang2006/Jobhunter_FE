@@ -66,6 +66,21 @@ const ResumePage = () => {
         tableRef?.current?.reload(resetPageIndex);
     }
 
+    const getFileDownloadUrl = (rawUrl?: string) => {
+        if (!rawUrl) return '#';
+        let file = rawUrl;
+        if (rawUrl.startsWith('{')) {
+            try {
+                const parsed = JSON.parse(rawUrl);
+                file = parsed.file || '';
+            } catch {
+                file = '';
+            }
+        }
+        if (!file) return '#';
+        return `${import.meta.env.VITE_BACKEND_URL}/storage/resume/${file}`;
+    };
+
     const columns: ProColumns<IResume>[] = [
         {
             title: 'Id',
@@ -165,7 +180,7 @@ const ResumePage = () => {
                     />
 
                     <a
-                        href={`${entity?.url}`}
+                        href={getFileDownloadUrl(entity?.url)}
                         target="_blank"
                         rel="noopener noreferrer"
                         download

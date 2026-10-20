@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { CodeOutlined, ContactsOutlined, FireOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined, TwitterOutlined } from '@ant-design/icons';
+import { HomeOutlined, ShopOutlined, ApartmentOutlined, ContactsOutlined, FireOutlined, LogoutOutlined, MenuFoldOutlined, RiseOutlined } from '@ant-design/icons';
 import { Avatar, Drawer, Dropdown, MenuProps, Space, message } from 'antd';
 import { Menu, ConfigProvider } from 'antd';
 import styles from '@/styles/client.module.scss';
 import { isMobile } from 'react-device-detect';
 import { FaReact } from 'react-icons/fa';
+import { GiCroissant } from 'react-icons/gi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
@@ -34,17 +35,17 @@ const Header = (props: any) => {
         {
             label: <Link to={'/'}>Trang Chủ</Link>,
             key: '/',
-            icon: <TwitterOutlined />,
+            icon: <HomeOutlined />,
         },
         {
-            label: <Link to={'/job'}>Việc Làm IT</Link>,
+            label: <Link to={'/job'}>Việc Làm Ngành Bánh</Link>,
             key: '/job',
-            icon: <CodeOutlined />,
+            icon: <ShopOutlined />,
         },
         {
-            label: <Link to={'/company'}>Top Công ty IT</Link>,
+            label: <Link to={'/company'}>Hệ Thống Tiệm Bánh</Link>,
             key: '/company',
-            icon: <RiseOutlined />,
+            icon: <ApartmentOutlined />,
         }
     ];
 
@@ -101,17 +102,17 @@ const Header = (props: any) => {
         {
             label: <Link to={'/'} onClick={() => setOpenMobileMenu(false)}>Trang Chủ</Link>,
             key: '/',
-            icon: <TwitterOutlined />,
+            icon: <HomeOutlined />,
         },
         {
-            label: <Link to={'/job'} onClick={() => setOpenMobileMenu(false)}>Việc Làm IT</Link>,
+            label: <Link to={'/job'} onClick={() => setOpenMobileMenu(false)}>Việc Làm Ngành Bánh</Link>,
             key: '/job',
-            icon: <CodeOutlined />,
+            icon: <ShopOutlined />,
         },
         {
-            label: <Link to={'/company'} onClick={() => setOpenMobileMenu(false)}>Top Công ty IT</Link>,
+            label: <Link to={'/company'} onClick={() => setOpenMobileMenu(false)}>Hệ Thống Tiệm Bánh</Link>,
             key: '/company',
-            icon: <RiseOutlined />,
+            icon: <ApartmentOutlined />,
         },
         ...itemsDropdown
     ];
@@ -122,8 +123,8 @@ const Header = (props: any) => {
                 <div className={styles["container"]}>
                     <div className={styles["header-wrapper"]}>
                         <div className={styles['brand']} onClick={() => navigate('/')}>
-                            <FaReact className={styles['logo-icon']} title='JobHunter' />
-                            <span className={styles['logo-text']}>JobHunter</span>
+                            <GiCroissant className={styles['logo-icon']} title='BakeJobs' style={{ color: '#fa8c16', fontSize: '28px' }} />
+                            <span className={styles['logo-text']}>BakeJobs</span>
                         </div>
 
                         <div className={styles['top-menu-desktop']}>

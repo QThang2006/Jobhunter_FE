@@ -22,7 +22,7 @@ const ChatWidget = () => {
     const [messages, setMessages] = useState<IChatMessage[]>([
         {
             id: 'welcome',
-            text: 'Chào bạn! Tôi là AI JobHunter. Bạn đang tìm kiếm công việc như thế nào? (VD: Tìm việc Java lương trên 20 triệu tại Hà Nội)',
+            text: 'Chào bạn! Tôi là Trợ lý AI của BakeJobs. Bạn đang tìm việc thợ bánh, phụ bếp hay thu ngân theo ca tại tiệm bánh nào? (VD: Tìm việc phụ bếp ca sáng tại Đà Nẵng)',
             sender: 'bot'
         }
     ]);
@@ -101,7 +101,7 @@ const ChatWidget = () => {
                     <div className={styles.header}>
                         <div className={styles.title}>
                             <BsRobot size={20} />
-                            AI Job Assistant
+                            Trợ lý AI BakeJobs
                             <span className={styles.status}></span>
                         </div>
                         <BsX size={24} style={{ cursor: 'cursor' }} onClick={() => setIsOpen(false)} />
