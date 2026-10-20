@@ -1,4 +1,4 @@
-import { Button, Col, Form, Row, Select, Space, Tag, notification } from 'antd';
+import { Button, Col, Form, Row, Select, Space, notification } from 'antd';
 import { EnvironmentOutlined, SearchOutlined, ShopOutlined } from '@ant-design/icons';
 import { LOCATION_LIST } from '@/config/utils';
 import { ProForm } from '@ant-design/pro-components';
@@ -6,15 +6,6 @@ import { useEffect, useState } from 'react';
 import { callFetchAllSkill } from '@/config/api';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from '@/styles/client.module.scss';
-
-const QUICK_TAGS = [
-    "Bánh kem",
-    "Bánh mì",
-    "Phụ bếp",
-    "Thu ngân",
-    "Bán hàng",
-    "Pha chế"
-];
 
 const SearchClient = () => {
     const navigate = useNavigate();
@@ -80,16 +71,6 @@ const SearchClient = () => {
             return;
         }
         navigate(`/job?${query}`);
-    };
-
-    const handleQuickTagClick = (tag: string) => {
-        const matched = optionsSkills.find(s => s.label.toLowerCase().includes(tag.toLowerCase()));
-        if (matched) {
-            form.setFieldValue("skills", [matched.value]);
-            navigate(`/job?skills=${matched.value}`);
-        } else {
-            navigate(`/job`);
-        }
     };
 
     return (
@@ -175,34 +156,6 @@ const SearchClient = () => {
                         </Col>
                     </Row>
                 </ProForm>
-
-                <div className={styles["search-quick-tags"]}>
-                    <span className={styles["tags-label"]}>Gợi ý nhanh:</span>
-                    {QUICK_TAGS.map((tag) => (
-                        <Tag
-                            key={tag}
-                            className={styles["quick-tag-item"]}
-                            onClick={() => handleQuickTagClick(tag)}
-                        >
-                            {tag}
-                        </Tag>
-                    ))}
-                </div>
-            </div>
-
-            <div className={styles["hero-features"]}>
-                <div className={styles["feature-item"]}>
-                    <span className={styles["feature-dot"]}></span>
-                    <span>Hệ thống tiệm bánh & chuỗi F&B xác thực</span>
-                </div>
-                <div className={styles["feature-item"]}>
-                    <span className={styles["feature-dot"]}></span>
-                    <span>Xếp lịch làm việc theo ca linh hoạt (Sáng / Chiều / Tối)</span>
-                </div>
-                <div className={styles["feature-item"]}>
-                    <span className={styles["feature-dot"]}></span>
-                    <span>Đính kèm hình ảnh bánh & đăng ký thử việc trực tiếp</span>
-                </div>
             </div>
         </div>
     );

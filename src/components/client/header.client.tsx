@@ -131,9 +131,9 @@ const Header = (props: any) => {
                             <ConfigProvider
                                 theme={{
                                     token: {
-                                        colorPrimary: '#fff',
-                                        colorBgContainer: '#222831',
-                                        colorText: '#a7a7a7',
+                                        colorPrimary: '#d46b08',
+                                        colorBgContainer: 'transparent',
+                                        colorText: '#5c4a3d',
                                     },
                                 }}
                             >
@@ -141,6 +141,11 @@ const Header = (props: any) => {
                                     selectedKeys={[current]}
                                     mode="horizontal"
                                     items={items}
+                                    style={{
+                                        background: 'transparent',
+                                        borderBottom: 'none',
+                                        color: '#5c4a3d'
+                                    }}
                                 />
                             </ConfigProvider>
 
@@ -149,11 +154,11 @@ const Header = (props: any) => {
                                     <Link to={'/login'}>Đăng Nhập</Link>
                                     :
                                     <Space size={16} align="center">
-                                        <NotificationBell theme="dark" />
+                                        <NotificationBell theme="light" />
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
                                                 <span className={styles['user-name-text']}>{user?.name}</span>
-                                                <Avatar> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
+                                                <Avatar style={{ backgroundColor: '#d46b08' }}> {user?.name?.substring(0, 2)?.toUpperCase()} </Avatar>
                                             </Space>
                                         </Dropdown>
                                     </Space>
@@ -162,7 +167,7 @@ const Header = (props: any) => {
                         </div>
 
                         <div className={styles['header-mobile-trigger']}>
-                            {isAuthenticated && <NotificationBell theme="dark" />}
+                            {isAuthenticated && <NotificationBell theme="light" />}
                             <MenuFoldOutlined
                                 className={styles['hamburger-icon']}
                                 onClick={() => setOpenMobileMenu(true)}
