@@ -34,7 +34,6 @@ import ClientCompanyDetailPage from './pages/company/detail';
 import JobTabs from './pages/admin/job/job.tabs';
 import ShiftPage from './pages/admin/shift';
 import MyShiftsPage from './pages/shift/my-shifts';
-import ChatWidget from 'components/client/chat/ChatWidget';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,7 +54,6 @@ const LayoutClient = () => {
         <Outlet context={[searchTerm, setSearchTerm]} />
       </div>
       <Footer />
-      <ChatWidget />
     </div>
   )
 }
