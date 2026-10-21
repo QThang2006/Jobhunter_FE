@@ -214,7 +214,7 @@ const ApplyModal = (props: IProps) => {
                                 📧 Hệ thống đã tự động tạo tài khoản và gửi thông tin đăng nhập vào email: <strong style={{ color: '#2563eb' }}>{submittedEmail}</strong>.
                             </p>
                             <p style={{ margin: 0, color: '#64748b', fontSize: 12 }}>
-                                * Bạn có thể đăng nhập vào hệ thống bất cứ lúc nào bằng tài khoản trên để theo dõi kết quả phỏng vấn và lịch ca làm việc.
+                                * Bạn có thể đăng nhập vào hệ thống bằng tài khoản trên để theo dõi kết quả phỏng vấn và lịch ca làm việc (kiểm tra cả mục Hộp thư đến và mục Thư rác / Spam nếu chưa thấy).
                             </p>
                         </div>
                     }
