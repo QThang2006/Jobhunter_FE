@@ -16,10 +16,15 @@ export const SKILLS_LIST = [
 ];
 
 export const LOCATION_LIST = [
-    { label: "Đà Nẵng", value: "DANANG" },
-    { label: "TP. Hồ Chí Minh", value: "HOCHIMINH" },
-    { label: "Hà Nội", value: "HANOI" },
-    { label: "Khu vực khác", value: "OTHER" },
+    { label: "Tất cả địa điểm", value: "ALL" },
+    { label: "Đà Nẵng", value: "Đà Nẵng" },
+    { label: "TP. Hồ Chí Minh", value: "Hồ Chí Minh" },
+    { label: "Hà Nội", value: "Hà Nội" },
+    { label: "Cần Thơ", value: "Cần Thơ" },
+    { label: "Hải Phòng", value: "Hải Phòng" },
+    { label: "Bình Dương", value: "Bình Dương" },
+    { label: "Đồng Nai", value: "Đồng Nai" },
+    { label: "Khu vực khác", value: "Khác" },
 ];
 
 export const nonAccentVietnamese = (str: string) => {

@@ -1,8 +1,8 @@
 import { callFetchJob } from '@/config/api';
-import { convertSlug, getLocationName } from '@/config/utils';
+import { convertSlug, getLocationName, nonAccentVietnamese } from '@/config/utils';
 import { IJob } from '@/types/backend';
-import { EnvironmentOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Card, Col, Empty, Pagination, Row, Spin } from 'antd';
+import { EnvironmentOutlined, ThunderboltOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Card, Col, Empty, Pagination, Row, Spin, Tag, Button, Space } from 'antd';
 import { useState, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -34,6 +34,9 @@ const JobCard = (props: IProps) => {
     const [searchParams, setSearchParams] = useSearchParams();
     const location = useLocation();
 
+    const queryKeyword = searchParams.get("keyword") || searchParams.get("search");
+    const queryLocation = searchParams.get("location");
+
     // -- WebSocket - Auto Refresh Jobs --
     const { stompClient } = useWebSocket();
     useEffect(() => {
@@ -63,21 +66,45 @@ const JobCard = (props: IProps) => {
             query += `&${sortQuery}`;
         }
 
-        //check query string
+        // check query string (Hỗ trợ tìm kiếm từ khóa thông minh & địa chỉ thực tế)
+        const queryKeyword = searchParams.get("keyword") || searchParams.get("search");
         const queryLocation = searchParams.get("location");
-        const querySkills = searchParams.get("skills")
-        if (queryLocation || querySkills) {
-            let q = "";
-            if (queryLocation) {
-                q = sfIn("location", queryLocation.split(",")).toString();
-            }
+        const querySkills = searchParams.get("skills");
 
-            if (querySkills) {
-                q = queryLocation ?
-                    q + " and " + `${sfIn("skills", querySkills.split(","))}`
-                    : `${sfIn("skills", querySkills.split(","))}`;
-            }
+        const filterClauses: string[] = [];
 
+        // 1. Tìm theo từ khóa (khớp tên việc làm hoặc kỹ năng)
+        if (queryKeyword && queryKeyword.trim()) {
+            const kw = queryKeyword.trim();
+            const unaccentKw = nonAccentVietnamese(kw);
+            if (unaccentKw !== kw && unaccentKw.length > 1) {
+                filterClauses.push(`(name ~ '%${kw}%' or name ~ '%${unaccentKw}%' or skills.name ~ '%${kw}%')`);
+            } else {
+                filterClauses.push(`(name ~ '%${kw}%' or skills.name ~ '%${kw}%')`);
+            }
+        }
+
+        // 2. Tìm theo địa điểm (khớp chuỗi địa chỉ chi tiết trong DB)
+        if (queryLocation && queryLocation.trim() && queryLocation !== 'ALL') {
+            const loc = queryLocation.trim();
+            if (loc === 'Đà Nẵng' || loc === 'DANANG') {
+                filterClauses.push(`(location ~ '%Đà Nẵng%' or location ~ '%Da Nang%')`);
+            } else if (loc === 'Hồ Chí Minh' || loc === 'HOCHIMINH') {
+                filterClauses.push(`(location ~ '%Hồ Chí Minh%' or location ~ '%Ho Chi Minh%' or location ~ '%HCM%' or location ~ '%Sài Gòn%')`);
+            } else if (loc === 'Hà Nội' || loc === 'HANOI') {
+                filterClauses.push(`(location ~ '%Hà Nội%' or location ~ '%Ha Noi%')`);
+            } else {
+                filterClauses.push(`location ~ '%${loc}%'`);
+            }
+        }
+
+        // 3. Hỗ trợ query theo skill IDs nếu có
+        if (querySkills && querySkills.trim()) {
+            filterClauses.push(sfIn("skills", querySkills.split(",")).toString());
+        }
+
+        if (filterClauses.length > 0) {
+            const q = filterClauses.join(" and ");
             query += `&filter=${encodeURIComponent(q)}`;
         }
 
@@ -113,9 +140,53 @@ const JobCard = (props: IProps) => {
                     <Row gutter={[20, 20]}>
                         <Col span={24}>
                             <div className={styles["dflex-header"]}>
-                                <span className={styles["title"]}>
-                                    {showPagination ? "Danh Sách Việc Làm Ngành Bánh" : "Việc Làm Tiệm Bánh Mới Nhất"}
-                                </span>
+                                <div>
+                                    <span className={styles["title"]}>
+                                        {showPagination ? "Danh Sách Việc Làm Ngành Bánh" : "Việc Làm Tiệm Bánh Mới Nhất"}
+                                    </span>
+                                    {(queryKeyword || (queryLocation && queryLocation !== 'ALL')) && (
+                                        <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                                            <span style={{ fontSize: 13, color: '#6b7280' }}>
+                                                Kết quả lọc:
+                                            </span>
+                                            {queryKeyword && (
+                                                <Tag
+                                                    closable
+                                                    onClose={() => {
+                                                        const next = new URLSearchParams(searchParams);
+                                                        next.delete("keyword");
+                                                        next.delete("search");
+                                                        navigate(next.toString() ? `/job?${next.toString()}` : '/job');
+                                                    }}
+                                                    style={{ background: '#f0f5ff', border: '1px solid #d6e4ff', color: '#1677ff', borderRadius: 4 }}
+                                                >
+                                                    Từ khóa: <strong>{queryKeyword}</strong>
+                                                </Tag>
+                                            )}
+                                            {queryLocation && queryLocation !== 'ALL' && (
+                                                <Tag
+                                                    closable
+                                                    onClose={() => {
+                                                        const next = new URLSearchParams(searchParams);
+                                                        next.delete("location");
+                                                        navigate(next.toString() ? `/job?${next.toString()}` : '/job');
+                                                    }}
+                                                    style={{ background: '#f9fafb', border: '1px solid #e5e7eb', color: '#374151', borderRadius: 4 }}
+                                                >
+                                                    Khu vực: <strong>{queryLocation}</strong>
+                                                </Tag>
+                                            )}
+                                            <Button
+                                                type="link"
+                                                size="small"
+                                                style={{ padding: 0, fontSize: 12, color: '#ef4444' }}
+                                                onClick={() => navigate('/job')}
+                                            >
+                                                Xóa bộ lọc
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
                                 {!showPagination &&
                                     <Link to="job">Xem tất cả</Link>
                                 }
