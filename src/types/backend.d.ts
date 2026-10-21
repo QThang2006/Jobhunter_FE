@@ -120,6 +120,8 @@ export interface IJob {
 export interface IResume {
     id?: string;
     email: string;
+    phone?: string;
+    message?: string;
     userId: string;
     url: string;
     status: string;

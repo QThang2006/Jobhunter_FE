@@ -161,6 +161,20 @@ const ResumePage = () => {
             dataIndex: 'email',
             hideInSearch: true,
         },
+        {
+            title: 'SĐT',
+            dataIndex: 'phone',
+            hideInSearch: true,
+            render: (text, record) => {
+                return record.phone ? (
+                    <a href={`tel:${record.phone}`} style={{ color: '#1677ff', fontWeight: 500 }}>
+                        {record.phone}
+                    </a>
+                ) : (
+                    <span style={{ color: '#9ca3af' }}>-</span>
+                );
+            }
+        },
 
         {
             title: 'CreatedAt',

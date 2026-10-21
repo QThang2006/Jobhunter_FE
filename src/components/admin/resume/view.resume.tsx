@@ -314,6 +314,16 @@ const ViewDetailResume = (props: IProps) => {
                     <Descriptions.Item label="Email Ứng Viên" style={{ width: '50%' }}>
                         <span style={{ wordBreak: 'break-all', fontWeight: 500 }}>{dataInit?.email}</span>
                     </Descriptions.Item>
+                    <Descriptions.Item label="Số Điện Thoại Ứng Viên" style={{ width: '50%' }}>
+                        {dataInit?.phone ? (
+                            <span style={{ fontWeight: 600, color: '#1677ff' }}>
+                                📞 <a href={`tel:${dataInit.phone}`}>{dataInit.phone}</a>
+                            </span>
+                        ) : (
+                            <span style={{ color: '#9ca3af' }}>Chưa cung cấp</span>
+                        )}
+                    </Descriptions.Item>
+
                     <Descriptions.Item label="Trạng thái xử lý" style={{ width: '50%' }}>
                         <Form form={form}>
                             <Form.Item name={"status"} style={{ margin: 0 }}>
@@ -379,6 +389,22 @@ const ViewDetailResume = (props: IProps) => {
                             <span style={{ color: '#999' }}>Không đính kèm file</span>
                         )}
                     </Descriptions.Item>
+
+                    {dataInit?.message && (
+                        <Descriptions.Item label="Lời nhắn / Giới thiệu từ ứng viên" span={2}>
+                            <div style={{
+                                color: '#1e293b',
+                                background: '#f8fafc',
+                                padding: '10px 14px',
+                                borderRadius: 6,
+                                border: '1px solid #e2e8f0',
+                                lineHeight: 1.6,
+                                whiteSpace: 'pre-line'
+                            }}>
+                                💬 {dataInit.message}
+                            </div>
+                        </Descriptions.Item>
+                    )}
 
                     {/* Hiển thị chi tiết thông tin phỏng vấn nếu đã có lịch hẹn */}
                     {dataInit?.interviewDate && (
