@@ -1,4 +1,4 @@
-import { Button, Col, Form, Row, Select, AutoComplete, Input } from 'antd';
+import { Button, Col, Form, Row, Select, AutoComplete } from 'antd';
 import { EnvironmentOutlined, SearchOutlined, ShopOutlined, ReadOutlined, DollarOutlined } from '@ant-design/icons';
 import { LOCATION_LIST, LEVEL_LIST, SALARY_LIST } from '@/config/utils';
 import { ProForm } from '@ant-design/pro-components';
@@ -92,25 +92,26 @@ const SearchClient = () => {
                                 style={{ marginBottom: 0 }}
                             >
                                 <AutoComplete
+                                    size="large"
                                     options={companyOptions}
+                                    allowClear
                                     style={{ width: '100%' }}
+                                    placeholder={
+                                        <span style={{ color: '#6b7280' }}>
+                                            <ShopOutlined style={{ marginRight: 6 }} />
+                                            Tên tiệm bánh...
+                                        </span>
+                                    }
                                     filterOption={(inputValue, option) =>
                                         option?.value?.toString().toLowerCase().includes(inputValue.toLowerCase()) ?? false
                                     }
-                                >
-                                    <Input
-                                        size="large"
-                                        allowClear
-                                        prefix={<ShopOutlined style={{ color: '#6b7280', fontSize: 16, marginRight: 4 }} />}
-                                        placeholder="Tên tiệm bánh..."
-                                        onPressEnter={() => form.submit()}
-                                        style={{
-                                            borderRadius: 6,
-                                            height: 42,
-                                            fontSize: 14
-                                        }}
-                                    />
-                                </AutoComplete>
+                                    onSelect={() => form.submit()}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            form.submit();
+                                        }
+                                    }}
+                                />
                             </ProForm.Item>
                         </Col>
 
@@ -191,7 +192,6 @@ const SearchClient = () => {
                                 style={{
                                     fontWeight: 600,
                                     borderRadius: 6,
-                                    height: 42,
                                     fontSize: 14
                                 }}
                             >
