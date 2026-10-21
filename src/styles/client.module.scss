@@ -389,6 +389,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            text-align: center;
         }
 
         .company-card-address {
@@ -397,21 +398,31 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
 
     .card-customize {
         height: 135px;
         background: #f9fafb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center;
+        width: 100%;
         padding: 12px;
         border-bottom: 1px solid #e5e7eb;
 
         img {
             max-width: 100%;
-            max-height: 105px;
+            max-height: 100px;
+            width: auto !important;
+            height: auto;
+            margin: 0 auto !important;
+            display: block;
             object-fit: contain;
         }
     }

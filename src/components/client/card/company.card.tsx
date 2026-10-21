@@ -87,10 +87,31 @@ const CompanyCard = (props: IProps) => {
                                         hoverable
                                         className={styles["company-card-item"]}
                                         cover={
-                                            <div className={styles["card-customize"]}>
+                                            <div
+                                                className={styles["card-customize"]}
+                                                style={{
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    height: 135,
+                                                    background: '#f9fafb',
+                                                    padding: 12,
+                                                    width: '100%',
+                                                    overflow: 'hidden'
+                                                }}
+                                            >
                                                 <img
                                                     alt={item?.name || "Logo"}
                                                     src={`${item?.logo}`}
+                                                    style={{
+                                                        maxWidth: '100%',
+                                                        maxHeight: 100,
+                                                        width: 'auto',
+                                                        height: 'auto',
+                                                        margin: '0 auto',
+                                                        display: 'block',
+                                                        objectFit: 'contain'
+                                                    }}
                                                 />
                                             </div>
                                         }
