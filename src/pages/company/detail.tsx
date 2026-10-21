@@ -89,54 +89,56 @@ const ClientCompanyDetailPage = () => {
                                     )}
                                 </div>
 
-                                <Spin spinning={isJobsLoading} tip="Đang tải danh sách việc làm...">
-                                    {companyJobs.length > 0 ? (
-                                        <Row gutter={[16, 16]}>
-                                            {companyJobs.map(job => (
-                                                <Col span={24} sm={12} key={job.id}>
-                                                    <Card
-                                                        size="small"
-                                                        hoverable
-                                                        className={styles["job-card-item"]}
-                                                        onClick={() => handleViewDetailJob(job)}
-                                                        style={{ height: '100%', borderColor: '#e5e7eb', borderRadius: 8 }}
-                                                    >
-                                                        <div className={styles["card-job-content"]}>
-                                                            <div className={styles["card-job-left"]}>
-                                                                <img
-                                                                    alt={job.name || "Logo"}
-                                                                    src={`${companyDetail.logo}`}
-                                                                />
+                                <div className={styles["card-job-section"]}>
+                                    <Spin spinning={isJobsLoading} tip="Đang tải danh sách việc làm...">
+                                        {companyJobs.length > 0 ? (
+                                            <Row gutter={[16, 16]}>
+                                                {companyJobs.map(job => (
+                                                    <Col span={24} sm={12} key={job.id}>
+                                                        <Card
+                                                            size="small"
+                                                            hoverable
+                                                            className={styles["job-card-item"]}
+                                                            onClick={() => handleViewDetailJob(job)}
+                                                            style={{ height: '100%', borderColor: '#e5e7eb', borderRadius: 8 }}
+                                                        >
+                                                            <div className={styles["card-job-content"]}>
+                                                                <div className={styles["card-job-left"]}>
+                                                                    <img
+                                                                        alt={job.name || "Logo"}
+                                                                        src={`${companyDetail.logo}`}
+                                                                    />
+                                                                </div>
+                                                                <div className={styles["card-job-right"]}>
+                                                                    <div className={styles["job-title"]}>
+                                                                        {job.level ? `[${job.level}] ` : ''}{job.name}
+                                                                    </div>
+                                                                    <div className={styles["job-location"]}>
+                                                                        <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 4 }} />
+                                                                        <span>{getLocationName(job.location)}</span>
+                                                                    </div>
+                                                                    <div className={styles["job-salary"]}>
+                                                                        <ThunderboltOutlined style={{ color: '#059669', marginRight: 4 }} />
+                                                                        <span>{(job.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
+                                                                    </div>
+                                                                    <div className={styles["job-updatedAt"]}>
+                                                                        Hạn nộp: {dayjs(job.endDate).format('DD/MM/YYYY')}
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div className={styles["card-job-right"]}>
-                                                                <div className={styles["job-title"]}>
-                                                                    {job.level ? `[${job.level}] ` : ''}{job.name}
-                                                                </div>
-                                                                <div className={styles["job-location"]}>
-                                                                    <EnvironmentOutlined style={{ color: '#6b7280', marginRight: 4 }} />
-                                                                    <span>{getLocationName(job.location)}</span>
-                                                                </div>
-                                                                <div className={styles["job-salary"]}>
-                                                                    <ThunderboltOutlined style={{ color: '#059669', marginRight: 4 }} />
-                                                                    <span>{(job.salary + "")?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')} đ</span>
-                                                                </div>
-                                                                <div className={styles["job-updatedAt"]}>
-                                                                    Hạn nộp: {dayjs(job.endDate).format('DD/MM/YYYY')}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </Card>
-                                                </Col>
-                                            ))}
-                                        </Row>
-                                    ) : (
-                                        !isJobsLoading && (
-                                            <div style={{ padding: '32px 16px', textAlign: 'center', background: '#f9fafb', borderRadius: 8, border: '1px dashed #e5e7eb' }}>
-                                                <Empty description="Hiện tại tiệm bánh chưa có vị trí nào đang tuyển dụng." />
-                                            </div>
-                                        )
-                                    )}
-                                </Spin>
+                                                        </Card>
+                                                    </Col>
+                                                ))}
+                                            </Row>
+                                        ) : (
+                                            !isJobsLoading && (
+                                                <div style={{ padding: '32px 16px', textAlign: 'center', background: '#f9fafb', borderRadius: 8, border: '1px dashed #e5e7eb' }}>
+                                                    <Empty description="Hiện tại tiệm bánh chưa có vị trí nào đang tuyển dụng." />
+                                                </div>
+                                            )
+                                        )}
+                                    </Spin>
+                                </div>
                             </Col>
 
                             <Col span={24} md={8}>
