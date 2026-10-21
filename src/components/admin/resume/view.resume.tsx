@@ -208,7 +208,22 @@ const ViewDetailResume = (props: IProps) => {
             // keep raw
         }
     }
-    const fileUrl = fileName ? `${backendUrl}/storage/resume/${fileName}` : '';
+    const fileUrl = fileName 
+        ? (fileName.startsWith('http://') || fileName.startsWith('https://') 
+            ? fileName 
+            : `${backendUrl}/storage/resume/${fileName}`)
+        : '';
+
+    const getDisplayFileName = (url: string) => {
+        if (!url) return '';
+        try {
+            const rawName = decodeURIComponent(url.split('/').pop() || '');
+            return rawName.replace(/^[0-9a-fA-F-]{36}-/, '') || rawName;
+        } catch {
+            return url.split('/').pop() || url;
+        }
+    };
+    const cleanFileName = getDisplayFileName(fileName);
 
     return (
         <>
@@ -217,7 +232,7 @@ const ViewDetailResume = (props: IProps) => {
                 placement="right"
                 onClose={() => { onClose(false); setDataInit(null); }}
                 open={open}
-                width={"45vw"}
+                width={"min(680px, 95vw)"}
                 maskClosable={false}
                 destroyOnClose
                 extra={
@@ -248,9 +263,17 @@ const ViewDetailResume = (props: IProps) => {
                     </Space>
                 }
             >
-                <Descriptions title="Thông tin hồ sơ ứng tuyển" bordered column={2} layout="vertical">
-                    <Descriptions.Item label="Email Ứng Viên">{dataInit?.email}</Descriptions.Item>
-                    <Descriptions.Item label="Trạng thái xử lý">
+                <Descriptions
+                    title="Thông tin hồ sơ ứng tuyển"
+                    bordered
+                    column={2}
+                    layout="vertical"
+                    style={{ tableLayout: 'fixed', width: '100%' }}
+                >
+                    <Descriptions.Item label="Email Ứng Viên" style={{ width: '50%' }}>
+                        <span style={{ wordBreak: 'break-all', fontWeight: 500 }}>{dataInit?.email}</span>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Trạng thái xử lý" style={{ width: '50%' }}>
                         <Form form={form}>
                             <Form.Item name={"status"} style={{ margin: 0 }}>
                                 <Select style={{ width: "100%" }} defaultValue={dataInit?.status}>
@@ -263,25 +286,54 @@ const ViewDetailResume = (props: IProps) => {
                         </Form>
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Vị trí ứng tuyển">
+                    <Descriptions.Item label="Vị trí ứng tuyển" style={{ width: '50%' }}>
                         <strong style={{ color: '#111827' }}>{dataInit?.job?.name}</strong>
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Tiệm bánh / Chi nhánh">
+                    <Descriptions.Item label="Tiệm bánh / Chi nhánh" style={{ width: '50%' }}>
                         {dataInit?.companyName || dataInit?.company?.name || 'Tiệm Bánh'}
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="Ngày nộp hồ sơ">
+                    <Descriptions.Item label="Ngày nộp hồ sơ" style={{ width: '50%' }}>
                         {dataInit && dataInit.createdAt ? dayjs(dataInit.createdAt).format('DD/MM/YYYY HH:mm') : ""}
                     </Descriptions.Item>
 
-                    <Descriptions.Item label="File CV Đính Kèm">
+                    <Descriptions.Item label="Hình thức hồ sơ" style={{ width: '50%' }}>
+                        <Tag color="blue">File CV Đính Kèm</Tag>
+                    </Descriptions.Item>
+
+                    <Descriptions.Item label="File CV Đính Kèm" span={2}>
                         {fileUrl ? (
-                            <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-                                <Button icon={<FileTextOutlined />} type="dashed" style={{ borderRadius: 6 }}>
-                                    Xem / Tải File CV ({fileName})
-                                </Button>
-                            </a>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                                <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+                                    <Button
+                                        icon={<FileTextOutlined />}
+                                        type="primary"
+                                        style={{
+                                            borderRadius: 6,
+                                            fontWeight: 500
+                                        }}
+                                    >
+                                        Xem / Tải File CV
+                                    </Button>
+                                </a>
+                                {cleanFileName && (
+                                    <span
+                                        style={{
+                                            color: '#374151',
+                                            fontSize: 13,
+                                            background: '#f3f4f6',
+                                            padding: '4px 10px',
+                                            borderRadius: 4,
+                                            border: '1px solid #e5e7eb',
+                                            wordBreak: 'break-all',
+                                            maxWidth: '100%'
+                                        }}
+                                    >
+                                        📄 {cleanFileName}
+                                    </span>
+                                )}
+                            </div>
                         ) : (
                             <span style={{ color: '#999' }}>Không đính kèm file</span>
                         )}

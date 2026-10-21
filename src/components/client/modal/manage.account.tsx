@@ -86,10 +86,16 @@ const UserResume = (props: any) => {
             title: '',
             dataIndex: "",
             render(value, record, index) {
+                const getFileUrl = (url?: string) => {
+                    if (!url) return '#';
+                    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+                    return `${import.meta.env.VITE_BACKEND_URL}/storage/resume/${url}`;
+                };
                 return (
                     <a
-                        href={`${record?.url ?? ''}`}
+                        href={getFileUrl(record?.url)}
                         target="_blank"
+                        rel="noreferrer"
                     >Chi tiết</a>
                 )
             },
@@ -152,7 +158,7 @@ const UserUpdateInfo = (props: any) => {
 
     return (
         <Form onFinish={onFinish} form={form} layout="vertical">
-            <Row gutter={[20, 20]}>
+            <Row gutter={[20, 20]} style={{ margin: 0 }}>
                 <Col span={24}>
                     <Form.Item label="Email" name="email" initialValue={user?.email}>
                         <Input disabled />
@@ -217,7 +223,7 @@ const UserPassword = (props: any) => {
 
     return (
         <Form onFinish={onFinish} form={form} layout="vertical">
-            <Row gutter={[20, 20]}>
+            <Row gutter={[20, 20]} style={{ margin: 0 }}>
                 <Col span={24}>
                     <Form.Item label="Email" name="email" initialValue={user?.email}>
                         <Input disabled />
@@ -340,7 +346,7 @@ const JobByEmail = (props: any) => {
                 onFinish={onFinish}
                 form={form}
             >
-                <Row gutter={[20, 20]}>
+                <Row gutter={[20, 20]} style={{ margin: 0 }}>
                     <Col span={24}>
                         <Form.Item
                             label={"Kỹ năng"}
@@ -419,17 +425,16 @@ const ManageAccount = (props: IProps) => {
                 destroyOnClose={true}
                 style={{ top: 20 }}
                 styles={{
-                    body: { padding: '12px 16px' }
+                    body: { padding: '12px 16px', overflowX: 'hidden' }
                 }}
                 width="min(1000px, 96vw)"
             >
-                <div style={{ minHeight: 350 }}>
+                <div style={{ minHeight: 350, overflowX: 'hidden' }}>
                     <Tabs
                         defaultActiveKey="user-resume"
                         items={items}
                         onChange={onChange}
                         size="small"
-                        style={{ overflowX: 'auto' }}
                     />
                 </div>
             </Modal>

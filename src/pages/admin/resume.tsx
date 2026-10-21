@@ -81,6 +81,9 @@ const ResumePage = () => {
             }
         }
         if (!file) return '#';
+        if (file.startsWith('http://') || file.startsWith('https://')) {
+            return file;
+        }
         return `${import.meta.env.VITE_BACKEND_URL}/storage/resume/${file}`;
     };
 
