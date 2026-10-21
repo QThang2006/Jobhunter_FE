@@ -97,6 +97,7 @@ const CompanyCard = (props: IProps) => {
                                                     background: '#f9fafb',
                                                     padding: 12,
                                                     width: '100%',
+                                                    boxSizing: 'border-box',
                                                     overflow: 'hidden'
                                                 }}
                                             >
