@@ -19,6 +19,7 @@ interface IState {
         id: string;
         email: string;
         name: string;
+        phone?: string;
         role: {
             id?: string;
             name?: string;
@@ -48,6 +49,7 @@ const initialState: IState = {
         id: "",
         email: "",
         name: "",
+        phone: "",
         role: {
             id: "",
             name: "",
@@ -74,6 +76,7 @@ export const accountSlide = createSlice({
             state.user.id = action?.payload?.id;
             state.user.email = action.payload.email;
             state.user.name = action.payload.name;
+            state.user.phone = action.payload.phone || "";
             state.user.role = action?.payload?.role;
 
             if (!action?.payload?.role) state.user.role = {};
@@ -86,6 +89,7 @@ export const accountSlide = createSlice({
                 id: "",
                 email: "",
                 name: "",
+                phone: "",
                 role: {
                     id: "",
                     name: "",
@@ -115,6 +119,7 @@ export const accountSlide = createSlice({
                 state.user.id = action?.payload?.user?.id;
                 state.user.email = action.payload.user?.email;
                 state.user.name = action.payload.user?.name;
+                state.user.phone = action.payload.user?.phone || "";
                 state.user.role = action?.payload?.user?.role;
                 if (!action?.payload?.user?.role) state.user.role = {};
                 state.user.role.permissions = action?.payload?.user?.role?.permissions ?? [];

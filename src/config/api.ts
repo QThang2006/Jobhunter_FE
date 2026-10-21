@@ -206,7 +206,14 @@ export const callUpdateJobActive = (id: string | number, status: boolean) => {
  * 
 Module Resume
  */
-export const callCreateResume = (url: string, jobId: any, email: string, userId: string | number) => {
+export const callCreateResume = (
+    url: string,
+    jobId: any,
+    email: string,
+    userId: string | number,
+    phone?: string,
+    message?: string
+) => {
     return axios.post<IBackendRes<IResume>>('/api/v1/resumes', {
         email, url,
         status: "PENDING",
@@ -215,7 +222,9 @@ export const callCreateResume = (url: string, jobId: any, email: string, userId:
         },
         job: {
             "id": jobId
-        }
+        },
+        phone,
+        message
     })
 }
 

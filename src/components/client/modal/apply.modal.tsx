@@ -6,7 +6,7 @@ import viVN from 'antd/lib/locale/vi_VN';
 import { UploadOutlined, CheckCircleOutlined, ShopOutlined, EnvironmentOutlined, UserOutlined, MailOutlined, PhoneOutlined, LockOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { callCreateResume, callQuickApplyResume, callUploadSingleFile } from "@/config/api";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 
 interface IProps {
@@ -31,6 +31,14 @@ const ApplyModal = (props: IProps) => {
     const [submittedEmail, setSubmittedEmail] = useState<string>('');
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isModalOpen && isAuthenticated && user) {
+            if (user?.phone) {
+                setPhone(user.phone);
+            }
+        }
+    }, [isModalOpen, isAuthenticated, user]);
 
     const getDisplayFileName = (url: string) => {
         if (!url) return '';
@@ -82,7 +90,7 @@ const ApplyModal = (props: IProps) => {
         try {
             if (isAuthenticated) {
                 // Đã đăng nhập: nộp thông qua API chuẩn
-                const res = await callCreateResume(urlCV, jobDetail.id, user.email, user.id);
+                const res = await callCreateResume(urlCV, jobDetail.id, user.email, user.id, phone.trim(), note.trim());
                 if (res?.data) {
                     message.success("Nộp đơn ứng tuyển thành công! Tiệm bánh sẽ liên hệ bạn sớm nhất.");
                     handleClose();
@@ -261,34 +269,62 @@ const ApplyModal = (props: IProps) => {
 
                     <Form layout="vertical">
                         {isAuthenticated ? (
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Form.Item
-                                        label={<span style={{ fontWeight: 500, color: '#374151' }}>Tên Ứng Viên</span>}
-                                        style={{ marginBottom: 16 }}
-                                    >
-                                        <Input
-                                            value={user?.name || ''}
-                                            disabled
-                                            prefix={<UserOutlined style={{ color: '#9ca3af' }} />}
-                                            style={{ background: '#f3f4f6', color: '#374151', borderRadius: 6 }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                                <Col span={12}>
-                                    <Form.Item
-                                        label={<span style={{ fontWeight: 500, color: '#374151' }}>Email Liên Hệ</span>}
-                                        style={{ marginBottom: 16 }}
-                                    >
-                                        <Input
-                                            value={user?.email || ''}
-                                            disabled
-                                            prefix={<MailOutlined style={{ color: '#9ca3af' }} />}
-                                            style={{ background: '#f3f4f6', color: '#374151', borderRadius: 6 }}
-                                        />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
+                            <>
+                                <Row gutter={16}>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={<span style={{ fontWeight: 500, color: '#374151' }}>Tên Ứng Viên</span>}
+                                            style={{ marginBottom: 14 }}
+                                        >
+                                            <Input
+                                                value={user?.name || ''}
+                                                disabled
+                                                prefix={<UserOutlined style={{ color: '#9ca3af' }} />}
+                                                style={{ background: '#f3f4f6', color: '#374151', borderRadius: 6 }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            label={<span style={{ fontWeight: 500, color: '#374151' }}>Email Liên Hệ</span>}
+                                            style={{ marginBottom: 14 }}
+                                        >
+                                            <Input
+                                                value={user?.email || ''}
+                                                disabled
+                                                prefix={<MailOutlined style={{ color: '#9ca3af' }} />}
+                                                style={{ background: '#f3f4f6', color: '#374151', borderRadius: 6 }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+
+                                <Form.Item
+                                    label={<span style={{ fontWeight: 500, color: '#374151' }}>Số điện thoại liên hệ</span>}
+                                    style={{ marginBottom: 14 }}
+                                >
+                                    <Input
+                                        placeholder="VD: 0987654321"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        prefix={<PhoneOutlined style={{ color: '#9ca3af' }} />}
+                                        style={{ borderRadius: 6 }}
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label={<span style={{ fontWeight: 500, color: '#374151' }}>Ghi chú / Lời nhắn ứng tuyển</span>}
+                                    style={{ marginBottom: 14 }}
+                                >
+                                    <Input.TextArea
+                                        rows={2}
+                                        placeholder="VD: Em có kinh nghiệm làm bánh ngọt 1 năm, có thể làm full-time..."
+                                        value={note}
+                                        onChange={(e) => setNote(e.target.value)}
+                                        style={{ borderRadius: 6 }}
+                                    />
+                                </Form.Item>
+                            </>
                         ) : (
                             <>
                                 <Row gutter={16}>
