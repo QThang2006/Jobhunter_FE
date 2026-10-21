@@ -1,9 +1,9 @@
 import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IJob } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Button, Popconfirm, Space, Switch, Tag, message, notification } from "antd";
+import { Button, Popconfirm, Space, Switch, Tag, Tooltip, message, notification } from "antd";
 import { useRef, useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { callDeleteJob, callUpdateJobActive } from "@/config/api";
@@ -14,10 +14,13 @@ import Access from "@/components/share/access";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import { sfIn } from "spring-filter-query-builder";
 import { useWebSocket } from "@/context/websocket.context";
+import ShareJobModal from "@/components/admin/job/share.job.modal";
 
 const JobPage = () => {
     const tableRef = useRef<ActionType>();
     const [updatingActiveId, setUpdatingActiveId] = useState<string | number | null>(null);
+    const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
+    const [selectedShareJob, setSelectedShareJob] = useState<IJob | null>(null);
 
     const isFetching = useAppSelector(state => state.job.isFetching);
     const meta = useAppSelector(state => state.job.meta);
@@ -194,6 +197,20 @@ const JobPage = () => {
             width: 50,
             render: (_value, entity, _index, _action) => (
                 <Space>
+                    <Tooltip title="Sinh link để rải ứng tuyển">
+                        <ShareAltOutlined
+                            style={{
+                                fontSize: 20,
+                                color: '#1677ff',
+                                cursor: 'pointer',
+                                marginRight: 6
+                            }}
+                            onClick={() => {
+                                setSelectedShareJob(entity);
+                                setIsShareModalOpen(true);
+                            }}
+                        />
+                    </Tooltip>
                     < Access
                         permission={ALL_PERMISSIONS.JOBS.UPDATE}
                         hideChildren
@@ -322,6 +339,12 @@ const JobPage = () => {
                     }}
                 />
             </Access>
+
+            <ShareJobModal
+                open={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                job={selectedShareJob}
+            />
         </div >
     )
 }

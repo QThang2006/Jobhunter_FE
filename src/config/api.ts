@@ -219,6 +219,17 @@ export const callCreateResume = (url: string, jobId: any, email: string, userId:
     })
 }
 
+export const callQuickApplyResume = (data: {
+    jobId: number | string;
+    name: string;
+    email: string;
+    phone?: string;
+    urlCV: string;
+    note?: string;
+}) => {
+    return axios.post<IBackendRes<IResume>>('/api/v1/resumes/quick-apply', data);
+}
+
 export const callUpdateResumeStatus = (id: any, status: string) => {
     return axios.put<IBackendRes<IResume>>(`/api/v1/resumes`, { id, status })
 }

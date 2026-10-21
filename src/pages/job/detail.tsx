@@ -54,6 +54,13 @@ const ClientJobDetailPage = (props: any) => {
 
     const isExpired = jobDetail?.endDate && dayjs(jobDetail.endDate).isBefore(dayjs(), 'day');
     const isNotStarted = jobDetail?.startDate && dayjs(jobDetail.startDate).isAfter(dayjs(), 'day');
+    const isApplyParam = params?.get("apply") === "true";
+
+    useEffect(() => {
+        if (jobDetail && isApplyParam && !isExpired && !isNotStarted) {
+            setIsModalOpen(true);
+        }
+    }, [jobDetail, isApplyParam]);
 
     return (
         <div className={`${styles["container"]} ${styles["detail-job-section"]}`}>
