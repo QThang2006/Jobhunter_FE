@@ -87,7 +87,44 @@ const ViewDetailResume = (props: IProps) => {
             return;
         }
 
-        // Các trạng thái khác (PENDING, REJECTED)
+        // Khi HR chọn "REJECTED" (Từ chối hồ sơ) → Xác nhận và thông báo sẽ gửi email từ chối
+        if (status === 'REJECTED') {
+            Modal.confirm({
+                title: 'Xác Nhận Từ Chối Hồ Sơ Ứng Tuyển',
+                content: (
+                    <div style={{ marginTop: 8 }}>
+                        <p>Bạn có chắc chắn muốn từ chối hồ sơ ứng tuyển của <strong>{dataInit?.email}</strong>?</p>
+                        <p style={{ margin: 0, color: '#6b7280', fontSize: 13, lineHeight: 1.5 }}>
+                            Hệ thống sẽ chuyển trạng thái sang <strong>REJECTED</strong>, tự động gửi <strong>Email Thông Báo Từ Chối</strong> lịch sự đến ứng viên và gỡ bỏ hồ sơ khỏi Lịch phỏng vấn tuần.
+                        </p>
+                    </div>
+                ),
+                okText: 'Xác Nhận Từ Chối',
+                okType: 'danger',
+                cancelText: 'Hủy',
+                okButtonProps: { style: { borderRadius: 6 } },
+                cancelButtonProps: { style: { borderRadius: 6 } },
+                onOk: async () => {
+                    setIsSubmit(true);
+                    const res = await callUpdateResumeStatus(dataInit?.id, 'REJECTED');
+                    if (res.data) {
+                        message.success("Đã từ chối hồ sơ và tự động gửi email thông báo đến ứng viên!");
+                        setDataInit(null);
+                        onClose(false);
+                        reloadTable();
+                    } else {
+                        notification.error({
+                            message: 'Có lỗi xảy ra',
+                            description: res.message
+                        });
+                    }
+                    setIsSubmit(false);
+                }
+            });
+            return;
+        }
+
+        // Các trạng thái khác (PENDING)
         setIsSubmit(true);
         const res = await callUpdateResumeStatus(dataInit?.id, status);
 

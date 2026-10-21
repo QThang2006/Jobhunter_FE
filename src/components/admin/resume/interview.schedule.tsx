@@ -91,9 +91,10 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
         return false;
     };
 
-    // Lọc theo hình thức phỏng vấn
+    // Lọc theo hình thức phỏng vấn và loại bỏ các hồ sơ đã bị từ chối
     const filteredResumes = resumes.filter((r) => {
         if (!r.interviewDate) return false;
+        if (r.status === 'REJECTED') return false;
         if (filterType === 'ONLINE_MEET') return r.interviewType === 'ONLINE_MEET';
         if (filterType === 'OFFLINE') return r.interviewType === 'OFFLINE';
         return true;
@@ -385,6 +386,8 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                                         display: 'flex',
                                                         alignItems: 'center',
                                                         justifyContent: 'space-between',
+                                                        gap: 4,
+                                                        flexWrap: 'wrap',
                                                         marginBottom: 8
                                                     }}
                                                 >
@@ -517,54 +520,66 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                                     </div>
                                                 )}
 
-                                                {/* Nút thao tác dưới Card (đồng bộ màu) */}
+                                                {/* Nút thao tác dưới Card: bố cục 2 hàng gọn gàng, không bị tràn viền */}
                                                 <div
                                                     style={{
                                                         display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'space-between',
+                                                        flexDirection: 'column',
                                                         gap: 6,
                                                         borderTop: '1px solid #f3f4f6',
                                                         paddingTop: 8,
-                                                        marginTop: 4
+                                                        marginTop: 6
                                                     }}
                                                 >
-                                                    {interview.interviewType === 'ONLINE_MEET' && interview.meetLink ? (
-                                                        <Space size={4}>
+                                                    {interview.interviewType === 'ONLINE_MEET' && interview.meetLink && (
+                                                        <div style={{ display: 'flex', gap: 4, width: '100%' }}>
                                                             <a
                                                                 href={interview.meetLink}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
+                                                                style={{ flex: 1 }}
                                                             >
                                                                 <Button
                                                                     type="primary"
                                                                     size="small"
                                                                     icon={<VideoCameraOutlined />}
-                                                                    style={{ borderRadius: 4, fontSize: 11, height: 24, padding: '0 8px' }}
+                                                                    style={{
+                                                                        borderRadius: 4,
+                                                                        fontSize: 11,
+                                                                        height: 24,
+                                                                        width: '100%',
+                                                                        fontWeight: 500
+                                                                    }}
                                                                 >
                                                                     Vào Meet
                                                                 </Button>
                                                             </a>
-                                                            <Tooltip title="Copy link phòng họp">
+                                                            <Tooltip title="Sao chép link Google Meet">
                                                                 <Button
                                                                     size="small"
                                                                     icon={<CopyOutlined />}
-                                                                    style={{ borderRadius: 4, height: 24, padding: '0 6px' }}
+                                                                    style={{ borderRadius: 4, height: 24, width: 28 }}
                                                                     onClick={() => {
                                                                         navigator.clipboard.writeText(interview.meetLink!);
                                                                         message.success('Đã sao chép link Google Meet!');
                                                                     }}
                                                                 />
                                                             </Tooltip>
-                                                        </Space>
-                                                    ) : (
-                                                        <span style={{ fontSize: 11, color: '#9ca3af' }}>Trực tiếp</span>
+                                                        </div>
                                                     )}
 
                                                     <Button
                                                         size="small"
                                                         icon={<EyeOutlined />}
-                                                        style={{ borderRadius: 4, fontSize: 11, height: 24, padding: '0 8px' }}
+                                                        style={{
+                                                            borderRadius: 4,
+                                                            fontSize: 11,
+                                                            height: 24,
+                                                            width: '100%',
+                                                            background: '#f9fafb',
+                                                            borderColor: '#e5e7eb',
+                                                            color: '#374151'
+                                                        }}
                                                         onClick={() => onOpenResumeDetail(interview)}
                                                     >
                                                         Chi tiết
