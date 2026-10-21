@@ -22,6 +22,16 @@ const ApplyModal = (props: IProps) => {
     const [urlCV, setUrlCV] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
+    const getDisplayFileName = (url: string) => {
+        if (!url) return '';
+        try {
+            const rawName = decodeURIComponent(url.split('/').pop() || '');
+            return rawName.replace(/^[0-9a-fA-F-]{36}-/, '') || rawName;
+        } catch {
+            return url.split('/').pop() || url;
+        }
+    };
+
     const navigate = useNavigate();
 
     const handleOkButton = async () => {
@@ -103,6 +113,9 @@ const ApplyModal = (props: IProps) => {
                 message.error(info?.file?.error?.event?.message ?? "Đã có lỗi xảy ra khi upload file.");
             }
         },
+        onRemove() {
+            setUrlCV("");
+        }
     };
 
     return (
@@ -114,7 +127,10 @@ const ApplyModal = (props: IProps) => {
             }
             open={isModalOpen}
             onOk={() => handleOkButton()}
-            onCancel={() => setIsModalOpen(false)}
+            onCancel={() => {
+                setIsModalOpen(false);
+                setUrlCV("");
+            }}
             maskClosable={false}
             okText={isAuthenticated ? "Nộp Đơn Ứng Tuyển" : "Đăng Nhập Ngay"}
             cancelText="Hủy"
@@ -127,6 +143,9 @@ const ApplyModal = (props: IProps) => {
             confirmLoading={isSubmitting}
             destroyOnClose={true}
             width={540}
+            styles={{
+                body: { overflowX: 'hidden' }
+            }}
         >
             <Divider style={{ margin: '12px 0 16px 0', borderColor: '#f0f0f0' }} />
             {isAuthenticated ? (
@@ -192,12 +211,7 @@ const ApplyModal = (props: IProps) => {
                         </Row>
 
                         <Form.Item
-                            label={
-                                <span style={{ fontWeight: 500, color: '#374151' }}>
-                                    <span style={{ color: '#ef4444', marginRight: 4 }}>*</span>
-                                    File CV Ứng Tuyển:
-                                </span>
-                            }
+                            label={<span style={{ fontWeight: 500, color: '#374151' }}>File CV Ứng Tuyển:</span>}
                             required
                             style={{ marginBottom: 16 }}
                             extra={<span style={{ color: '#6b7280', fontSize: 12 }}>Định dạng hỗ trợ: .pdf, .doc, .docx (Dung lượng &lt; 10MB)</span>}
@@ -218,7 +232,7 @@ const ApplyModal = (props: IProps) => {
                             </Upload>
 
                             {urlCV && (
-                                <div style={{ marginTop: '10px' }}>
+                                <div style={{ marginTop: '10px', maxWidth: '100%', overflow: 'hidden' }}>
                                     <Tag
                                         icon={<CheckCircleOutlined style={{ color: '#059669' }} />}
                                         style={{
@@ -227,10 +241,31 @@ const ApplyModal = (props: IProps) => {
                                             background: '#f0fdf4',
                                             border: '1px solid #bbf7d0',
                                             color: '#166534',
-                                            borderRadius: 4
+                                            borderRadius: 4,
+                                            maxWidth: '100%',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            boxSizing: 'border-box'
                                         }}
                                     >
-                                        File đã chọn: {urlCV}
+                                        <span style={{ marginRight: 6, flexShrink: 0 }}>Đã tải lên:</span>
+                                        <a
+                                            href={urlCV}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            style={{
+                                                color: '#166534',
+                                                textDecoration: 'underline',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                maxWidth: 280,
+                                                display: 'inline-block'
+                                            }}
+                                            title={`Xem trước: ${getDisplayFileName(urlCV)}`}
+                                        >
+                                            {getDisplayFileName(urlCV)}
+                                        </a>
                                     </Tag>
                                 </div>
                             )}
