@@ -91,10 +91,11 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
         return false;
     };
 
-    // Lọc theo hình thức phỏng vấn và loại bỏ các hồ sơ đã bị từ chối
+    // Lọc theo hình thức phỏng vấn và loại bỏ các hồ sơ đã duyệt hoặc bị từ chối
     const filteredResumes = resumes.filter((r) => {
         if (!r.interviewDate) return false;
-        if (r.status === 'REJECTED') return false;
+        // Chỉ hiển thị các hồ sơ đang trong quy trình phỏng vấn; ẩn hoàn toàn các hồ sơ đã APPROVED hoặc REJECTED
+        if (r.status === 'APPROVED' || r.status === 'REJECTED') return false;
         if (filterType === 'ONLINE_MEET') return r.interviewType === 'ONLINE_MEET';
         if (filterType === 'OFFLINE') return r.interviewType === 'OFFLINE';
         return true;

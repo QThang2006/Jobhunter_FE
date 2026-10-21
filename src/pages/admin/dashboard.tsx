@@ -97,12 +97,12 @@ const DashboardPage = () => {
     const fetchDashboardData = async () => {
         setLoading(true);
         try {
-            // Fetch all data in parallel (increase pageSize to get more historical data)
+            // Fetch all data in parallel (include both page/size for Spring Data and current/pageSize)
             const [usersRes, companiesRes, jobsRes, resumesRes] = await Promise.all([
-                callFetchUser('current=1&pageSize=1000'),
-                callFetchCompany('current=1&pageSize=1000'),
-                callFetchJob('current=1&pageSize=1000'),
-                callFetchResume('current=1&pageSize=1000&sort=createdAt,desc&populate=companyId,jobId')
+                callFetchUser('page=1&size=1000&current=1&pageSize=1000'),
+                callFetchCompany('page=1&size=1000&current=1&pageSize=1000'),
+                callFetchJob('page=1&size=1000&current=1&pageSize=1000'),
+                callFetchResume('page=1&size=1000&current=1&pageSize=1000&sort=createdAt,desc&populate=companyId,jobId')
             ]);
 
             // Calculate stats
@@ -111,63 +111,44 @@ const DashboardPage = () => {
             const totalJobs = jobsRes.data?.meta?.total || 0;
             const totalResumes = resumesRes.data?.meta?.total || 0;
 
-            // Calculate real growth based on data from last 2 months
-            const now = dayjs();
-            const currentMonth = now.month();
-            const lastMonth = now.subtract(1, 'month').month();
+            // Hàm tính toán phần trăm tăng trưởng so với tháng trước một cách chính xác
+            const calculateMetricGrowth = (items: any[] = [], totalCurrent: number): number => {
+                const now = dayjs();
+                const startOfCurrentMonth = now.startOf('month');
 
-            // Count users created this month vs last month
-            const usersThisMonth = usersRes.data?.result?.filter((user: any) =>
-                dayjs(user.createdAt).month() === currentMonth
-            ).length || 0;
-            const usersLastMonth = usersRes.data?.result?.filter((user: any) =>
-                dayjs(user.createdAt).month() === lastMonth
-            ).length || 0;
+                // Lọc những bản ghi hợp lệ được tạo trước ngày đầu tiên của tháng hiện tại (tính đến hết tháng trước)
+                const countBeforeThisMonth = items.filter((item: any) =>
+                    item && item.createdAt && dayjs(item.createdAt).isValid() && dayjs(item.createdAt).isBefore(startOfCurrentMonth)
+                ).length;
 
-            const jobsThisMonth = jobsRes.data?.result?.filter((job: any) =>
-                dayjs(job.createdAt).month() === currentMonth
-            ).length || 0;
-            const jobsLastMonth = jobsRes.data?.result?.filter((job: any) =>
-                dayjs(job.createdAt).month() === lastMonth
-            ).length || 0;
+                // 1. Nếu hệ thống đã có dữ liệu trước tháng này: Tỷ lệ tăng trưởng tổng số lượng (Cumulative Growth)
+                if (countBeforeThisMonth > 0) {
+                    const growth = ((totalCurrent - countBeforeThisMonth) / countBeforeThisMonth) * 100;
+                    return Number(growth.toFixed(1));
+                }
 
-            const companiesThisMonth = companiesRes.data?.result?.filter((company: any) =>
-                dayjs(company.createdAt).month() === currentMonth
-            ).length || 0;
-            const companiesLastMonth = companiesRes.data?.result?.filter((company: any) =>
-                dayjs(company.createdAt).month() === lastMonth
-            ).length || 0;
+                // 2. Nếu trước tháng này chưa có dữ liệu và tháng này bắt đầu có phát sinh (ví dụ: công ty mới, CV mới): Tăng trưởng mới 100%
+                if (totalCurrent > 0) {
+                    return 100;
+                }
 
-            const resumesThisMonth = resumesRes.data?.result?.filter((resume: any) =>
-                dayjs(resume.createdAt).month() === currentMonth
-            ).length || 0;
-            const resumesLastMonth = resumesRes.data?.result?.filter((resume: any) =>
-                dayjs(resume.createdAt).month() === lastMonth
-            ).length || 0;
+                return 0;
+            };
 
-            // Calculate growth percentages
-            const userGrowth = usersLastMonth > 0
-                ? ((usersThisMonth - usersLastMonth) / usersLastMonth * 100).toFixed(1)
-                : 0;
-            const jobGrowth = jobsLastMonth > 0
-                ? ((jobsThisMonth - jobsLastMonth) / jobsLastMonth * 100).toFixed(1)
-                : 0;
-            const companyGrowth = companiesLastMonth > 0
-                ? ((companiesThisMonth - companiesLastMonth) / companiesLastMonth * 100).toFixed(1)
-                : 0;
-            const resumeGrowth = resumesLastMonth > 0
-                ? ((resumesThisMonth - resumesLastMonth) / resumesLastMonth * 100).toFixed(1)
-                : 0;
+            const userGrowth = calculateMetricGrowth(usersRes.data?.result, totalUsers);
+            const companyGrowth = calculateMetricGrowth(companiesRes.data?.result, totalCompanies);
+            const jobGrowth = calculateMetricGrowth(jobsRes.data?.result, totalJobs);
+            const resumeGrowth = calculateMetricGrowth(resumesRes.data?.result, totalResumes);
 
             setStats({
                 totalUsers,
                 totalCompanies,
                 totalJobs,
                 totalResumes,
-                userGrowth: Number(userGrowth),
-                companyGrowth: Number(companyGrowth),
-                jobGrowth: Number(jobGrowth),
-                resumeGrowth: Number(resumeGrowth)
+                userGrowth,
+                companyGrowth,
+                jobGrowth,
+                resumeGrowth
             });
 
             // Set recent resumes with manual population
