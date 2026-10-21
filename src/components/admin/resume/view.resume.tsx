@@ -58,8 +58,8 @@ const ViewDetailResume = (props: IProps) => {
                 content: (
                     <div style={{ marginTop: 8 }}>
                         <p>Ứng viên <strong>{dataInit?.email}</strong> đã hoàn thành phỏng vấn và đạt yêu cầu.</p>
-                        <p style={{ margin: 0, color: '#4b5563' }}>
-                            Khi chuyển sang trạng thái <strong>APPROVED</strong>, ứng viên sẽ được tiếp nhận chính thức và hệ thống sẽ tự động liên kết tài khoản nhân viên vào chi nhánh tiệm bánh.
+                        <p style={{ margin: 0, color: '#4b5563', fontSize: 13, lineHeight: 1.5 }}>
+                            Khi chuyển sang trạng thái <strong>APPROVED</strong>, hệ thống sẽ tự động gửi <strong>Email Chúc Mừng Trúng Tuyển</strong> đến ứng viên, giải phóng lịch phỏng vấn và liên kết tài khoản nhân viên vào chi nhánh tiệm bánh.
                         </p>
                     </div>
                 ),
@@ -71,7 +71,7 @@ const ViewDetailResume = (props: IProps) => {
                     setIsSubmit(true);
                     const res = await callUpdateResumeStatus(dataInit?.id, 'APPROVED');
                     if (res.data) {
-                        message.success("🎉 Hồ sơ đã được DUYỆT CHÍNH THỨC! Ứng viên đã trúng tuyển.");
+                        message.success("🎉 Hồ sơ đã được DUYỆT CHÍNH THỨC! Đã gửi email chúc mừng và giải phóng lịch phỏng vấn.");
                         setDataInit(null);
                         onClose(false);
                         reloadTable();
