@@ -8,7 +8,8 @@ import {
     RiseOutlined,
     FallOutlined,
     ClockCircleOutlined,
-    MailOutlined
+    MailOutlined,
+    SolutionOutlined
 } from '@ant-design/icons';
 import CountUp from 'react-countup';
 import {
@@ -333,18 +334,22 @@ const DashboardPage = () => {
     return (
         <div style={{ padding: '0 0 24px 0' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h2 style={{ margin: 0 }}>Bảng điều khiển</h2>
+                <h2 style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Bảng điều khiển</h2>
                 <Button
                     type="primary"
                     icon={<MailOutlined />}
                     loading={isEmailLoading}
                     onClick={() => handleSendEmail()}
                     style={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        border: 'none',
-                        height: 40,
-                        borderRadius: 8,
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+                        background: '#1677ff',
+                        borderColor: '#1677ff',
+                        height: 38,
+                        borderRadius: 6,
+                        fontWeight: 500,
+                        boxShadow: '0 2px 6px rgba(22, 119, 255, 0.25)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6
                     }}
                 >
                     Gửi Email giới thiệu công việc
@@ -357,20 +362,52 @@ const DashboardPage = () => {
                     <Card
                         bordered={false}
                         style={{
-                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                            color: 'white'
+                            borderRadius: 10,
+                            border: '1px solid #edf2f7',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                            background: '#ffffff',
+                            transition: 'all 0.3s ease'
                         }}
+                        bodyStyle={{ padding: '18px 20px' }}
                     >
-                        <Statistic
-                            title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>Tổng người dùng</span>}
-                            value={stats.totalUsers}
-                            prefix={<UserOutlined />}
-                            formatter={formatter}
-                            valueStyle={{ color: 'white' }}
-                        />
-                        <div style={{ marginTop: 8, fontSize: 12 }}>
-                            {stats.userGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
-                            {' '}{stats.userGrowth >= 0 ? '+' : ''}{stats.userGrowth}% so với tháng trước
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                                <div style={{ color: '#64748b', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                                    Tổng người dùng
+                                </div>
+                                <Statistic
+                                    value={stats.totalUsers}
+                                    formatter={formatter}
+                                    valueStyle={{ fontSize: 26, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}
+                                />
+                            </div>
+                            <div style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: 10,
+                                background: '#eff6ff',
+                                color: '#1677ff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 20
+                            }}>
+                                <UserOutlined />
+                            </div>
+                        </div>
+                        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', fontSize: 12 }}>
+                            <span style={{
+                                color: stats.userGrowth >= 0 ? '#16a34a' : '#dc2626',
+                                fontWeight: 600,
+                                marginRight: 6,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 2
+                            }}>
+                                {stats.userGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
+                                {' '}{stats.userGrowth >= 0 ? '+' : ''}{stats.userGrowth}%
+                            </span>
+                            <span style={{ color: '#94a3b8' }}>so với tháng trước</span>
                         </div>
                     </Card>
                 </Col>
@@ -379,20 +416,52 @@ const DashboardPage = () => {
                     <Card
                         bordered={false}
                         style={{
-                            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                            color: 'white'
+                            borderRadius: 10,
+                            border: '1px solid #edf2f7',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                            background: '#ffffff',
+                            transition: 'all 0.3s ease'
                         }}
+                        bodyStyle={{ padding: '18px 20px' }}
                     >
-                        <Statistic
-                            title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>Tổng công ty</span>}
-                            value={stats.totalCompanies}
-                            prefix={<BankOutlined />}
-                            formatter={formatter}
-                            valueStyle={{ color: 'white' }}
-                        />
-                        <div style={{ marginTop: 8, fontSize: 12 }}>
-                            {stats.companyGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
-                            {' '}{stats.companyGrowth >= 0 ? '+' : ''}{stats.companyGrowth}% so với tháng trước
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                                <div style={{ color: '#64748b', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                                    Tổng công ty
+                                </div>
+                                <Statistic
+                                    value={stats.totalCompanies}
+                                    formatter={formatter}
+                                    valueStyle={{ fontSize: 26, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}
+                                />
+                            </div>
+                            <div style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: 10,
+                                background: '#f5f3ff',
+                                color: '#7c3aed',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 20
+                            }}>
+                                <BankOutlined />
+                            </div>
+                        </div>
+                        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', fontSize: 12 }}>
+                            <span style={{
+                                color: stats.companyGrowth >= 0 ? '#16a34a' : '#dc2626',
+                                fontWeight: 600,
+                                marginRight: 6,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 2
+                            }}>
+                                {stats.companyGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
+                                {' '}{stats.companyGrowth >= 0 ? '+' : ''}{stats.companyGrowth}%
+                            </span>
+                            <span style={{ color: '#94a3b8' }}>so với tháng trước</span>
                         </div>
                     </Card>
                 </Col>
@@ -401,20 +470,52 @@ const DashboardPage = () => {
                     <Card
                         bordered={false}
                         style={{
-                            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                            color: 'white'
+                            borderRadius: 10,
+                            border: '1px solid #edf2f7',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                            background: '#ffffff',
+                            transition: 'all 0.3s ease'
                         }}
+                        bodyStyle={{ padding: '18px 20px' }}
                     >
-                        <Statistic
-                            title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>Tổng việc làm</span>}
-                            value={stats.totalJobs}
-                            prefix={<FileTextOutlined />}
-                            formatter={formatter}
-                            valueStyle={{ color: 'white' }}
-                        />
-                        <div style={{ marginTop: 8, fontSize: 12 }}>
-                            {stats.jobGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
-                            {' '}{stats.jobGrowth >= 0 ? '+' : ''}{stats.jobGrowth}% so với tháng trước
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                                <div style={{ color: '#64748b', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                                    Tổng việc làm
+                                </div>
+                                <Statistic
+                                    value={stats.totalJobs}
+                                    formatter={formatter}
+                                    valueStyle={{ fontSize: 26, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}
+                                />
+                            </div>
+                            <div style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: 10,
+                                background: '#fff7ed',
+                                color: '#ea580c',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 20
+                            }}>
+                                <FileTextOutlined />
+                            </div>
+                        </div>
+                        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', fontSize: 12 }}>
+                            <span style={{
+                                color: stats.jobGrowth >= 0 ? '#16a34a' : '#dc2626',
+                                fontWeight: 600,
+                                marginRight: 6,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 2
+                            }}>
+                                {stats.jobGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
+                                {' '}{stats.jobGrowth >= 0 ? '+' : ''}{stats.jobGrowth}%
+                            </span>
+                            <span style={{ color: '#94a3b8' }}>so với tháng trước</span>
                         </div>
                     </Card>
                 </Col>
@@ -423,20 +524,52 @@ const DashboardPage = () => {
                     <Card
                         bordered={false}
                         style={{
-                            background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-                            color: 'white'
+                            borderRadius: 10,
+                            border: '1px solid #edf2f7',
+                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
+                            background: '#ffffff',
+                            transition: 'all 0.3s ease'
                         }}
+                        bodyStyle={{ padding: '18px 20px' }}
                     >
-                        <Statistic
-                            title={<span style={{ color: 'rgba(255,255,255,0.85)' }}>Tổng CV</span>}
-                            value={stats.totalResumes}
-                            prefix={<FileTextOutlined />}
-                            formatter={formatter}
-                            valueStyle={{ color: 'white' }}
-                        />
-                        <div style={{ marginTop: 8, fontSize: 12 }}>
-                            {stats.resumeGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
-                            {' '}{stats.resumeGrowth >= 0 ? '+' : ''}{stats.resumeGrowth}% so với tháng trước
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div>
+                                <div style={{ color: '#64748b', fontSize: 13, fontWeight: 500, marginBottom: 6 }}>
+                                    Tổng CV
+                                </div>
+                                <Statistic
+                                    value={stats.totalResumes}
+                                    formatter={formatter}
+                                    valueStyle={{ fontSize: 26, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}
+                                />
+                            </div>
+                            <div style={{
+                                width: 44,
+                                height: 44,
+                                borderRadius: 10,
+                                background: '#f0fdf4',
+                                color: '#16a34a',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 20
+                            }}>
+                                <SolutionOutlined />
+                            </div>
+                        </div>
+                        <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', fontSize: 12 }}>
+                            <span style={{
+                                color: stats.resumeGrowth >= 0 ? '#16a34a' : '#dc2626',
+                                fontWeight: 600,
+                                marginRight: 6,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 2
+                            }}>
+                                {stats.resumeGrowth >= 0 ? <RiseOutlined /> : <FallOutlined />}
+                                {' '}{stats.resumeGrowth >= 0 ? '+' : ''}{stats.resumeGrowth}%
+                            </span>
+                            <span style={{ color: '#94a3b8' }}>so với tháng trước</span>
                         </div>
                     </Card>
                 </Col>
