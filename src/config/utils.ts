@@ -27,6 +27,33 @@ export const LOCATION_LIST = [
     { label: "Khu vực khác", value: "Khác" },
 ];
 
+export const LEVEL_LIST = [
+    { label: "Tất cả trình độ", value: "ALL" },
+    { label: "Thực tập sinh (Intern)", value: "INTERN" },
+    { label: "Mới tốt nghiệp (Fresher)", value: "FRESHER" },
+    { label: "Nhân viên (Junior)", value: "JUNIOR" },
+    { label: "Có kinh nghiệm (Middle)", value: "MIDDLE" },
+    { label: "Thợ chính (Senior)", value: "SENIOR" },
+];
+
+export const SALARY_LIST = [
+    { label: "Tất cả mức lương", value: "ALL" },
+    { label: "Dưới 8 triệu", value: "UNDER_8" },
+    { label: "8 - 15 triệu", value: "8_15" },
+    { label: "15 - 25 triệu", value: "15_25" },
+    { label: "Trên 25 triệu", value: "ABOVE_25" },
+];
+
+export const getLevelLabel = (value: string) => {
+    const found = LEVEL_LIST.find(item => item.value === value);
+    return found ? found.label : value;
+};
+
+export const getSalaryLabel = (value: string) => {
+    const found = SALARY_LIST.find(item => item.value === value);
+    return found ? found.label : value;
+};
+
 export const nonAccentVietnamese = (str: string) => {
     str = str.replace(/A|Á|À|Ã|Ạ|Â|Ấ|Ầ|Ẫ|Ậ|Ă|Ắ|Ằ|Ẵ|Ặ/g, "A");
     str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
