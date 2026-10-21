@@ -1,5 +1,6 @@
 import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IWorkShift } from '@/types/backend';
 import axios from 'config/axios-customize';
+import { nonAccentVietnamese } from '@/config/utils';
 
 /**
  * 
@@ -52,11 +53,30 @@ export const callResetPassword = (email: string, otp: string, newPass: string) =
 }
 
 /**
+ * Chuẩn hóa tên file: loại bỏ dấu tiếng Việt, thay khoảng trắng và ký tự lạ bằng dấu gạch ngang
+ */
+export const sanitizeFileName = (fileName: string): string => {
+    if (!fileName) return "document";
+    const dotIndex = fileName.lastIndexOf(".");
+    const baseName = dotIndex !== -1 ? fileName.substring(0, dotIndex) : fileName;
+    const extension = dotIndex !== -1 ? fileName.substring(dotIndex) : "";
+
+    const cleanBase = nonAccentVietnamese(baseName)
+        .replace(/\s+/g, '-')
+        .replace(/[^a-zA-Z0-9-_]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+    return `${cleanBase || 'document'}${extension.toLowerCase()}`;
+};
+
+/**
  * Upload single file
  */
 export const callUploadSingleFile = (file: any, folderType: string) => {
     const bodyFormData = new FormData();
-    bodyFormData.append('file', file);
+    const cleanName = sanitizeFileName(file?.name || 'document');
+    bodyFormData.append('file', file, cleanName);
     bodyFormData.append('folder', folderType);
 
     return axios<IBackendRes<{ fileName: string }>>({
