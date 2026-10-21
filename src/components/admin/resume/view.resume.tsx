@@ -182,8 +182,12 @@ const ViewDetailResume = (props: IProps) => {
             onClose(false);
             reloadTable();
             setIsSubmit(false);
-        } catch (error) {
-            console.log('Validation failed:', error);
+        } catch (error: any) {
+            console.log('Validation or Submit failed:', error);
+            notification.error({
+                message: 'Lỗi gửi yêu cầu',
+                description: error?.response?.data?.message || error?.message || 'Không thể kết nối đến máy chủ để lên lịch phỏng vấn.'
+            });
             setIsSubmit(false);
         }
     };
