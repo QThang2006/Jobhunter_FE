@@ -20,16 +20,25 @@ const instance = axiosClient.create({
 const mutex = new Mutex();
 const NO_RETRY_HEADER = 'x-no-retry';
 
-const handleRefreshToken = async (): Promise<string | null> => {
-    return await mutex.runExclusive(async () => {
-        const res = await instance.get<IBackendRes<AccessTokenResponse>>('/api/v1/auth/refresh');
-        if (res && res.data) return res.data.access_token;
-        else return null;
+const handleRefreshToken = async (failedAuthorization?: string): Promise<string | null> => {
+    return mutex.runExclusive(async () => {
+        const currentToken = localStorage.getItem('access_token');
+        if (currentToken && failedAuthorization !== `Bearer ${currentToken}`) return currentToken;
+        try {
+            const res = await instance.get<IBackendRes<AccessTokenResponse>>('/api/v1/auth/refresh', {
+                headers: { [NO_RETRY_HEADER]: 'true' }
+            });
+            const token = res.data?.access_token ?? null;
+            if (token) localStorage.setItem('access_token', token);
+            return token;
+        } catch {
+            return null;
+        }
     });
 };
 
 instance.interceptors.request.use(function (config) {
-    if (typeof window !== "undefined" && window.localStorage.getItem('access_token')) {
+    if (config.url !== '/api/v1/auth/refresh' && typeof window !== "undefined" && window.localStorage.getItem('access_token')) {
         config.headers.Authorization = 'Bearer ' + window.localStorage.getItem('access_token');
     }
 
@@ -46,14 +55,15 @@ instance.interceptors.request.use(function (config) {
  * for requests, but it is omitted here for brevity.
  */
 instance.interceptors.response.use(
-    (res) => res.data,
+    (res) => res.status === 204 ? { statusCode: 204, message: "", data: null } : res.data,
     async (error) => {
         if (error.config && error.response
             && +error.response.status === 401
             && error.config.url !== '/api/v1/auth/login'
+            && error.config.url !== '/api/v1/auth/refresh'
             && !error.config.headers[NO_RETRY_HEADER]
         ) {
-            const access_token = await handleRefreshToken();
+            const access_token = await handleRefreshToken(error.config.headers?.Authorization);
             error.config.headers[NO_RETRY_HEADER] = 'true'
             if (access_token) {
                 error.config.headers['Authorization'] = `Bearer ${access_token}`;
@@ -76,7 +86,7 @@ instance.interceptors.response.use(
             store.dispatch(setRefreshTokenAction({ status: true, message }));
         }
 
-        if (+error.response.status === 403) {
+        if (+error.response?.status === 403) {
             notification.error({
                 message: error?.response?.data?.message ?? "",
                 description: error?.response?.data?.error ?? ""

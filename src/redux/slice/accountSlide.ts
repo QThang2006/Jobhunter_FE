@@ -77,14 +77,16 @@ export const accountSlide = createSlice({
             state.user.email = action.payload.email;
             state.user.name = action.payload.name;
             state.user.phone = action.payload.phone || "";
-            state.user.role = action?.payload?.role;
-
-            if (!action?.payload?.role) state.user.role = {};
-            state.user.role.permissions = action?.payload?.role?.permissions ?? [];
+            state.user.company = action.payload.company ?? undefined;
+            state.user.role = {
+                ...action.payload.role,
+                permissions: action.payload.role?.permissions ?? [],
+            };
         },
         setLogoutAction: (state, action) => {
             localStorage.removeItem('access_token');
             state.isAuthenticated = false;
+            state.isLoading = false;
             state.user = {
                 id: "",
                 email: "",
@@ -106,31 +108,32 @@ export const accountSlide = createSlice({
     extraReducers: (builder) => {   
         // Add reducers for additional action types here, and handle loading state as needed
         builder.addCase(fetchAccount.pending, (state, action) => {
-            if (action.payload) {
-                state.isAuthenticated = false;
-                state.isLoading = true;
-            }
+            state.isLoading = true;
         })
 
         builder.addCase(fetchAccount.fulfilled, (state, action) => {
-            if (action.payload) {
+            state.isLoading = false;
+            state.isAuthenticated = false;
+            state.user = { ...initialState.user };
+            if (action.payload?.user) {
                 state.isAuthenticated = true;
                 state.isLoading = false;
                 state.user.id = action?.payload?.user?.id;
                 state.user.email = action.payload.user?.email;
                 state.user.name = action.payload.user?.name;
                 state.user.phone = action.payload.user?.phone || "";
-                state.user.role = action?.payload?.user?.role;
-                if (!action?.payload?.user?.role) state.user.role = {};
-                state.user.role.permissions = action?.payload?.user?.role?.permissions ?? [];
+                state.user.company = action.payload.user?.company ?? undefined;
+                state.user.role = {
+                    ...action.payload.user.role,
+                    permissions: action.payload.user.role?.permissions ?? [],
+                };
             }
         })
 
         builder.addCase(fetchAccount.rejected, (state, action) => {
-            if (action.payload) {
             state.isAuthenticated = false;
             state.isLoading = false;
-            }
+            state.user = initialState.user;
         })
 
     },

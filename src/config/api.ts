@@ -109,7 +109,7 @@ export const callDeleteCompany = (id: string) => {
 }
 
 export const callFetchCompany = (query: string) => {
-    return axios.get<IBackendRes<IModelPaginate<ICompany>>>(`/api/v1/companies?${query}`);
+    return axios.get<IBackendRes<IModelPaginate<ICompany>>, IBackendRes<IModelPaginate<ICompany>>>(`/api/v1/companies?${query}`);
 }
 
 export const callFetchCompanyAdmin = (query: string) => {
@@ -150,6 +150,9 @@ export const callCreateUser = (user: IUser) => {
     return axios.post<IBackendRes<IUser>>('/api/v1/users', { ...user })
 }
 
+export const callFetchProfile = () => axios.get<IBackendRes<IUser>>('/api/v1/users/me');
+export const callUpdateProfile = (user: IUser) => axios.put<IBackendRes<IUser>>('/api/v1/users/me', user);
+
 export const callUpdateUser = (user: IUser) => {
     return axios.put<IBackendRes<IUser>>(`/api/v1/users`, { ...user })
 }
@@ -159,7 +162,7 @@ export const callDeleteUser = (id: string) => {
 }
 
 export const callFetchUser = (query: string) => {
-    return axios.get<IBackendRes<IModelPaginate<IUser>>>(`/api/v1/users?${query}`);
+    return axios.get<IBackendRes<IModelPaginate<IUser>>, IBackendRes<IModelPaginate<IUser>>>(`/api/v1/users?${query}`);
 }
 
 export const callFetchUserById = (id: string) => {
@@ -191,7 +194,7 @@ export const callFetchJob = (query: string) => {
 }
 
 export const callFetchJobAdmin = (query: string) => {
-    return axios.get<IBackendRes<IModelPaginate<IJob>>>(`/api/v1/jobs/by-company?${query}`);
+    return axios.get<IBackendRes<IModelPaginate<IJob>>, IBackendRes<IModelPaginate<IJob>>>(`/api/v1/jobs/by-company?${query}`);
 }
 
 export const callFetchJobById = (id: string) => {
@@ -248,7 +251,7 @@ export const callDeleteResume = (id: string) => {
 }
 
 export const callFetchResume = (query: string) => {
-    return axios.get<IBackendRes<IModelPaginate<IResume>>>(`/api/v1/resumes?${query}`);
+    return axios.get<IBackendRes<IModelPaginate<IResume>>, IBackendRes<IModelPaginate<IResume>>>(`/api/v1/resumes?${query}`);
 }
 
 export const callFetchResumeById = (id: string) => {

@@ -2,7 +2,7 @@ import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notificati
 import type { TabsProps } from 'antd';
 import { IResume, ISubscribers } from "@/types/backend";
 import { useState, useEffect, useCallback } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callUpdateUser, callFetchUserById, callUpdatePassword } from "@/config/api";
+import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callUpdateProfile, callFetchProfile, callUpdatePassword } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { MonitorOutlined } from "@ant-design/icons";
@@ -132,7 +132,7 @@ const UserUpdateInfo = (props: any) => {
 
         const init = async () => {
             if (user?.id) {
-                const res = await callFetchUserById(user.id);
+                const res = await callFetchProfile();
                 if (res && res.data) {
                     form.setFieldsValue({
                         ...res.data,
@@ -147,7 +147,7 @@ const UserUpdateInfo = (props: any) => {
     const onFinish = async (values: any) => {
         const { name, age, gender, address } = values;
         setIsSubmit(true);
-        const res = await callUpdateUser({ id: user.id, name, age, gender, address, email: user.email });
+        const res = await callUpdateProfile({ id: user.id, name, age, gender, address, email: user.email });
         if (res && res.data) {
             message.success("Cập nhật thành công");
         } else {

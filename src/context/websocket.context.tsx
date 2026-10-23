@@ -16,6 +16,8 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
     const token = localStorage.getItem('access_token');
 
     useEffect(() => {
+        setStompClient(null);
+        if (!isAuthenticated || !token) return;
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
         // Kết nối vào endpoint "/ws" mà server đã mở
         const socket = new SockJS(`${backendUrl}/ws`);
@@ -36,11 +38,8 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
 
         // Cleanup: Ngắt kết nối khi unmount hoặc khi token thay đổi (login/logout)
         return () => {
-            if (client && client.connected) {
-                client.disconnect(() => {
-                    // console.log('WebSocket Disconnected');
-                });
-            }
+            if (client.connected) client.disconnect(() => socket.close());
+            else socket.close();
         }
     }, [isAuthenticated, token]); // Chạy lại khi trạng thái đăng nhập thay đổi
 

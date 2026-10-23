@@ -46,7 +46,7 @@ const UserPage = () => {
     const handleDeleteUser = async (id: string | undefined) => {
         if (id) {
             const res = await callDeleteUser(id);
-            if (+res.statusCode === 200) {
+            if (+res.statusCode === 200 || +res.statusCode === 204) {
                 message.success('Xóa User thành công');
                 reloadTable();
             } else {

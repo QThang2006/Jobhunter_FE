@@ -1,408 +1,200 @@
-# 🎯 JobHunter — Frontend
+# BakeJobs - Frontend
 
-<p align="center">
-  Nền tảng tìm kiếm việc làm hiện đại được xây dựng với <strong>React 18 + Vite + TypeScript</strong>
-</p>
+Frontend của **BakeJobs**, ứng dụng tuyển dụng cho tiệm bánh/F&B, quản lý hồ sơ ứng tuyển, phỏng vấn và phân ca nhân viên. Giao diện dùng React, TypeScript và Vite, kết nối REST API Spring Boot.
 
-<p align="center">
-  <img alt="React" src="https://img.shields.io/badge/React-18.2.0-61DAFB?logo=react&logoColor=white&style=flat-square"/>
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.3.3-3178C6?logo=typescript&logoColor=white&style=flat-square"/>
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-4.2.0-646CFF?logo=vite&logoColor=white&style=flat-square"/>
-  <img alt="Ant Design" src="https://img.shields.io/badge/Ant_Design-5.13.1-0170FE?logo=antdesign&logoColor=white&style=flat-square"/>
-  <img alt="Redux Toolkit" src="https://img.shields.io/badge/Redux_Toolkit-1.9.3-764ABC?logo=redux&logoColor=white&style=flat-square"/>
-  <img alt="License" src="https://img.shields.io/badge/License-MIT-green?style=flat-square"/>
-</p>
+Tên thư mục `Jobhunter_FE`, package `react-vite-jobhunter` và một số định danh JobHunter được giữ lại từ nền tảng ban đầu. Tên sản phẩm trên giao diện là BakeJobs.
 
-<p align="center">
-  <a href="#-giới-thiệu">➡ Giới thiệu</a> •
-  <a href="#️-luồng-hoạt-động">➡ Luồng hoạt động</a> •
-  <a href="#-tính-năng">➡ Tính năng</a> •
-  <a href="#️-công-nghệ-sử-dụng">➡ Công nghệ</a> •
-  <a href="#-cấu-trúc-dự-án">➡ Cấu trúc</a> •
-  <a href="#-cài-đặt--chạy-dự-án">➡ Cài đặt</a>
-</p>
+Tài liệu mô tả source hiện tại; các giới hạn đã biết được ghi ở cuối trang. Xem thêm [README backend](https://github.com/QThang2006/Jobhunter_backend/blob/main/README.md).
 
----
+## Chức năng hiện có
 
-## 📌 Giới thiệu
+| Nhóm | Chức năng |
+|---|---|
+| Khách truy cập | Xem tiệm/công ty, tìm việc theo từ khóa, địa điểm, cấp bậc, lương và kỹ năng |
+| Ứng tuyển | Upload CV, nộp hồ sơ khi đã đăng nhập hoặc ứng tuyển nhanh bằng email; mở form từ link chia sẻ/QR |
+| Tài khoản | Đăng ký, đăng nhập mật khẩu hoặc Google, khôi phục mật khẩu qua OTP, quản lý tài khoản và hồ sơ |
+| Tuyển dụng | Quản lý công ty, tin tuyển dụng/kỹ năng, bật/tắt tin, xem hồ sơ, hẹn phỏng vấn, nhận hoặc từ chối ứng viên |
+| Ca làm | Quản lý ca, chuyển ca cho nhân viên khác và có thể đổi ngày; xem lịch ca cá nhân |
+| Thông báo | Chuông thông báo, số chưa đọc, đánh dấu đã đọc; cập nhật dữ liệu qua WebSocket |
+| Quản trị | Quản lý người dùng, vai trò, quyền API; dashboard thống kê với Recharts |
+| Email việc làm | Đăng ký kỹ năng quan tâm; nút trên dashboard gọi API gửi email việc làm |
 
-**JobHunter** là ứng dụng web tìm kiếm việc làm full-stack, được phát triển như một phần của series **"Spring Boot RESTful API"** trên kênh YouTube [Hỏi Dân IT](https://www.youtube.com/@hoiDanIT). Frontend được xây dựng bằng React + Vite, giao tiếp với backend Spring Boot thông qua REST API.
+## Luồng nghiệp vụ
 
-Dự án bao gồm hai giao diện chính:
-- **Client Side** — Tìm kiếm việc làm, duyệt công ty, nộp hồ sơ
-- **Admin Panel** — Quản trị toàn bộ hệ thống (CRUD, phân quyền, thống kê)
+### Tài khoản và ứng tuyển
 
----
+1. Khách có thể xem việc làm/công ty trước khi đăng nhập.
+2. Đăng ký tạo tài khoản rồi chuyển về trang đăng nhập; API đăng ký không cấp JWT để đăng nhập ngay.
+3. Đăng nhập trả access token, frontend lưu trong `localStorage`. Refresh token nằm trong cookie HttpOnly do backend cấp. Axios có cơ chế thử refresh và đồng bộ bằng `async-mutex`.
+4. Người đã đăng nhập nộp CV qua `POST /api/v1/resumes`.
+5. Khách dùng `POST /api/v1/resumes/quick-apply`: backend tìm tài khoản theo email, tạo tài khoản nếu chưa có và gửi mật khẩu tạm qua email. Role `USER` được khởi tạo và dùng mặc định cho tài khoản mới.
 
-## 🗺️ Luồng hoạt động
+Link chia sẻ có dạng `/job/<slug>?id=<jobId>&apply=true`. Trang chi tiết lấy ID từ query `id`; `apply=true` mở form ứng tuyển.
 
-### Kiến trúc hệ thống
+### Hồ sơ và phỏng vấn
 
 ```mermaid
-graph LR
-    FE["🖥️ React + Vite
-Frontend :3000"]
-    BE["☕ Spring Boot
-REST API :8080"]
-    DB[("🗄️ MySQL
-Database")]
-    EMAIL["📧 Email Service
-JavaMail + Thymeleaf"]
-    WS["💬 WebSocket
-STOMP + SockJS"]
-    REDUX["🔄 Redux Toolkit
-State Management"]
-
-    REDUX --> FE
-    FE -->|"HTTP + JWT Auth"| BE
-    FE <-->|"WebSocket"| WS
-    WS --- BE
-    BE --> DB
-    BE --> EMAIL
+flowchart LR
+    A["Ứng tuyển: PENDING"] --> B["REVIEWING: xem xét / hẹn phỏng vấn"]
+    B --> C["ONLINE_MEET: n8n tạo Meet và gửi thư mời"]
+    B --> D["OFFLINE: gửi email qua SMTP"]
+    B --> E["APPROVED: nhận vào công ty"]
+    B --> F["REJECTED: từ chối"]
+    E --> G["Quản lý và xem ca làm"]
 ```
 
-### Luồng hoạt động toàn dự án
+Đây là luồng sử dụng chính, không phải sơ đồ ràng buộc mọi chuyển trạng thái ở backend.
 
-```mermaid
-flowchart TD
-    Start(["👤 Người dùng
-truy cập"])
-    Start --> AuthCheck{"🔐 Đã
-đăng nhập?"}
+- Chọn `REVIEWING` mở modal hẹn ngày/giờ, hình thức và ghi chú phỏng vấn. Form gọi `POST /api/v1/email/approve`; backend cũng hỗ trợ alias `/api/v1/email/schedule-interview`.
+- `ONLINE_MEET` gọi n8n để tạo Google Calendar/Meet và gửi Gmail. Nếu không lấy được link Meet, backend có nhánh gửi thư mời bằng SMTP.
+- `APPROVED` là quyết định nhận ứng viên: gắn tài khoản với công ty tuyển dụng, xóa thông tin lịch phỏng vấn và gửi thông báo/email nhận việc.
+- `REJECTED` xóa thông tin lịch phỏng vấn và gửi email từ chối.
 
-    AuthCheck -->|Chưa| AuthFlow
-    AuthCheck -->|Rồi| RoleCheck
+Workflow nằm tại [src/resources/n8n/n8n-interview-meet-workflow.json](src/resources/n8n/n8n-interview-meet-workflow.json). Hướng dẫn cấu hình ở [README backend](https://github.com/QThang2006/Jobhunter_backend/blob/main/README.md).
 
-    subgraph AuthFlow ["🔑 Xác thực"]
-        direction LR
-        Login["📧 Đăng nhập
-Email + Password"]
-        Register["📝 Đăng ký
-tài khoản mới"]
-        OAuth2["🌐 OAuth2
-Google Login"]
-        JWT["🗝️ JWT Token
-Access + Refresh"]
-        Login --> JWT
-        Register --> JWT
-        OAuth2 --> JWT
-    end
+### Ca làm, thông báo và email việc làm
 
-    AuthFlow --> RoleCheck
-    RoleCheck{"🎭 Vai trò?"}
+Ca có các trạng thái `ASSIGNED`, `CONFIRMED`, `COMPLETED`, `TRANSFERRED`, `CANCELLED`. Chuyển ca cập nhật bản ghi hiện tại và thêm lịch sử vào ghi chú. Nhân viên xem ca tại `/my-shifts`, người quản lý dùng `/admin/shift`.
 
-    RoleCheck -->|USER| ClientFlow
-    RoleCheck -->|ADMIN| AdminFlow
+WebSocket sử dụng SockJS tại `/ws` và STOMP. Các thông điệp như `REFRESH`, `NEW_NOTIFICATION` báo frontend gọi REST API lấy dữ liệu mới. Source hiện tại chưa có chức năng chat hoặc trợ lý AI.
 
-    subgraph ClientFlow ["👤 Luồng Người dùng"]
-        direction TB
-        Home["🏠 Trang chủ
-(Job nổi bật)"]
-        JobSearch["🔍 Tìm kiếm việc làm
-filter kỹ năng, địa điểm, lương"]
-        CompanyBrowse["🏢 Duyệt công ty"]
-        JobDetail["📋 Chi tiết việc làm"]
-        Apply["📤 Nộp CV
-(Upload file)"]
-        Subscribe["📧 Đăng ký nhận
-Job qua Email"]
-        Chat["💬 Chat real-time
-WebSocket"]
-        Account["👤 Quản lý
-tài khoản & CV"]
+Email việc làm được kích hoạt bằng `GET /api/v1/email`. Backend hiện chưa có scheduler gửi email việc làm định kỳ.
 
-        Home --> JobSearch
-        Home --> CompanyBrowse
-        JobSearch --> JobDetail
-        JobDetail --> Apply
-    end
+## Công nghệ
 
-    subgraph AdminFlow ["🛡️ Luồng Admin"]
-        direction TB
-        Dashboard["📊 Dashboard
-(Recharts)"]
-        Users["👥 Quản lý
-Users"]
-        Companies["🏭 Quản lý
-Companies"]
-        Jobs["💼 Quản lý
-Jobs"]
-        Resumes["📃 Quản lý
-Resumes"]
-        RBAC["🔑 Roles &
-Permissions"]
+Phiên bản/range lấy từ [package.json](package.json).
 
-        Dashboard --- Users
-        Dashboard --- Companies
-        Dashboard --- Jobs
-        Dashboard --- Resumes
-        Dashboard --- RBAC
-    end
-
-    Apply -->|"POST /api/v1/resumes"| API
-    Subscribe -->|"POST /api/v1/subscribers"| API
-    Chat <-->|"WebSocket / STOMP"| API
-    AdminFlow -->|"REST API + JWT"| API
-
-    API["⚙️ Spring Boot BE
-REST API"]
-    API --> DB[("🗄️ MySQL DB")]
-
-    Resumes --> ReviewFlow
-
-    subgraph ReviewFlow ["📧 Duyệt hồ sơ & Email"]
-        direction LR
-        StatusChange{"Chuyển
-trạng thái"}
-        Modal["📅 Modal chọn
-lịch phỏng vấn"]
-        EmailPV["📧 Gửi email
-lịch phỏng vấn
-cho ứng viên"]
-        OtherStatus["⏳ Cập nhật
-PENDING / REVIEWING
-/ REJECTED"]
-
-        StatusChange -->|"APPROVED"| Modal
-        Modal -->|"Xác nhận"| EmailPV
-        StatusChange -->|"Khác"| OtherStatus
-    end
-
-    EmailPV -->|"POST /api/v1/email/approve"| API
-    API -->|"Scheduler định kỳ"| EmailJob["📧 Email giới thiệu
-Job theo kỹ năng
-(Subscribers)"]
-```
-
----
-
-## ✨ Tính năng
-
-### 👤 Phía Người dùng (Client)
-- 🔍 **Tìm kiếm việc làm** nâng cao theo kỹ năng, địa điểm, mức lương
-- 🏢 **Duyệt công ty** và xem thông tin chi tiết
-- 📄 **Nộp hồ sơ (CV)** trực tiếp cho từng vị trí
-- 🔐 **Đăng nhập / Đăng ký** tài khoản, hỗ trợ **OAuth2** (Google)
-- 💬 **Chat Widget** tích hợp real-time (WebSocket / STOMP)
-- 📧 **Nhận Job qua Email** — Đăng ký nhận thông báo việc làm phù hợp theo kỹ năng
-- 📱 **Responsive Design** tương thích mọi thiết bị
-
-### 🛡️ Phía Quản trị (Admin)
-- 📊 **Dashboard** thống kê tổng quan (biểu đồ Recharts)
-- 👥 **Quản lý Người dùng** — CRUD đầy đủ
-- 🏭 **Quản lý Công ty** — Thêm/sửa/xóa công ty
-- 💼 **Quản lý Việc làm** — Đăng tin, chỉnh sửa, phân loại kỹ năng
-- 📃 **Quản lý Hồ sơ** — Duyệt và cập nhật trạng thái ứng tuyển
-- 📧 **Gửi Email Template** — Tự động gửi email thông báo lịch phỏng vấn khi duyệt hồ sơ (APPROVED)
-- 🔑 **Quản lý Quyền hạn (Permission & Role)** — RBAC (Role-Based Access Control)
-- 🛡️ **ACL (Access Control List)** — Kiểm soát truy cập theo từng API endpoint
-
----
-
-## 🛠️ Công nghệ sử dụng
-
-| Công nghệ | Phiên bản | Mục đích |
+| Công nghệ | Phiên bản/range | Vai trò |
 |---|---|---|
-| [React](https://reactjs.org/) | 18.2.0 | UI Framework |
-| [TypeScript](https://www.typescriptlang.org/) | 5.3.3 | Type Safety |
-| [Vite](https://vitejs.dev/) | 4.2.0 | Build Tool & Dev Server |
-| [Ant Design](https://ant.design/) | 5.13.1 | UI Component Library |
-| [Ant Design Pro Components](https://pro-components.ant.design/) | 2.6.46 | Pro Table, Pro Layout |
-| [Redux Toolkit](https://redux-toolkit.js.org/) | 1.9.3 | State Management |
-| [React Router DOM](https://reactrouter.com/) | 6.11.2 | Client-side Routing |
-| [Axios](https://axios-http.com/) | 1.6.5 | HTTP Client |
-| [STOMP.js + SockJS](https://stomp-js.github.io/) | 2.3.3 | WebSocket Real-time Chat |
-| [Recharts](https://recharts.org/) | 3.x | Biểu đồ thống kê |
-| [React Quill](https://zenoamaro.github.io/react-quill/) | 2.0.0 | Rich Text Editor |
-| [Day.js](https://day.js.org/) | 1.11.8 | Xử lý ngày tháng |
-| [SASS](https://sass-lang.com/) | 1.62.1 | CSS Preprocessor |
+| React / TypeScript / Vite | 18.2.0 / 5.3.3 / 4.2.0 | Giao diện, kiểu dữ liệu, dev server và build |
+| Ant Design / Pro Components | 5.13.1 / 2.6.46 | Form, bảng, modal và bố cục |
+| Redux Toolkit / React Router | 1.9.3 / 6.11.2 | State và định tuyến |
+| Axios / async-mutex | 1.6.5 / 0.4.0 | REST API và refresh token |
+| stompjs / sockjs-client | ^2.3.3 / ^1.6.1 | Thông báo và tải lại dữ liệu |
+| Recharts | ^3.6.0 | Biểu đồ dashboard |
+| React Quill / Day.js / Sass | 2.0.0 / 1.11.8 / 1.62.1 | Mô tả tin, ngày giờ và style |
 
----
+Backend sử dụng Java 17, Spring Boot 3.2.4, PostgreSQL trên Supabase, Supabase Storage, Brevo SMTP và Google OAuth2.
 
-## 📁 Cấu trúc dự án
+## Cấu trúc source
 
-```
+```text
 src/
-├── assets/              # Hình ảnh, font, static files
 ├── components/
-│   ├── admin/           # Components cho Admin Panel
-│   │   ├── company/     # Quản lý công ty
-│   │   ├── job/         # Quản lý việc làm (upsert, tabs)
-│   │   ├── permission/  # Quản lý quyền hạn
-│   │   ├── resume/      # Quản lý hồ sơ
-│   │   ├── role/        # Quản lý vai trò
-│   │   ├── skill/       # Quản lý kỹ năng
-│   │   ├── user/        # Quản lý người dùng
-│   │   └── layout.admin.tsx
-│   ├── client/          # Components cho Client Side
-│   │   ├── card/        # Job/Company cards
-│   │   ├── chat/        # Chat Widget (WebSocket)
-│   │   ├── data-table/  # Bảng dữ liệu có filter
-│   │   ├── modal/       # Modal dialogs
-│   │   ├── header.client.tsx
-│   │   ├── footer.client.tsx
-│   │   └── search.client.tsx
-│   └── share/           # Shared (Loading, NotFound, ProtectedRoute...)
-├── config/              # Cấu hình Axios, ACL
-├── context/             # React Context providers
+│   ├── admin/          # Công ty, việc làm, hồ sơ, quyền, người dùng
+│   ├── client/         # Tìm kiếm, thẻ việc làm, ứng tuyển, tài khoản, ca cá nhân
+│   └── share/          # ProtectedRoute, Access, thông báo, lịch ca
+├── config/             # API helpers, Axios, quyền API và tiện ích
+├── context/            # WebSocket provider
 ├── pages/
-│   ├── admin/           # Dashboard, Company, Job, User, Role, Permission, Resume
-│   ├── auth/            # Đăng nhập, đăng ký, OAuth2 redirect
-│   ├── company/         # Danh sách & chi tiết công ty
-│   ├── home/            # Trang chủ
-│   └── job/             # Danh sách & chi tiết việc làm
-├── redux/
-│   ├── slice/           # Redux slices (account, company, job, role, permission, resume, skill, user)
-│   ├── store.ts
-│   └── hooks.ts
-├── styles/              # Global SCSS styles
-├── types/               # TypeScript type definitions
-├── App.tsx              # Root routing
-└── main.tsx             # Entry point
+│   ├── admin/          # Dashboard, tuyển dụng, phân ca và quản trị
+│   ├── auth/           # Login, register, OAuth2 redirect
+│   ├── company/        # Danh sách và chi tiết công ty
+│   ├── home/           # Trang chủ
+│   ├── job/            # Danh sách và chi tiết việc làm
+│   └── shift/          # Trang ca làm cá nhân
+├── redux/              # Store, hooks và các slice
+├── resources/n8n/      # Bản export workflow phỏng vấn
+├── styles/             # SCSS
+├── types/              # Kiểu dữ liệu API
+├── App.tsx             # Routes
+└── main.tsx            # Entry point
 ```
 
----
+## Chạy local
 
-## 🚀 Cài đặt & Chạy dự án
+Cần Node.js và npm tương thích với dependencies. Repository chưa khai báo `engines` để chốt phiên bản Node/npm; dùng bản Node LTS phù hợp với Vite 4 và kiểm tra build trên môi trường triển khai.
 
-### Yêu cầu hệ thống
-
-- **Node.js** >= 18.x
-- **npm** >= 9.x hoặc **yarn** >= 1.22.x
-
-### 1. Clone repository
+Tại thư mục `Jobhunter_FE`:
 
 ```bash
-git clone https://github.com/QThang2006/Jobhunter_FE.git
-cd Jobhunter_FE
+npm ci
 ```
 
-### 2. Cài đặt dependencies
+Tạo `.env.development.local`:
 
-```bash
-npm install
+```dotenv
+PORT=3000
+VITE_BACKEND_URL=http://localhost:8080
+VITE_ACL_ENABLE=true
 ```
-
-### 3. Cấu hình môi trường
-
-```bash
-cp .env.development .env
-```
-
-### 4. Chạy Development
 
 ```bash
 npm run dev
 ```
 
-Ứng dụng chạy tại: **http://localhost:3000**
+Mở [http://localhost:3000](http://localhost:3000). Khởi chạy backend theo [hướng dẫn backend](https://github.com/QThang2006/Jobhunter_backend/blob/main/README.md) nếu dùng URL local.
 
-### 5. Build Production
+Hai file `.env.development` và `.env.production` đang trỏ đến backend Render. `.env.development.local` ghi đè cấu hình development và được bỏ qua bởi `.gitignore`. Chỉ sao chép `.env.development` sang `.env` không bảo đảm đổi được backend vì file theo mode có độ ưu tiên cao hơn.
+
+| Biến | Ý nghĩa |
+|---|---|
+| `PORT` | Cổng dev server; được `vite.config.ts` đọc bằng `loadEnv` |
+| `VITE_BACKEND_URL` | URL gốc backend, không thêm `/api/v1` |
+| `VITE_ACL_ENABLE` | Bật/tắt kiểm tra quyền ở component `Access` phía giao diện |
+
+Chỉ biến cần đưa vào mã trình duyệt mới dùng tiền tố `VITE_`. Không đặt bí mật trong các biến này. `VITE_ACL_ENABLE=false` không thay đổi cơ chế xác thực/phân quyền của backend.
+
+Google OAuth2 dùng `FRONTEND_URL` trên backend để chọn địa chỉ redirect. Khi chạy local, cấu hình `FRONTEND_URL`, `CORS_ALLOWED_ORIGINS`, `AUTH_COOKIE_SECURE=false` ở backend và redirect URI trong Google Console. Khi deploy HTTPS lên Vercel/Render, giữ `AUTH_COOKIE_SECURE=true` để refresh cookie dùng `Secure; SameSite=None`.
+
+## Routes
+
+| Route | Nội dung | Kiểm tra đăng nhập ở frontend |
+|---|---|---|
+| `/` | Trang chủ | Không |
+| `/job`, `/job/:id` | Danh sách, chi tiết việc làm | Không |
+| `/company`, `/company/:id` | Danh sách, chi tiết công ty | Không |
+| `/login`, `/register`, `/oauth2/redirect` | Xác thực | Không |
+| `/my-shifts` | Ca cá nhân | Có |
+| `/admin` | Dashboard | Có, UI giới hạn `SUPER_ADMIN` |
+| `/admin/company`, `/admin/user` | Công ty, người dùng | Có |
+| `/admin/job`, `/admin/job/upsert` | Tin tuyển dụng/kỹ năng, tạo/sửa tin | Có |
+| `/admin/resume`, `/admin/shift` | Hồ sơ, phân ca | Có |
+| `/admin/permission`, `/admin/role` | Quyền và vai trò | Có |
+
+Dù route khai báo `:id`, trang chi tiết job/company lấy ID thật từ query `?id=...`; đoạn path dùng cho slug. Menu và thao tác quản trị còn kiểm tra quyền từ tài khoản. Đây là kiểm soát giao diện; cần đối chiếu riêng mức bảo vệ API ở backend.
+
+## Build và triển khai
 
 ```bash
 npm run build
+npm run preview
 ```
 
----
+`build` chạy `tsc && vite build`, xuất thư mục `dist/`. `preview` phục vụ bản build để kiểm tra local. `npm run start` là alias chạy Vite dev server, không phải production server.
 
-## 🔧 Biến môi trường
+Production đọc `.env.production` và các override của mode production. Vite đưa các biến `VITE_*` vào bundle lúc build nên đổi URL backend cần build lại. [vercel.json](vercel.json) có rewrite về `index.html` để hỗ trợ SPA routes.
 
-```env
-# Cổng chạy dev server
-PORT=3000
+Địa chỉ được tham chiếu trong cấu hình dự án (không xác nhận tình trạng hoạt động):
 
-# URL Backend API (Spring Boot)
-VITE_BACKEND_URL=https://jobhunter-backend-aeu0.onrender.com
-# Hoặc chạy local:
-# VITE_BACKEND_URL=http://localhost:8080
+- Frontend: [jobhunter-fe-one.vercel.app](https://jobhunter-fe-one.vercel.app)
+- Backend: [jobhunter-backend-aeu0.onrender.com](https://jobhunter-backend-aeu0.onrender.com)
 
-# Bật/tắt ACL (Access Control List)
-VITE_ACL_ENABLE=true
-```
+## Bản sửa và kiểm thử
 
-> **Lưu ý:** Tất cả biến môi trường dùng cho Vite phải có tiền tố `VITE_`.
-
----
-
-## 🌐 API & Backend
-
-| Tài nguyên | Link |
-|---|---|
-| 🔗 Backend Deployed | https://jobhunter-backend-aeu0.onrender.com |
-| 📺 Series YouTube | https://www.youtube.com/@hoiDanIT |
-
-### Xác thực (Authentication)
-- **JWT** — Access Token + Refresh Token (tự động refresh qua `async-mutex`)
-- **OAuth2** — Đăng nhập qua Google
-- **RBAC** — Phân quyền theo Role & Permission động từ backend
-
----
-
-## 🗺️ Routing
-
-| Route | Mô tả | Bảo vệ |
-|---|---|---|
-| `/` | Trang chủ — việc làm nổi bật | ❌ Public |
-| `/job` | Tất cả việc làm + tìm kiếm | ❌ Public |
-| `/job/:id` | Chi tiết việc làm | ❌ Public |
-| `/company` | Danh sách công ty | ❌ Public |
-| `/company/:id` | Chi tiết công ty | ❌ Public |
-| `/login` | Đăng nhập | ❌ Public |
-| `/register` | Đăng ký | ❌ Public |
-| `/oauth2/redirect` | OAuth2 callback | ❌ Public |
-| `/admin` | Dashboard quản trị | ✅ Protected |
-| `/admin/company` | Quản lý công ty | ✅ Protected |
-| `/admin/user` | Quản lý người dùng | ✅ Protected |
-| `/admin/job` | Quản lý việc làm | ✅ Protected |
-| `/admin/resume` | Quản lý hồ sơ | ✅ Protected |
-| `/admin/permission` | Quản lý quyền hạn | ✅ Protected |
-| `/admin/role` | Quản lý vai trò | ✅ Protected |
-
----
-
-## 📧 Email Templates
-
-Hệ thống tích hợp **2 loại email template** gửi tự động qua backend (JavaMail + Thymeleaf):
-
-### 1. 📅 Email Duyệt Hồ Sơ + Lịch Phỏng Vấn
-> Kích hoạt khi Admin chuyển trạng thái resume sang `APPROVED`
-
-1. Admin chọn status `APPROVED` → Modal nhập ngày/giờ phỏng vấn
-2. Xác nhận → gọi 2 API tuần tự:
-   - `PUT /api/v1/resumes` — cập nhật status
-   - `POST /api/v1/email/approve` — gửi email kèm lịch phỏng vấn
-
-```json
-{ "resumeId": "string", "interviewDate": "DD/MM/YYYY", "interviewTime": "HH:mm" }
-```
-
-### 2. 💼 Email Giới Thiệu Việc Làm Theo Kỹ Năng
-> Backend Scheduler chạy định kỳ gửi job phù hợp cho Subscribers
-
-```
-POST /api/v1/subscribers        → Đăng ký nhận email
-POST /api/v1/subscribers/skills → Lấy kỹ năng đã đăng ký
-PUT  /api/v1/subscribers        → Cập nhật kỹ năng
-GET  /api/v1/email              → Trigger thủ công (test)
-```
-
----
-
-## 🧰 Scripts
+- Refresh token được đồng bộ giữa các request, không gọi refresh lặp khi cookie hết hạn; lỗi mạng giữ nguyên nguyên nhân và response 204 được chuẩn hóa.
+- Hồ sơ cá nhân dùng `GET/PUT /api/v1/users/me`; quyền quản trị user được kiểm tra riêng trên backend.
+- Account Redux nhận company từ API, kết thúc loading khi request thất bại và sao chép role trước khi cập nhật.
+- Trang ca cá nhân dùng kiểm tra đăng nhập; trang admin kiểm tra vai trò/quyền và không chờ vô hạn khi thiếu role.
+- Thông báo cập nhật đúng trường `read`; xóa user chấp nhận HTTP 204.
+- Dashboard tải đủ các trang và dùng nguồn job quản trị để tính cả tin đã tắt. Khi dữ liệu lớn, nên chuyển thống kê sang API tổng hợp phía backend.
+- WebSocket chỉ kết nối khi đã đăng nhập; backend kiểm tra JWT, topic cá nhân và quyền nhận topic quản trị.
 
 ```bash
-npm run dev        # Khởi động dev server (port 3000)
-npm run start      # Alias của dev
-npm run build      # Build production (tsc + vite build)
-npm run preview    # Preview bản build production
+npm test
+npm run build
 ```
 
----
+Test dùng Node test runner và TypeScript có sẵn trong dependencies, kiểm tra các tình huống refresh đồng thời/thất bại, lỗi mạng, response 204 và Redux account. Build kiểm tra TypeScript và tạo bundle. Còn cảnh báo của Ant Design về `use client` và bundle lớn; chúng không chặn build.
 
-## 📜 License
+Google OAuth, email thật, n8n/Meet và hành vi cookie trên trình duyệt production cần kiểm tra sau deploy. Trình duyệt chặn cookie bên thứ ba vẫn có thể giới hạn refresh giữa hai domain khác site.
 
-Dự án được phát triển nâng cao thêm cho mục đích **học tập và tham khảo** theo series của [Hỏi Dân IT](https://www.youtube.com/@hoiDanIT).
+## Deploy bản sửa
 
----
+Deploy backend và frontend cùng phiên bản vì frontend dùng endpoint hồ sơ cá nhân mới. Trên Vercel giữ `VITE_BACKEND_URL` trỏ về backend Render, build bằng `npm run build`, output `dist`. Các biến `VITE_*` được đọc lúc build nên thay đổi biến cần redeploy.
 
-<p align="center">Made with ❤️ by <strong>Ngô Quốc Thắng</strong></p>
+Xem danh sách biến bắt buộc trên Render trong [hướng dẫn deploy backend](https://github.com/QThang2006/Jobhunter_backend/blob/main/DEPLOYMENT.md). Các secret cũ đã bị xóa khỏi source hiện tại nhưng vẫn có thể nằm trong lịch sử Git; cần thay credential ở nhà cung cấp.
+
+## Nguồn gốc
+
+Phát triển bởi **Ngô Quốc Thắng / QThang2006**, dựa trên nền tảng series Spring Boot RESTful API của [Hỏi Dân IT](https://www.youtube.com/@hoiDanIT). Chưa có file LICENSE trong source được đối chiếu nên tài liệu không khẳng định giấy phép MIT.

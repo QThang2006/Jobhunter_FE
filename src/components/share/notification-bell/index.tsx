@@ -111,7 +111,7 @@ const NotificationBell = (props: IProps) => {
     const handleMarkAll = async () => {
         setMarkingAll(true);
         await callMarkAllNotificationsAsRead();
-        setNotifications(prev => prev.map(item => ({ ...item, isRead: true })));
+        setNotifications(prev => prev.map(item => ({ ...item, read: true })));
         setUnreadCount(0);
         setMarkingAll(false);
     };

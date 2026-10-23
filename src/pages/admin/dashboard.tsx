@@ -16,8 +16,8 @@ import {
     LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { callFetchUser, callFetchCompany, callFetchJob, callFetchResume, callSendIntroEmail } from '@/config/api';
-import { IResume } from '@/types/backend';
+import { callFetchUser, callFetchCompany, callFetchJobAdmin, callFetchResume, callSendIntroEmail } from '@/config/api';
+import { IResume, IBackendRes, IModelPaginate } from '@/types/backend';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/vi';
@@ -45,6 +45,18 @@ interface ITopCompany {
 
 import { useAppSelector } from '@/redux/hooks';
 import { Result } from 'antd';
+
+const fetchEveryPage = async <T,>(fetchPage: (query: string) => Promise<IBackendRes<IModelPaginate<T>>>) => {
+    const first = await fetchPage('page=1&size=200&sort=createdAt,desc');
+    if (!first.data) throw new Error('Không thể tải dữ liệu thống kê');
+    const result = [...first.data.result];
+    for (let page = 2; page <= first.data.meta.pages; page++) {
+        const next = await fetchPage(`page=${page}&size=200&sort=createdAt,desc`);
+        if (!next.data) throw new Error('Không thể tải đủ dữ liệu thống kê');
+        result.push(...next.data.result);
+    }
+    return { ...first, data: { ...first.data, result } };
+};
 
 const DashboardPage = () => {
     const userRole = useAppSelector(state => state.account.user.role.name);
@@ -99,10 +111,10 @@ const DashboardPage = () => {
         try {
             // Fetch all data in parallel (include both page/size for Spring Data and current/pageSize)
             const [usersRes, companiesRes, jobsRes, resumesRes] = await Promise.all([
-                callFetchUser('page=1&size=1000&current=1&pageSize=1000'),
-                callFetchCompany('page=1&size=1000&current=1&pageSize=1000'),
-                callFetchJob('page=1&size=1000&current=1&pageSize=1000'),
-                callFetchResume('page=1&size=1000&current=1&pageSize=1000&sort=createdAt,desc&populate=companyId,jobId')
+                fetchEveryPage(callFetchUser),
+                fetchEveryPage(callFetchCompany),
+                fetchEveryPage(callFetchJobAdmin),
+                fetchEveryPage(callFetchResume)
             ]);
 
             // Calculate stats
@@ -166,7 +178,7 @@ const DashboardPage = () => {
                     }
 
                     // Job: Use existing object if available, otherwise find in list
-                    let job = typeof resume.jobId === 'object' ? resume.jobId : null;
+                    let job = resume.job ?? (typeof resume.jobId === 'object' ? resume.jobId : null);
                     if (!job) {
                         const jobIdStr = resume.jobId;
                         job = jobs.find((j: any) => j.id == jobIdStr);
@@ -174,7 +186,7 @@ const DashboardPage = () => {
 
                     return {
                         ...resume,
-                        companyId: company ? { id: company.id, name: company.name, logo: company.logo } : { name: 'N/A' },
+                        companyId: company ? { id: company.id, name: company.name, logo: company.logo } : { name: resume.companyName || 'N/A' },
                         jobId: job ? { id: job.id, name: job.name } : { name: 'N/A' }
                     };
                 });

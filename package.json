@@ -9,7 +9,8 @@
     "dev": "vite",
     "start": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test tests/*.cjs"
   },
   "dependencies": {
     "@ant-design/icons": "4.8.0",
