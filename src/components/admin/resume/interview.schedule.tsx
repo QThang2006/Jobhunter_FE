@@ -40,7 +40,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
     const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs());
     const [loading, setLoading] = useState<boolean>(false);
     const [resumes, setResumes] = useState<IResume[]>([]);
-    const [filterType, setFilterType] = useState<string>('ALL'); // 'ALL' | 'ONLINE_MEET' | 'OFFLINE'
+    const [filterType, setFilterType] = useState<string>('ALL'); // 'ALL' | 'ONLINE_P2P' | 'OFFLINE'
 
     const { stompClient } = useWebSocket();
 
@@ -96,7 +96,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
         if (!r.interviewDate) return false;
         // Chỉ hiển thị các hồ sơ đang trong quy trình phỏng vấn; ẩn hoàn toàn các hồ sơ đã APPROVED hoặc REJECTED
         if (r.status === 'APPROVED' || r.status === 'REJECTED') return false;
-        if (filterType === 'ONLINE_MEET') return r.interviewType === 'ONLINE_MEET';
+        if (filterType === 'ONLINE_P2P') return r.interviewType !== 'OFFLINE';
         if (filterType === 'OFFLINE') return r.interviewType === 'OFFLINE';
         return true;
     });
@@ -109,7 +109,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
         return false;
     });
 
-    const countOnline = thisWeekResumes.filter((r) => r.interviewType === 'ONLINE_MEET').length;
+    const countOnline = thisWeekResumes.filter((r) => r.interviewType !== 'OFFLINE').length;
     const countOffline = thisWeekResumes.filter((r) => r.interviewType === 'OFFLINE').length;
 
     return (
@@ -239,7 +239,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                         onChange={(val) => setFilterType(val as string)}
                         options={[
                             { label: 'Tất cả', value: 'ALL' },
-                            { label: 'Online (Meet)', value: 'ONLINE_MEET' },
+                            { label: 'Online (P2P)', value: 'ONLINE_P2P' },
                             { label: 'Tại tiệm', value: 'OFFLINE' }
                         ]}
                     />
@@ -432,7 +432,7 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                                                 color: '#374151'
                                                             }}
                                                         >
-                                                            Online Meet
+                                                            Online P2P
                                                         </Tag>
                                                     )}
                                                 </div>
@@ -532,37 +532,32 @@ const InterviewSchedule: React.FC<IProps> = ({ onOpenResumeDetail, refreshSignal
                                                         marginTop: 6
                                                     }}
                                                 >
-                                                    {interview.interviewType === 'ONLINE_MEET' && interview.meetLink && (
+                                                    {interview.interviewType !== 'OFFLINE' && interview.id && (
                                                         <div style={{ display: 'flex', gap: 4, width: '100%' }}>
-                                                            <a
-                                                                href={interview.meetLink}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                style={{ flex: 1 }}
+                                                            <Button
+                                                                type="primary"
+                                                                size="small"
+                                                                icon={<VideoCameraOutlined />}
+                                                                style={{
+                                                                    borderRadius: 4,
+                                                                    fontSize: 11,
+                                                                    height: 24,
+                                                                    flex: 1,
+                                                                    fontWeight: 500
+                                                                }}
+                                                                onClick={() => window.open(`/interview/${interview.id}`, '_blank')}
                                                             >
-                                                                <Button
-                                                                    type="primary"
-                                                                    size="small"
-                                                                    icon={<VideoCameraOutlined />}
-                                                                    style={{
-                                                                        borderRadius: 4,
-                                                                        fontSize: 11,
-                                                                        height: 24,
-                                                                        width: '100%',
-                                                                        fontWeight: 500
-                                                                    }}
-                                                                >
-                                                                    Vào Meet
-                                                                </Button>
-                                                            </a>
-                                                            <Tooltip title="Sao chép link Google Meet">
+                                                                Vào Phòng P2P
+                                                            </Button>
+                                                            <Tooltip title="Sao chép link Phòng P2P (WebRTC)">
                                                                 <Button
                                                                     size="small"
                                                                     icon={<CopyOutlined />}
                                                                     style={{ borderRadius: 4, height: 24, width: 28 }}
                                                                     onClick={() => {
-                                                                        navigator.clipboard.writeText(interview.meetLink!);
-                                                                        message.success('Đã sao chép link Google Meet!');
+                                                                        const link = `${window.location.origin}/interview/${interview.id}`;
+                                                                        navigator.clipboard.writeText(link);
+                                                                        message.success('Đã sao chép link Phòng P2P!');
                                                                     }}
                                                                 />
                                                             </Tooltip>

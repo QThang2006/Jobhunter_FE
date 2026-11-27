@@ -26,28 +26,28 @@ const ViewDetailResume = (props: IProps) => {
     const [interviewForm] = Form.useForm();
     const { onClose, open, dataInit, setDataInit, reloadTable } = props;
     const [form] = Form.useForm();
-    const [interviewType, setInterviewType] = useState<'ONLINE_MEET' | 'OFFLINE'>('ONLINE_MEET');
+    const [interviewType, setInterviewType] = useState<'ONLINE_P2P' | 'OFFLINE'>('ONLINE_P2P');
 
     const handleChangeStatus = async () => {
         const status = form.getFieldValue('status');
 
         // Khi HR chọn "REVIEWING" (Duyệt hồ sơ mời phỏng vấn) → Mở modal xếp lịch phỏng vấn
         if (status === 'REVIEWING') {
-            // Điền sẵn dữ liệu cũ nếu đã từng đặt lịch
             if (dataInit?.interviewDate && dataInit?.interviewTime) {
+                const initType = dataInit?.interviewType === 'OFFLINE' ? 'OFFLINE' : 'ONLINE_P2P';
                 interviewForm.setFieldsValue({
-                    interviewType: dataInit?.interviewType || 'ONLINE_MEET',
+                    interviewType: initType,
                     interviewDate: dayjs(dataInit.interviewDate, 'DD/MM/YYYY'),
                     interviewTime: dayjs(dataInit.interviewTime, 'HH:mm'),
                     note: dataInit?.note || ''
                 });
-                setInterviewType(dataInit?.interviewType || 'ONLINE_MEET');
+                setInterviewType(initType);
             } else {
                 interviewForm.setFieldsValue({
-                    interviewType: 'ONLINE_MEET',
+                    interviewType: 'ONLINE_P2P',
                     note: ''
                 });
-                setInterviewType('ONLINE_MEET');
+                setInterviewType('ONLINE_P2P');
             }
             setIsModalOpen(true);
             return;
@@ -151,13 +151,13 @@ const ViewDetailResume = (props: IProps) => {
             const values = await interviewForm.validateFields();
             const interviewDate = dayjs(values.interviewDate).format('DD/MM/YYYY');
             const interviewTime = dayjs(values.interviewTime).format('HH:mm');
-            const type = values.interviewType || 'ONLINE_MEET';
+            const type = values.interviewType || 'ONLINE_P2P';
             const note = values.note || '';
 
             setIsModalOpen(false);
             setIsSubmit(true);
 
-            // Gửi request lên server: Chuyển trạng thái sang REVIEWING + lưu ngày giờ, hình thức vào DB + kích hoạt n8n / gửi email
+            // Gửi request lên server: Chuyển trạng thái sang REVIEWING + lưu ngày giờ, hình thức vào DB + sinh link P2P WebRTC & gửi email
             const emailRes = await callSendApprovalEmail(
                 dataInit?.id,
                 interviewDate,
@@ -166,54 +166,50 @@ const ViewDetailResume = (props: IProps) => {
                 note
             );
 
-            const meetLink = emailRes?.data?.meetLink;
+            const p2pLink = emailRes?.data?.meetLink || `${window.location.origin}/interview/${dataInit?.id}`;
 
-            if (type === 'ONLINE_MEET') {
-                if (meetLink) {
-                    Modal.success({
-                        title: 'Đã Lên Lịch Phỏng Vấn Online (Google Meet)!',
-                        width: 540,
-                        content: (
-                            <div style={{ marginTop: 12 }}>
-                                <p>Hồ sơ đã được chuyển sang trạng thái <strong>REVIEWING (Đang phỏng vấn)</strong>. Workflow n8n đã tự động tạo lịch trên Google Calendar và gửi thư mời kèm link phòng họp đến <strong>{dataInit?.email}</strong>.</p>
-                                <p style={{ margin: '8px 0' }}>
-                                    <strong>Thời gian phỏng vấn:</strong> {interviewTime} ngày {interviewDate}
-                                </p>
-                                <div style={{
-                                    marginTop: 14,
-                                    padding: '12px 14px',
-                                    background: '#f0f7ff',
-                                    borderRadius: 8,
-                                    border: '1px solid #bae0ff'
-                                }}>
-                                    <div style={{ fontSize: 13, color: '#0958d9', fontWeight: 600, marginBottom: 6 }}>
-                                        <VideoCameraOutlined style={{ marginRight: 6 }} />
-                                        Link phòng họp Google Meet:
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                        <a href={meetLink} target="_blank" rel="noreferrer" style={{ fontWeight: 600, color: '#1677ff', wordBreak: 'break-all', flex: 1 }}>
-                                            {meetLink}
-                                        </a>
-                                        <Button
-                                            size="small"
-                                            icon={<CopyOutlined />}
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(meetLink);
-                                                message.success("Đã sao chép link Google Meet!");
-                                            }}
-                                        >
-                                            Copy
-                                        </Button>
-                                    </div>
+            if (type !== 'OFFLINE') {
+                Modal.success({
+                    title: 'Đã Lên Lịch Phỏng Vấn Trực Tuyến P2P (WebRTC)!',
+                    width: 540,
+                    content: (
+                        <div style={{ marginTop: 12 }}>
+                            <p>Hồ sơ đã được chuyển sang trạng thái <strong>REVIEWING (Đang phỏng vấn)</strong>. Hệ thống đã khởi tạo <strong>Phòng Phỏng Vấn P2P (WebRTC)</strong> và gửi email thư mời kèm link phòng họp đến <strong>{dataInit?.email}</strong>.</p>
+                            <p style={{ margin: '8px 0' }}>
+                                <strong>Thời gian phỏng vấn:</strong> {interviewTime} ngày {interviewDate}
+                            </p>
+                            <div style={{
+                                marginTop: 14,
+                                padding: '12px 14px',
+                                background: '#f0f7ff',
+                                borderRadius: 8,
+                                border: '1px solid #bae0ff'
+                            }}>
+                                <div style={{ fontSize: 13, color: '#0958d9', fontWeight: 600, marginBottom: 6 }}>
+                                    <VideoCameraOutlined style={{ marginRight: 6 }} />
+                                    Link Phòng Phỏng Vấn P2P (WebRTC):
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                    <a href={p2pLink} target="_blank" rel="noreferrer" style={{ fontWeight: 600, color: '#1677ff', wordBreak: 'break-all', flex: 1 }}>
+                                        {p2pLink}
+                                    </a>
+                                    <Button
+                                        size="small"
+                                        icon={<CopyOutlined />}
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(p2pLink);
+                                            message.success("Đã sao chép link Phòng P2P!");
+                                        }}
+                                    >
+                                        Copy
+                                    </Button>
                                 </div>
                             </div>
-                        ),
-                        okText: 'Hoàn tất',
-                        okButtonProps: { style: { borderRadius: 6 } }
-                    });
-                } else {
-                    message.success(`✅ Đã chuyển sang phỏng vấn!\n📧 Thư mời phỏng vấn trực tuyến đã được gửi đến ứng viên (${interviewTime} ngày ${interviewDate})`);
-                }
+                        </div>
+                    ),
+                    okText: 'Hoàn tất',
+                    okButtonProps: { style: { borderRadius: 6 } }
+                });
             } else {
                 message.success(`✅ Đã chuyển sang phỏng vấn trực tiếp!\n📧 Thư mời thử việc tại tiệm đã được gửi đến ứng viên\n📅 Lịch hẹn: ${interviewTime} ngày ${interviewDate}`);
             }
@@ -236,7 +232,7 @@ const ViewDetailResume = (props: IProps) => {
         if (dataInit) {
             form.setFieldValue("status", dataInit.status);
             if (dataInit.interviewType) {
-                setInterviewType(dataInit.interviewType);
+                setInterviewType(dataInit.interviewType === 'OFFLINE' ? 'OFFLINE' : 'ONLINE_P2P');
             }
         }
         return () => form.resetFields();
@@ -318,13 +314,14 @@ const ViewDetailResume = (props: IProps) => {
                                 icon={<CalendarOutlined />}
                                 onClick={() => {
                                     if (dataInit?.interviewDate && dataInit?.interviewTime) {
+                                        const initType = dataInit?.interviewType === 'OFFLINE' ? 'OFFLINE' : 'ONLINE_P2P';
                                         interviewForm.setFieldsValue({
-                                            interviewType: dataInit?.interviewType || 'ONLINE_MEET',
+                                            interviewType: initType,
                                             interviewDate: dayjs(dataInit.interviewDate, 'DD/MM/YYYY'),
                                             interviewTime: dayjs(dataInit.interviewTime, 'HH:mm'),
                                             note: dataInit?.note || ''
                                         });
-                                        setInterviewType(dataInit?.interviewType || 'ONLINE_MEET');
+                                        setInterviewType(initType);
                                     }
                                     setIsModalOpen(true);
                                 }}
@@ -463,31 +460,38 @@ const ViewDetailResume = (props: IProps) => {
                                         icon={<VideoCameraOutlined style={{ color: '#1677ff' }} />}
                                         style={{ fontSize: 13, padding: '4px 10px', background: '#f0f5ff', border: '1px solid #d6e4ff', color: '#0958d9', borderRadius: 4 }}
                                     >
-                                        Online (Google Meet)
+                                        Online P2P (WebRTC)
                                     </Tag>
                                 )}
                             </Descriptions.Item>
 
-                            {dataInit?.meetLink && (
-                                <Descriptions.Item label="Phòng Họp Trực Tuyến (Google Meet)" span={2}>
+                            {dataInit?.interviewType !== 'OFFLINE' && dataInit?.id && (
+                                <Descriptions.Item label="Phòng Phỏng Vấn Trực Tuyến P2P (WebRTC)" span={2}>
                                     <Space wrap align="center">
-                                        <a href={dataInit.meetLink} target="_blank" rel="noopener noreferrer">
-                                            <Button type="primary" icon={<VideoCameraOutlined />} size="small" style={{ borderRadius: 6 }}>
-                                                Tham Gia Phỏng Vấn
-                                            </Button>
-                                        </a>
+                                        <Button
+                                            type="primary"
+                                            icon={<VideoCameraOutlined />}
+                                            size="small"
+                                            style={{ borderRadius: 6 }}
+                                            onClick={() => window.open(`/interview/${dataInit.id}`, '_blank')}
+                                        >
+                                            Tham Gia Phòng P2P
+                                        </Button>
                                         <Button
                                             size="small"
                                             icon={<CopyOutlined />}
                                             onClick={() => {
-                                                navigator.clipboard.writeText(dataInit.meetLink);
-                                                message.success("Đã sao chép link Google Meet!");
+                                                const roomLink = `${window.location.origin}/interview/${dataInit.id}`;
+                                                navigator.clipboard.writeText(roomLink);
+                                                message.success("Đã sao chép link Phòng P2P!");
                                             }}
                                             style={{ borderRadius: 6 }}
                                         >
                                             Copy Link
                                         </Button>
-                                        <span style={{ color: '#1677ff', fontSize: 13, wordBreak: 'break-all' }}>{dataInit.meetLink}</span>
+                                        <span style={{ color: '#1677ff', fontSize: 13, wordBreak: 'break-all' }}>
+                                            {`${window.location.origin}/interview/${dataInit.id}`}
+                                        </span>
                                     </Space>
                                 </Descriptions.Item>
                             )}
@@ -504,7 +508,7 @@ const ViewDetailResume = (props: IProps) => {
                 </Descriptions>
             </Drawer>
 
-            {/* Modal xếp lịch phỏng vấn (Online Meet qua n8n hoặc Trực tiếp tại tiệm) */}
+            {/* Modal xếp lịch phỏng vấn (Online P2P WebRTC hoặc Trực tiếp tại tiệm) */}
             <Modal
                 title={<span style={{ color: '#111827', fontWeight: 600 }}>Duyệt Hồ Sơ & Lên Lịch Phỏng Vấn</span>}
                 open={isModalOpen}
@@ -524,7 +528,7 @@ const ViewDetailResume = (props: IProps) => {
                     form={interviewForm}
                     layout="vertical"
                     initialValues={{
-                        interviewType: 'ONLINE_MEET'
+                        interviewType: 'ONLINE_P2P'
                     }}
                     style={{ marginTop: 15 }}
                 >
@@ -538,9 +542,9 @@ const ViewDetailResume = (props: IProps) => {
                             style={{ width: '100%', display: 'flex' }}
                             onChange={(e) => setInterviewType(e.target.value)}
                         >
-                            <Radio.Button value="ONLINE_MEET" style={{ flex: 1, textAlign: 'center' }}>
+                            <Radio.Button value="ONLINE_P2P" style={{ flex: 1, textAlign: 'center' }}>
                                 <VideoCameraOutlined style={{ marginRight: 6 }} />
-                                Online (Google Meet)
+                                Online P2P (WebRTC)
                             </Radio.Button>
                             <Radio.Button value="OFFLINE" style={{ flex: 1, textAlign: 'center' }}>
                                 <ShopOutlined style={{ marginRight: 6 }} />
@@ -549,7 +553,7 @@ const ViewDetailResume = (props: IProps) => {
                         </Radio.Group>
                     </Form.Item>
 
-                    {interviewType === 'ONLINE_MEET' ? (
+                    {interviewType === 'ONLINE_P2P' ? (
                         <div style={{
                             padding: '12px 16px',
                             background: '#f0f7ff',
@@ -558,7 +562,7 @@ const ViewDetailResume = (props: IProps) => {
                             marginBottom: 16
                         }}>
                             <p style={{ margin: 0, fontSize: '13px', color: '#0958d9', lineHeight: 1.5 }}>
-                                ⚡ <strong>Tự động hóa n8n:</strong> Hệ thống sẽ chuyển hồ sơ sang <strong>REVIEWING</strong>, kích hoạt <strong>n8n Workflow</strong> để tạo lịch trên Google Calendar, sinh link phòng họp <strong>Google Meet</strong> và tự động gửi email thư mời đến <strong>{dataInit?.email}</strong>.
+                                🎥 <strong>Phỏng vấn P2P nội bộ (WebRTC):</strong> Hệ thống chuyển hồ sơ sang <strong>REVIEWING</strong>, tự động khởi tạo <strong>Phòng Phỏng Vấn Video & Truyền Tệp P2P</strong> ngay trên BakeJobs và gửi email thư mời kèm link phòng họp đến <strong>{dataInit?.email}</strong>.
                             </p>
                         </div>
                     ) : (

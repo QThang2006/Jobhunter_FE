@@ -126,7 +126,7 @@ export interface IResume {
     meetLink?: string;
     interviewDate?: string;
     interviewTime?: string;
-    interviewType?: 'ONLINE_MEET' | 'OFFLINE';
+    interviewType?: 'ONLINE_P2P' | 'ONLINE_MEET' | 'OFFLINE';
     note?: string;
     companyName?: string;
     company?: {

@@ -269,7 +269,7 @@ export const callSendApprovalEmail = (
     resumeId: string | number,
     interviewDate: string,
     interviewTime: string,
-    interviewType: 'ONLINE_MEET' | 'OFFLINE' = 'ONLINE_MEET',
+    interviewType: 'ONLINE_P2P' | 'ONLINE_MEET' | 'OFFLINE' = 'ONLINE_P2P',
     note?: string
 ) => {
     return axios.post<IBackendRes<any>>('/api/v1/email/approve', {
