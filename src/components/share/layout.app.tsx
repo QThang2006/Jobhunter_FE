@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWebSocket } from "@/context/websocket.context";
 import { fetchAccount } from "@/redux/slice/accountSlide";
+import { WebChatDrawerHost } from "@/components/share/web-chat-drawer";
 
 interface IProps {
     children: React.ReactNode
@@ -56,6 +57,7 @@ const LayoutApp = (props: IProps) => {
     return (
         <>
             {props.children}
+            <WebChatDrawerHost />
         </>
     )
 }
