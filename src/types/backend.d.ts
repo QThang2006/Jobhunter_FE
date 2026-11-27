@@ -323,14 +323,3 @@ export interface IWebRtcRoomInfo {
     participantRole: 'CANDIDATE' | 'INTERVIEWER';
     iceServers: { urls: string }[];
 }
-
-export interface IAiEvaluationResult {
-    matchScore: number;
-    verdict: string;
-    summary: string;
-    matchedSkills: string[];
-    missingSkills: string[];
-    strengths: string[];
-    suggestedQuestions: string[];
-    engineUsed: string;
-}

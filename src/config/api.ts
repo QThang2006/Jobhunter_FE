@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IWorkShift, IBakeryNetworkStatus, IWebChatContact, IWebChatMessage, IWebRtcRoomInfo, IAiEvaluationResult } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IWorkShift, IBakeryNetworkStatus, IWebChatContact, IWebChatMessage, IWebRtcRoomInfo } from '@/types/backend';
 import axios from 'config/axios-customize';
 import { nonAccentVietnamese } from '@/config/utils';
 
@@ -457,12 +457,8 @@ export const callMarkWebChatRead = (partnerId: number | string) => {
 };
 
 /**
- * Module WebRTC P2P Video Interview Room & AI Resume Evaluation
+ * Module WebRTC P2P Video Interview Room
  */
 export const callFetchWebRtcRoom = (resumeId: number | string) => {
     return axios.get<IBackendRes<IWebRtcRoomInfo>>(`/api/v1/webrtc/room/${resumeId}`);
-};
-
-export const callEvaluateResumeAi = (resumeId: number | string) => {
-    return axios.post<IBackendRes<IAiEvaluationResult>>(`/api/v1/ai/evaluate-resume/${resumeId}`);
 };
