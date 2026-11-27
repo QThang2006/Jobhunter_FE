@@ -15,6 +15,7 @@ import {
     LogoutOutlined,
     HomeOutlined,
     FieldTimeOutlined,
+    ApartmentOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Dropdown, Space, message, Avatar, Button, Drawer, Typography } from 'antd';
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -26,6 +27,7 @@ import type { MenuProps } from 'antd';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import { ALL_PERMISSIONS } from '@/config/permissions';
 import NotificationBell from '@/components/share/notification-bell';
+import WebChatWidget from '@/components/share/web-chat-drawer';
 import { GiCroissant } from 'react-icons/gi';
 
 const { Content, Sider } = Layout;
@@ -118,6 +120,11 @@ const LayoutAdmin = () => {
                     key: '/admin/shift',
                     icon: <FieldTimeOutlined />
                 }] : []),
+                {
+                    label: <Link to='/admin/bakery-network'>Mạng Xưởng Bánh P2P</Link>,
+                    key: '/admin/bakery-network',
+                    icon: <ApartmentOutlined />
+                },
                 ...(viewPermission || ACL_ENABLE === 'false' ? [{
                     label: <Link to='/admin/permission'>Quyền Hạn</Link>,
                     key: '/admin/permission',
@@ -191,6 +198,7 @@ const LayoutAdmin = () => {
                     </div>
 
                     <Space size={8} align="center">
+                        <WebChatWidget />
                         <NotificationBell theme="light" />
                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']} placement="bottomRight">
                             <Avatar
@@ -319,6 +327,7 @@ const LayoutAdmin = () => {
                         />
 
                         <Space size={16} align="center">
+                            <WebChatWidget />
                             <NotificationBell theme="light" />
                             <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                 <Space style={{ cursor: "pointer" }}>

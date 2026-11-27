@@ -66,8 +66,6 @@ export interface ISkill {
     updatedAt?: string;
 }
 
-
-
 export interface IUser {
     id?: string;
     name: string;
@@ -81,7 +79,6 @@ export interface IUser {
         id: string;
         name: string;
     }
-
     company?: {
         id: string;
         name: string;
@@ -111,7 +108,6 @@ export interface IJob {
     startDate: Date;
     endDate: Date;
     active: boolean;
-
     createdBy?: string;
     isDeleted?: boolean;
     deletedAt?: boolean | null;
@@ -174,13 +170,11 @@ export interface IPermission {
     apiPath?: string;
     method?: string;
     module?: string;
-
     createdBy?: string;
     isDeleted?: boolean;
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
-
 }
 
 export interface IRole {
@@ -189,7 +183,6 @@ export interface IRole {
     description: string;
     active: boolean;
     permissions: IPermission[] | string[];
-
     createdBy?: string;
     isDeleted?: boolean;
     deletedAt?: boolean | null;
@@ -213,8 +206,8 @@ export interface INotification {
     id: number;
     title: string;
     body: string;
-    status: string; // APPROVED | REJECTED | REVIEWING | PENDING
-    read: boolean;  // Java boolean isRead → Jackson serializes getter isRead() → "read"
+    status: string;
+    read: boolean;
     createdAt: string;
 }
 
@@ -222,7 +215,7 @@ export type WorkShiftStatus = 'ASSIGNED' | 'CONFIRMED' | 'COMPLETED' | 'TRANSFER
 
 export interface IWorkShift {
     id?: string | number;
-    shiftDate: string; // YYYY-MM-DD
+    shiftDate: string;
     shiftName: string;
     startTime?: string;
     endTime?: string;
@@ -244,4 +237,100 @@ export interface IWorkShift {
     };
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface IBakeryStationDto {
+    stationId: string;
+    bakerName: string;
+    email?: string;
+    kitchenZone: string;
+    companyName?: string;
+    ipAddress: string;
+    tcpPort: number;
+    udpPort: number;
+    status: string;
+    pingMs: number;
+}
+
+export interface ISharedRecipeIndex {
+    id: number;
+    fileName: string;
+    fileSize: number;
+    sha256Hash: string;
+    stationId: string;
+    bakerName: string;
+    kitchenZone: string;
+    companyName: string;
+    updatedAt: string;
+}
+
+export interface IBakeryStationLog {
+    id: number;
+    trackerHost: string;
+    eventType: string;
+    detail: string;
+    activeStationCount: number;
+    sharedRecipeCount: number;
+    createdAt: string;
+}
+
+export interface IBakeryNetworkStatus {
+    trackerOnline: boolean;
+    trackerHost: string;
+    rmiPort: number;
+    lastSyncAt: string | null;
+    onlineStations: IBakeryStationDto[];
+    sharedRecipes: ISharedRecipeIndex[];
+    recentLogs: IBakeryStationLog[];
+    pendingDirectiveCount: number;
+}
+
+export interface IWebChatContact {
+    userId: number;
+    name: string;
+    email: string;
+    roleName: string;
+    companyName: string;
+    lastMessage: string;
+    lastMessageAt: string | null;
+    unreadCount: number;
+}
+
+export interface IWebChatMessage {
+    id: number;
+    senderId: number;
+    senderName: string;
+    senderEmail: string;
+    receiverId: number;
+    receiverName: string;
+    receiverEmail: string;
+    jobId?: number;
+    jobName?: string;
+    content: string;
+    read: boolean;
+    createdAt: string;
+}
+
+export interface IWebRtcRoomInfo {
+    roomId: string;
+    resumeId: number;
+    candidateEmail: string;
+    candidateName: string;
+    jobName: string;
+    companyName: string;
+    interviewDate?: string;
+    interviewTime?: string;
+    participantRole: 'CANDIDATE' | 'INTERVIEWER';
+    iceServers: { urls: string }[];
+}
+
+export interface IAiEvaluationResult {
+    matchScore: number;
+    verdict: string;
+    summary: string;
+    matchedSkills: string[];
+    missingSkills: string[];
+    strengths: string[];
+    suggestedQuestions: string[];
+    engineUsed: string;
 }

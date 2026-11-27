@@ -1,4 +1,4 @@
-import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IWorkShift } from '@/types/backend';
+import { IBackendRes, ICompany, IAccount, IUser, IModelPaginate, IGetAccount, IJob, IResume, IPermission, IRole, ISkill, ISubscribers, IWorkShift, IBakeryNetworkStatus, IWebChatContact, IWebChatMessage, IWebRtcRoomInfo, IAiEvaluationResult } from '@/types/backend';
 import axios from 'config/axios-customize';
 import { nonAccentVietnamese } from '@/config/utils';
 
@@ -412,4 +412,53 @@ export const callFetchMyWorkShifts = (query: string = 'page=1&size=20&sort=shift
 export const callFetchCompanyEmployees = (companyId?: string | number) => {
     const q = companyId ? `?companyId=${companyId}` : '';
     return axios.get<IBackendRes<IUser[]>>(`/api/v1/shifts/employees${q}`);
+};
+
+/**
+ * Module Bakery P2P Network Monitor (Đồng bộ từ JobCake RMI Tracker)
+ */
+export const callFetchBakeryNetworkStatus = () => {
+    return axios.get<IBackendRes<IBakeryNetworkStatus>>('/api/v1/bakery-network/status');
+};
+
+export const callSendBakeryDirective = (message: string) => {
+    return axios.post<IBackendRes<{ queued: boolean; directive: string; pendingCount: number }>>('/api/v1/bakery-network/directive', { message });
+};
+
+/**
+ * Module Web Chat Messenger (Client-Server WebSocket STOMP giữa HR & Ứng viên)
+ */
+export const callFetchWebChatContacts = () => {
+    return axios.get<IBackendRes<IWebChatContact[]>>('/api/v1/web-chat/contacts');
+};
+
+export const callFetchWebChatMessages = (partnerId: number | string) => {
+    return axios.get<IBackendRes<IWebChatMessage[]>>(`/api/v1/web-chat/messages/${partnerId}`);
+};
+
+export const callSendWebChatMessage = (receiverId: number | string, content: string, jobId?: number | string) => {
+    return axios.post<IBackendRes<IWebChatMessage>>('/api/v1/web-chat/send', {
+        receiverId: Number(receiverId),
+        jobId: jobId ? Number(jobId) : null,
+        content
+    });
+};
+
+export const callResolveJobRecruiter = (jobId: number | string) => {
+    return axios.get<IBackendRes<IWebChatContact>>(`/api/v1/web-chat/job-recruiter/${jobId}`);
+};
+
+export const callFetchWebChatUnreadCount = () => {
+    return axios.get<IBackendRes<{ unreadCount: number }>>('/api/v1/web-chat/unread-count');
+};
+
+/**
+ * Module WebRTC P2P Video Interview Room & AI Resume Evaluation
+ */
+export const callFetchWebRtcRoom = (resumeId: number | string) => {
+    return axios.get<IBackendRes<IWebRtcRoomInfo>>(`/api/v1/webrtc/room/${resumeId}`);
+};
+
+export const callEvaluateResumeAi = (resumeId: number | string) => {
+    return axios.post<IBackendRes<IAiEvaluationResult>>(`/api/v1/ai/evaluate-resume/${resumeId}`);
 };

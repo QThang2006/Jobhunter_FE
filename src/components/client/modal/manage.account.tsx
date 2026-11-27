@@ -1,11 +1,11 @@
-import { Button, Col, Form, Modal, Row, Select, Table, Tabs, message, notification, Input } from "antd";
+import { Button, Col, Form, Modal, Row, Select, Space, Table, Tabs, message, notification, Input } from "antd";
 import type { TabsProps } from 'antd';
 import { IResume, ISubscribers } from "@/types/backend";
 import { useState, useEffect, useCallback } from 'react';
 import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callUpdateProfile, callFetchProfile, callUpdatePassword } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { MonitorOutlined } from "@ant-design/icons";
+import { MonitorOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { SKILLS_LIST } from "@/config/utils";
 import { useAppSelector } from "@/redux/hooks";
 import { useWebSocket } from "@/context/websocket.context";
@@ -83,7 +83,7 @@ const UserResume = (props: any) => {
             },
         },
         {
-            title: '',
+            title: 'Thao tác',
             dataIndex: "",
             render(value, record, index) {
                 const getFileUrl = (url?: string) => {
@@ -92,11 +92,24 @@ const UserResume = (props: any) => {
                     return `${import.meta.env.VITE_BACKEND_URL}/storage/resume/${url}`;
                 };
                 return (
-                    <a
-                        href={getFileUrl(record?.url)}
-                        target="_blank"
-                        rel="noreferrer"
-                    >Chi tiết</a>
+                    <Space size={10}>
+                        <a
+                            href={getFileUrl(record?.url)}
+                            target="_blank"
+                            rel="noreferrer"
+                        >Xem CV</a>
+                        {record?.id && (
+                            <Button
+                                size="small"
+                                type="primary"
+                                ghost
+                                icon={<VideoCameraOutlined />}
+                                onClick={() => window.open(`/interview/${record.id}`, '_blank')}
+                            >
+                                Phòng P2P
+                            </Button>
+                        )}
+                    </Space>
                 )
             },
         },

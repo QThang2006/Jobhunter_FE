@@ -13,6 +13,7 @@ import { callLogout } from '@/config/api';
 import { setLogoutAction } from '@/redux/slice/accountSlide';
 import ManageAccount from './modal/manage.account';
 import NotificationBell from '@/components/share/notification-bell';
+import WebChatWidget from '@/components/share/web-chat-drawer';
 
 const Header = (props: any) => {
     const navigate = useNavigate();
@@ -162,6 +163,7 @@ const Header = (props: any) => {
                                     <Link to={'/login'}>Đăng Nhập</Link>
                                     :
                                     <Space size={16} align="center">
+                                        <WebChatWidget />
                                         <NotificationBell theme="light" />
                                         <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
                                             <Space style={{ cursor: "pointer" }}>
@@ -175,6 +177,7 @@ const Header = (props: any) => {
                         </div>
 
                         <div className={styles['header-mobile-trigger']}>
+                            {isAuthenticated && <WebChatWidget />}
                             {isAuthenticated && <NotificationBell theme="light" />}
                             <MenuFoldOutlined
                                 className={styles['hamburger-icon']}

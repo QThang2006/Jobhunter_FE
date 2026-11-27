@@ -34,6 +34,8 @@ import ClientCompanyDetailPage from './pages/company/detail';
 import JobTabs from './pages/admin/job/job.tabs';
 import ShiftPage from './pages/admin/shift';
 import MyShiftsPage from './pages/shift/my-shifts';
+import BakeryNetworkPage from './pages/admin/bakery-network';
+import WebRtcInterviewRoomPage from './pages/interview/webrtc-room';
 
 const LayoutClient = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -85,7 +87,8 @@ export default function App() {
         { path: "job/:id", element: <ClientJobDetailPage /> },
         { path: "company", element: <ClientCompanyPage /> },
         { path: "company/:id", element: <ClientCompanyDetailPage /> },
-        { path: "my-shifts", element: <ProtectedRoute><MyShiftsPage /></ProtectedRoute> }
+        { path: "my-shifts", element: <ProtectedRoute><MyShiftsPage /></ProtectedRoute> },
+        { path: "interview/:resumeId", element: <ProtectedRoute><WebRtcInterviewRoomPage /></ProtectedRoute> }
       ],
     },
 
@@ -141,6 +144,13 @@ export default function App() {
           element:
             <ProtectedRoute>
               <ShiftPage />
+            </ProtectedRoute>
+        },
+        {
+          path: "bakery-network",
+          element:
+            <ProtectedRoute>
+              <BakeryNetworkPage />
             </ProtectedRoute>
         },
         {

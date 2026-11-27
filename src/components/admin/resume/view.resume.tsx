@@ -1,12 +1,12 @@
-import { callUpdateResumeStatus, callSendApprovalEmail } from "@/config/api";
-import { IResume } from "@/types/backend";
-import { Button, Descriptions, Drawer, Form, Select, message, notification, Modal, DatePicker, TimePicker, Radio, Input, Space, Tag } from "antd";
+import { callUpdateResumeStatus, callSendApprovalEmail, callEvaluateResumeAi } from "@/config/api";
+import { IResume, IAiEvaluationResult } from "@/types/backend";
+import { Button, Descriptions, Drawer, Form, Select, message, notification, Modal, DatePicker, TimePicker, Radio, Input, Space, Tag, Progress } from "antd";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
 import { useState, useEffect } from 'react';
-import { FileTextOutlined, VideoCameraOutlined, ShopOutlined, CopyOutlined, CalendarOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { FileTextOutlined, VideoCameraOutlined, ShopOutlined, CopyOutlined, CalendarOutlined, CheckCircleOutlined, RobotOutlined } from '@ant-design/icons';
 const { Option } = Select;
 
 interface IProps {
@@ -20,6 +20,9 @@ interface IProps {
 const ViewDetailResume = (props: IProps) => {
     const [isSubmit, setIsSubmit] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
+    const [aiResult, setAiResult] = useState<IAiEvaluationResult | null>(null);
+    const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
     const [interviewForm] = Form.useForm();
     const { onClose, open, dataInit, setDataInit, reloadTable } = props;
     const [form] = Form.useForm();
@@ -277,7 +280,39 @@ const ViewDetailResume = (props: IProps) => {
                 maskClosable={false}
                 destroyOnClose
                 extra={
-                    <Space>
+                    <Space wrap>
+                        {dataInit?.id && (
+                            <>
+                                <Button
+                                    icon={<RobotOutlined />}
+                                    loading={isAiLoading}
+                                    onClick={async () => {
+                                        setIsAiLoading(true);
+                                        try {
+                                            const res = await callEvaluateResumeAi(dataInit.id);
+                                            if (res?.data) {
+                                                setAiResult(res.data);
+                                                setIsAiModalOpen(true);
+                                            } else {
+                                                message.error(res?.message || "Không thể phân tích CV");
+                                            }
+                                        } finally {
+                                            setIsAiLoading(false);
+                                        }
+                                    }}
+                                    style={{ borderRadius: 6, borderColor: '#7c3aed', color: '#7c3aed', fontWeight: 500 }}
+                                >
+                                    AI Đánh Giá CV
+                                </Button>
+                                <Button
+                                    icon={<VideoCameraOutlined />}
+                                    onClick={() => window.open(`/interview/${dataInit.id}`, '_blank')}
+                                    style={{ borderRadius: 6, borderColor: '#0d9488', color: '#0d9488', fontWeight: 500 }}
+                                >
+                                    Phòng P2P (WebRTC)
+                                </Button>
+                            </>
+                        )}
                         {dataInit?.status === 'REVIEWING' && (
                             <Button
                                 icon={<CalendarOutlined />}
@@ -577,6 +612,80 @@ const ViewDetailResume = (props: IProps) => {
                         />
                     </Form.Item>
                 </Form>
+            </Modal>
+
+            {/* Modal kết quả AI Đánh giá & Chấm điểm CV */}
+            <Modal
+                title={
+                    <Space>
+                        <RobotOutlined style={{ color: '#7c3aed' }} />
+                        <span>Kết Quả AI Phân Tích & Chấm Điểm Hồ Sơ Ứng Viên</span>
+                        {aiResult?.engineUsed && <Tag color="purple">{aiResult.engineUsed}</Tag>}
+                    </Space>
+                }
+                open={isAiModalOpen}
+                onCancel={() => setIsAiModalOpen(false)}
+                footer={[
+                    <Button key="close" type="primary" onClick={() => setIsAiModalOpen(false)}>
+                        Đóng
+                    </Button>
+                ]}
+                width={640}
+            >
+                {aiResult && (
+                    <div style={{ marginTop: 12 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 18, background: '#f8fafc', padding: 14, borderRadius: 10 }}>
+                            <Progress
+                                type="circle"
+                                percent={aiResult.matchScore}
+                                size={84}
+                                strokeColor={aiResult.matchScore >= 80 ? '#16a34a' : aiResult.matchScore >= 65 ? '#2563eb' : '#d97706'}
+                            />
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 700, fontSize: 16, color: '#111827', marginBottom: 4 }}>
+                                    {aiResult.verdict}
+                                </div>
+                                <div style={{ fontSize: 13.5, color: '#374151', lineHeight: 1.55 }}>
+                                    {aiResult.summary}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ marginBottom: 12 }}>
+                            <strong>✅ Kỹ năng nghề bánh phù hợp: </strong>
+                            {aiResult.matchedSkills?.length ? aiResult.matchedSkills.map((s, idx) => (
+                                <Tag color="green" key={idx} style={{ marginTop: 4 }}>{s}</Tag>
+                            )) : <span style={{ color: '#6b7280' }}>Cần trao đổi thêm khi phỏng vấn</span>}
+                        </div>
+
+                        {aiResult.missingSkills?.length > 0 && (
+                            <div style={{ marginBottom: 12 }}>
+                                <strong>⚠️ Kỹ năng cần kiểm tra thêm: </strong>
+                                {aiResult.missingSkills.map((s, idx) => (
+                                    <Tag color="orange" key={idx} style={{ marginTop: 4 }}>{s}</Tag>
+                                ))}
+                            </div>
+                        )}
+
+                        <div style={{ marginBottom: 12 }}>
+                            <strong>💡 Điểm nổi bật của hồ sơ:</strong>
+                            <ul style={{ margin: '6px 0 0', paddingLeft: 20 }}>
+                                {aiResult.strengths?.map((st, idx) => (
+                                    <li key={idx} style={{ marginBottom: 4 }}>{st}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <div style={{ background: '#f5f3ff', padding: '10px 14px', borderRadius: 8, border: '1px solid #ddd6fe' }}>
+                            <strong style={{ color: '#5b21b6' }}>🎯 Gợi ý câu hỏi phỏng vấn thực hành:</strong>
+                            <ol style={{ margin: '6px 0 0', paddingLeft: 20 }}>
+                                {aiResult.suggestedQuestions?.map((q, idx) => (
+                                    <li key={idx} style={{ marginBottom: 4, color: '#374151' }}>{q}</li>
+                                ))}
+                            </ol>
+                        </div>
+                    </div>
+                )}
             </Modal>
         </>
     );

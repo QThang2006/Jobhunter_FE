@@ -1,22 +1,25 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { IJob } from "@/types/backend";
-import { callFetchJobById } from "@/config/api";
+import { callFetchJobById, callResolveJobRecruiter } from "@/config/api";
 import styles from 'styles/client.module.scss';
 import parse from 'html-react-parser';
-import { Button, Col, Divider, Row, Skeleton, Tag } from "antd";
-import { DollarOutlined, EnvironmentOutlined, HistoryOutlined, ShopOutlined } from "@ant-design/icons";
+import { Button, Col, Divider, Row, Skeleton, Space, Tag, message } from "antd";
+import { DollarOutlined, EnvironmentOutlined, HistoryOutlined, MessageOutlined, ShopOutlined } from "@ant-design/icons";
 import { convertSlug, getLocationName } from "@/config/utils";
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import ApplyModal from "@/components/client/modal/apply.modal";
 import { useWebSocket } from "@/context/websocket.context";
+import { useAppSelector } from "@/redux/hooks";
+import { triggerOpenWebChat } from "@/components/share/web-chat-drawer";
 dayjs.extend(relativeTime);
 
 const ClientJobDetailPage = (props: any) => {
     const [jobDetail, setJobDetail] = useState<IJob | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -76,26 +79,54 @@ const ClientJobDetailPage = (props: any) => {
                                 </h1>
 
                                 <div style={{ marginBottom: 16 }}>
-                                    <Button
-                                        type="primary"
-                                        size="large"
-                                        onClick={() => setIsModalOpen(true)}
-                                        disabled={Boolean(isExpired || isNotStarted)}
-                                        style={{
-                                            width: "100%",
-                                            maxWidth: 320,
-                                            height: 42,
-                                            fontSize: 15,
-                                            fontWeight: 500,
-                                            borderRadius: 6
-                                        }}
-                                    >
-                                        {isExpired
-                                            ? "Đã hết hạn tuyển"
-                                            : isNotStarted
-                                                ? "Chưa mở tuyển"
-                                                : "Ứng Tuyển Ca Này"}
-                                    </Button>
+                                    <Space wrap size={12}>
+                                        <Button
+                                            type="primary"
+                                            size="large"
+                                            onClick={() => setIsModalOpen(true)}
+                                            disabled={Boolean(isExpired || isNotStarted)}
+                                            style={{
+                                                minWidth: 220,
+                                                height: 42,
+                                                fontSize: 15,
+                                                fontWeight: 500,
+                                                borderRadius: 6
+                                            }}
+                                        >
+                                            {isExpired
+                                                ? "Đã hết hạn tuyển"
+                                                : isNotStarted
+                                                    ? "Chưa mở tuyển"
+                                                    : "Ứng Tuyển Ca Này"}
+                                        </Button>
+                                        <Button
+                                            size="large"
+                                            icon={<MessageOutlined />}
+                                            onClick={async () => {
+                                                if (!isAuthenticated) {
+                                                    message.info("Vui lòng đăng nhập để nhắn tin trực tuyến với Tiệm bánh!");
+                                                    navigate('/login');
+                                                    return;
+                                                }
+                                                if (!jobDetail.id) return;
+                                                const res = await callResolveJobRecruiter(jobDetail.id);
+                                                if (res?.data) {
+                                                    triggerOpenWebChat(res.data, jobDetail.id, jobDetail.name);
+                                                } else {
+                                                    message.warning(res?.message || "Không tìm thấy người phụ trách tin tuyển dụng.");
+                                                }
+                                            }}
+                                            style={{
+                                                height: 42,
+                                                fontSize: 14,
+                                                borderRadius: 6,
+                                                borderColor: '#1677ff',
+                                                color: '#1677ff'
+                                            }}
+                                        >
+                                            Nhắn Tin Với Tiệm Bánh
+                                        </Button>
+                                    </Space>
                                 </div>
 
                                 <div className={styles["skills"]}>
