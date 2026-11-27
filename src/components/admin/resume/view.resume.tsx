@@ -6,7 +6,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
 import { useState, useEffect } from 'react';
-import { FileTextOutlined, VideoCameraOutlined, ShopOutlined, CopyOutlined, CalendarOutlined, CheckCircleOutlined, RobotOutlined } from '@ant-design/icons';
+import { FileTextOutlined, VideoCameraOutlined, ShopOutlined, CopyOutlined, CalendarOutlined, CheckCircleOutlined, RobotOutlined, MessageOutlined } from '@ant-design/icons';
+import { triggerOpenWebChat } from "@/components/share/web-chat-drawer";
 const { Option } = Select;
 
 interface IProps {
@@ -307,6 +308,29 @@ const ViewDetailResume = (props: IProps) => {
                                 >
                                     Phòng P2P (WebRTC)
                                 </Button>
+                                {dataInit?.user?.id && (
+                                    <Button
+                                        icon={<MessageOutlined />}
+                                        onClick={() => {
+                                            triggerOpenWebChat(
+                                                {
+                                                    userId: Number(dataInit.user.id),
+                                                    name: dataInit.user.name || dataInit.email,
+                                                    email: dataInit.email,
+                                                    roleName: 'USER',
+                                                    companyName: '',
+                                                    lastMessage: `Trao đổi hồ sơ: ${dataInit?.job?.name || ''}`,
+                                                    lastMessageAt: null,
+                                                    unreadCount: 0
+                                                },
+                                                dataInit?.job?.id
+                                            );
+                                        }}
+                                        style={{ borderRadius: 6, borderColor: '#1677ff', color: '#1677ff', fontWeight: 500 }}
+                                    >
+                                        Nhắn Ứng Viên
+                                    </Button>
+                                )}
                             </>
                         )}
                         {dataInit?.status === 'REVIEWING' && (

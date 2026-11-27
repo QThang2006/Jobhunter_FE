@@ -452,6 +452,10 @@ export const callFetchWebChatUnreadCount = () => {
     return axios.get<IBackendRes<{ unreadCount: number }>>('/api/v1/web-chat/unread-count');
 };
 
+export const callMarkWebChatRead = (partnerId: number | string) => {
+    return axios.put<IBackendRes<{ unreadCount: number }>, IBackendRes<{ unreadCount: number }>>(`/api/v1/web-chat/messages/${partnerId}/read`);
+};
+
 /**
  * Module WebRTC P2P Video Interview Room & AI Resume Evaluation
  */

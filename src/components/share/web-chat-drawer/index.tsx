@@ -6,6 +6,7 @@ import {
     callFetchWebChatContacts,
     callFetchWebChatMessages,
     callFetchWebChatUnreadCount,
+    callMarkWebChatRead,
     callSendWebChatMessage
 } from '@/config/api';
 import { IWebChatContact, IWebChatMessage } from '@/types/backend';
@@ -20,12 +21,12 @@ const UNREAD_COUNT_SYNC_EVENT = 'jobcake:web-chat-unread-sync';
 let cachedUnreadCount = 0;
 
 const publishUnreadCount = (count: number) => {
-    cachedUnreadCount = count;
-    window.dispatchEvent(new CustomEvent<number>(UNREAD_COUNT_SYNC_EVENT, { detail: count }));
+    cachedUnreadCount = Math.max(0, count);
+    window.dispatchEvent(new CustomEvent<number>(UNREAD_COUNT_SYNC_EVENT, { detail: cachedUnreadCount }));
 };
 
 /**
- * Mở thẳng khung chat duy nhất trên toàn ứng dụng (từ nút icon Header hoặc nút "Nhắn Tin Với Tiệm Bánh").
+ * Mở thẳng khung chat duy nhất trên toàn ứng dụng (từ nút icon Header, nút "Nhắn Tin Với Tiệm Bánh" hoặc nút "Nhắn Tin Ứng Viên").
  */
 export const triggerOpenWebChat = (contact?: IWebChatContact, jobId?: number | string, jobName?: string) => {
     window.dispatchEvent(new CustomEvent(OPEN_WEB_CHAT_EVENT, {
@@ -82,39 +83,83 @@ export const WebChatDrawerHost = () => {
     const [inputValue, setInputValue] = useState<string>('');
     const [contextJobId, setContextJobId] = useState<number | string | undefined>(undefined);
     const [sending, setSending] = useState<boolean>(false);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const openRef = useRef<boolean>(open);
+    const selectedContactRef = useRef<IWebChatContact | null>(selectedContact);
+
+    useEffect(() => {
+        openRef.current = open;
+    }, [open]);
+
+    useEffect(() => {
+        selectedContactRef.current = selectedContact;
+    }, [selectedContact]);
+
+    // Reset sạch state khi đăng xuất hoặc đổi tài khoản trong cùng trình duyệt
+    useEffect(() => {
+        setOpen(false);
+        setContacts([]);
+        setSelectedContact(null);
+        setMessages([]);
+        setInputValue('');
+        setContextJobId(undefined);
+        publishUnreadCount(0);
+    }, [isAuthenticated, currentUser?.id]);
 
     const loadUnread = useCallback(async () => {
         if (!isAuthenticated) {
             publishUnreadCount(0);
             return;
         }
-        const res = await callFetchWebChatUnreadCount();
-        if (res?.data !== undefined) {
-            publishUnreadCount(res.data.unreadCount || 0);
+        try {
+            const res = await callFetchWebChatUnreadCount();
+            if (res?.data !== undefined) {
+                publishUnreadCount(res.data.unreadCount || 0);
+            }
+        } catch {
+            // silent
         }
     }, [isAuthenticated]);
 
     const loadContacts = useCallback(async () => {
         if (!isAuthenticated) return;
-        const res = await callFetchWebChatContacts();
-        if (res?.data) {
-            setContacts(res.data);
+        try {
+            const res = await callFetchWebChatContacts();
+            if (res?.data) {
+                const serverContacts = res.data;
+                const currentTarget = selectedContactRef.current;
+                // Giữ lại liên hệ vừa mở từ trang Job/CV nếu hai bên chưa gửi tin đầu tiên
+                if (currentTarget && !serverContacts.some(c => Number(c.userId) === Number(currentTarget.userId))) {
+                    setContacts([currentTarget, ...serverContacts]);
+                } else {
+                    setContacts(serverContacts);
+                }
+            }
+        } catch {
+            // silent
         }
     }, [isAuthenticated]);
 
     const loadConversation = useCallback(async (partnerId: number) => {
-        const res = await callFetchWebChatMessages(partnerId);
-        if (res?.data) {
-            setMessages(res.data);
-            loadUnread();
-            loadContacts();
+        if (!isAuthenticated) return;
+        try {
+            const res = await callFetchWebChatMessages(partnerId);
+            if (res?.data) {
+                setMessages(res.data);
+                loadUnread();
+                loadContacts();
+            }
+        } catch {
+            // silent
         }
-    }, [loadUnread, loadContacts]);
+    }, [isAuthenticated, loadUnread, loadContacts]);
 
     useEffect(() => {
-        loadUnread();
-    }, [loadUnread]);
+        if (isAuthenticated && currentUser?.id) {
+            loadUnread();
+        }
+    }, [isAuthenticated, currentUser?.id, loadUnread]);
 
     useEffect(() => {
         if (open) {
@@ -124,7 +169,7 @@ export const WebChatDrawerHost = () => {
 
     useEffect(() => {
         if (selectedContact?.userId && open) {
-            loadConversation(selectedContact.userId);
+            loadConversation(Number(selectedContact.userId));
         }
     }, [selectedContact?.userId, open, loadConversation]);
 
@@ -139,9 +184,10 @@ export const WebChatDrawerHost = () => {
             setOpen(true);
             if (custom.detail?.contact) {
                 const target = custom.detail.contact;
+                selectedContactRef.current = target;
                 setSelectedContact(target);
                 setContextJobId(custom.detail.jobId);
-                setContacts(prev => prev.some(c => c.userId === target.userId) ? prev : [target, ...prev]);
+                setContacts(prev => prev.some(c => Number(c.userId) === Number(target.userId)) ? prev : [target, ...prev]);
                 if (custom.detail.jobName) {
                     setInputValue(prev => prev || `Chào tiệm bánh, mình muốn hỏi thêm về vị trí "${custom.detail.jobName}" ạ!`);
                 }
@@ -152,18 +198,38 @@ export const WebChatDrawerHost = () => {
     }, []);
 
     // Lắng nghe tin nhắn thời gian thực qua WebSocket STOMP (/topic/web-chat/{userId})
+    // Dùng ref cho open/selectedContact để giữ kết nối ổn định 1 lần duy nhất trong suốt phiên đăng nhập
     useEffect(() => {
         if (!stompClient || !stompClient.connected || !currentUser?.id) return;
-        const sub = stompClient.subscribe(`/topic/web-chat/${currentUser.id}`, (frame) => {
+        const myId = Number(currentUser.id);
+
+        const sub = stompClient.subscribe(`/topic/web-chat/${myId}`, (frame) => {
             if (!frame.body) return;
             try {
                 const incoming: IWebChatMessage = JSON.parse(frame.body);
-                const myId = Number(currentUser.id);
-                const partnerId = incoming.senderId === myId ? incoming.receiverId : incoming.senderId;
+                const senderId = Number(incoming.senderId);
+                const receiverId = Number(incoming.receiverId);
+                const partnerId = senderId === myId ? receiverId : senderId;
 
-                if (open && selectedContact && selectedContact.userId === partnerId) {
-                    setMessages(prev => prev.some(m => m.id === incoming.id) ? prev : [...prev, incoming]);
-                } else if (incoming.receiverId === myId) {
+                const isDrawerOpen = openRef.current;
+                const activePartner = selectedContactRef.current;
+                const isViewingPartner = isDrawerOpen && activePartner && Number(activePartner.userId) === partnerId;
+
+                if (isViewingPartner) {
+                    setMessages(prev => prev.some(m => Number(m.id) === Number(incoming.id)) ? prev : [...prev, incoming]);
+                    if (receiverId === myId) {
+                        // Đang mở đúng khung chat với người gửi -> đánh dấu đã đọc ngay trên DB để đồng bộ badge = 0
+                        callMarkWebChatRead(partnerId)
+                            .then((res) => {
+                                if (res?.data !== undefined) {
+                                    publishUnreadCount(res.data.unreadCount || 0);
+                                }
+                                loadContacts();
+                            })
+                            .catch(() => loadContacts());
+                        return;
+                    }
+                } else if (receiverId === myId) {
                     publishUnreadCount(cachedUnreadCount + 1);
                 }
                 loadContacts();
@@ -172,22 +238,47 @@ export const WebChatDrawerHost = () => {
             }
         });
         return () => sub.unsubscribe();
-    }, [stompClient, currentUser?.id, open, selectedContact, loadContacts]);
+    }, [stompClient, currentUser?.id, loadContacts]);
+
+    // Fallback nhẹ: nếu đang mở khung chat mà WebSocket tạm ngắt (ví dụ Render vừa ngủ dậy), tự đồng bộ lại mỗi 8 giây
+    useEffect(() => {
+        if (!open || !isAuthenticated || (stompClient && stompClient.connected)) return;
+        const timer = setInterval(() => {
+            loadContacts();
+            if (selectedContactRef.current?.userId) {
+                loadConversation(Number(selectedContactRef.current.userId));
+            }
+        }, 8000);
+        return () => clearInterval(timer);
+    }, [open, isAuthenticated, stompClient, loadContacts, loadConversation]);
+
+    const handleSelectContact = (item: IWebChatContact) => {
+        if (Number(selectedContact?.userId) !== Number(item.userId)) {
+            setContextJobId(undefined);
+            setInputValue('');
+        }
+        selectedContactRef.current = item;
+        setSelectedContact(item);
+    };
 
     const handleSend = async () => {
-        if (!selectedContact || !inputValue.trim()) return;
+        if (!selectedContact || !inputValue.trim() || sending) return;
         const text = inputValue.trim();
         setInputValue('');
         setSending(true);
         try {
             const res = await callSendWebChatMessage(selectedContact.userId, text, contextJobId);
             if (res?.data) {
-                setMessages(prev => prev.some(m => m.id === res.data!.id) ? prev : [...prev, res.data!]);
+                setMessages(prev => prev.some(m => Number(m.id) === Number(res.data!.id)) ? prev : [...prev, res.data!]);
                 setContextJobId(undefined);
                 loadContacts();
             } else {
-                message.error('Không gửi được tin nhắn');
+                setInputValue(text);
+                message.error(res?.message || 'Không gửi được tin nhắn');
             }
+        } catch (err: any) {
+            setInputValue(text);
+            message.error(err?.response?.data?.message || 'Không gửi được tin nhắn');
         } finally {
             setSending(false);
         }
@@ -223,10 +314,10 @@ export const WebChatDrawerHost = () => {
                         <List
                             dataSource={contacts}
                             renderItem={item => {
-                                const active = selectedContact?.userId === item.userId;
+                                const active = Number(selectedContact?.userId) === Number(item.userId);
                                 return (
                                     <List.Item
-                                        onClick={() => setSelectedContact(item)}
+                                        onClick={() => handleSelectContact(item)}
                                         style={{
                                             padding: '12px 14px',
                                             cursor: 'pointer',
@@ -276,7 +367,7 @@ export const WebChatDrawerHost = () => {
 
                             <div style={{ flex: 1, padding: '14px 16px', overflowY: 'auto', background: '#f8fafc' }}>
                                 {messages.map(msg => {
-                                    const isMine = String(msg.senderId) === String(currentUser?.id);
+                                    const isMine = Number(msg.senderId) === Number(currentUser?.id);
                                     return (
                                         <div
                                             key={msg.id}

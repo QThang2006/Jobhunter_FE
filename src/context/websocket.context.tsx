@@ -12,36 +12,63 @@ const WebSocketContext = createContext<IWebSocketContext>({ stompClient: null })
 export const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
     const [stompClient, setStompClient] = useState<Stomp.Client | null>(null);
     const isAuthenticated = useAppSelector(state => state.account.isAuthenticated);
+    const userId = useAppSelector(state => state.account.user?.id);
     // Lấy token từ localStorage (giống như axios)
     const token = localStorage.getItem('access_token');
 
     useEffect(() => {
         setStompClient(null);
         if (!isAuthenticated || !token) return;
+
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        // Kết nối vào endpoint "/ws" mà server đã mở
-        const socket = new SockJS(`${backendUrl}/ws`);
-        const client = Stomp.over(socket);
+        let active = true;
+        let currentClient: Stomp.Client | null = null;
+        let currentSocket: WebSocket | null = null;
+        let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
-        // Tắt log debug cho đỡ rối console
-        client.debug = () => { };
+        const connect = () => {
+            if (!active) return;
+            const latestToken = localStorage.getItem('access_token');
+            if (!latestToken) return;
 
-        // Chuẩn bị header gửi kèm (Auth)
-        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+            const socket = new SockJS(`${backendUrl}/ws`);
+            const client = Stomp.over(socket);
+            client.debug = () => { };
+            currentSocket = socket;
+            currentClient = client;
 
-        client.connect(headers, (frame) => {
-            console.log('✅ Connected to WebSocket System');
-            setStompClient(client);
-        }, (error) => {
-            console.error('❌ WebSocket Error:', error);
-        });
+            const headers = { Authorization: `Bearer ${latestToken}` };
+            client.connect(
+                headers,
+                () => {
+                    if (!active) {
+                        if (client.connected) client.disconnect(() => socket.close());
+                        return;
+                    }
+                    setStompClient(client);
+                },
+                () => {
+                    if (!active) return;
+                    setStompClient(null);
+                    if (reconnectTimer) clearTimeout(reconnectTimer);
+                    reconnectTimer = setTimeout(connect, 5000);
+                }
+            );
+        };
 
-        // Cleanup: Ngắt kết nối khi unmount hoặc khi token thay đổi (login/logout)
+        connect();
+
         return () => {
-            if (client.connected) client.disconnect(() => socket.close());
-            else socket.close();
-        }
-    }, [isAuthenticated, token]); // Chạy lại khi trạng thái đăng nhập thay đổi
+            active = false;
+            if (reconnectTimer) clearTimeout(reconnectTimer);
+            if (currentClient?.connected) {
+                currentClient.disconnect(() => currentSocket?.close());
+            } else {
+                currentSocket?.close();
+            }
+            setStompClient(null);
+        };
+    }, [isAuthenticated, token, userId]);
 
     return (
         <WebSocketContext.Provider value={{ stompClient }}>
