@@ -321,5 +321,8 @@ export interface IWebRtcRoomInfo {
     interviewDate?: string;
     interviewTime?: string;
     participantRole: 'CANDIDATE' | 'INTERVIEWER';
+    activeParticipants?: number;
+    maxParticipants?: number;
+    roomFull?: boolean;
     iceServers: { urls: string }[];
 }

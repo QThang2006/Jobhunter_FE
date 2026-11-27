@@ -50,14 +50,37 @@ const WebRtcInterviewRoomPage = () => {
     const remoteVideoRef = useRef<HTMLVideoElement>(null);
     const pcRef = useRef<RTCPeerConnection | null>(null);
     const localStreamRef = useRef<MediaStream | null>(null);
+    const screenStreamRef = useRef<MediaStream | null>(null);
     const dataChannelRef = useRef<RTCDataChannel | null>(null);
     const pendingCandidatesRef = useRef<RTCIceCandidateInit[]>([]);
+    const hasLeftRef = useRef<boolean>(false);
     const clientInstanceId = useRef<string>(`${currentUser?.id || 'u'}-${Math.random().toString(36).slice(2, 8)}`);
 
     // Bộ đệm ghép file nhận qua RTCDataChannel P2P
     const incomingFileMeta = useRef<{ name: string; size: number; sender: string } | null>(null);
     const incomingChunks = useRef<ArrayBuffer[]>([]);
     const incomingReceived = useRef<number>(0);
+
+    const stopAllMediaAndConnections = useCallback(() => {
+        screenStreamRef.current?.getTracks().forEach(t => t.stop());
+        screenStreamRef.current = null;
+        localStreamRef.current?.getTracks().forEach(t => t.stop());
+        localStreamRef.current = null;
+        if (localVideoRef.current) localVideoRef.current.srcObject = null;
+        if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+        try {
+            dataChannelRef.current?.close();
+        } catch {
+            // ignore
+        }
+        dataChannelRef.current = null;
+        try {
+            pcRef.current?.close();
+        } catch {
+            // ignore
+        }
+        pcRef.current = null;
+    }, []);
 
     const sendSignal = useCallback((roomId: string, payload: Record<string, any>) => {
         if (!stompClient || !stompClient.connected) return;
@@ -163,9 +186,10 @@ const WebRtcInterviewRoomPage = () => {
         return pc;
     }, [sendSignal, setupDataChannel]);
 
-    // 1. Lấy thông tin phòng & mở Camera/Mic TRƯỚC khi bắt tay Signaling
+    // 1. Lấy thông tin phòng, kiểm tra giới hạn tối đa 2 người & mở Camera/Mic TRƯỚC khi bắt tay Signaling
     useEffect(() => {
         let cancelled = false;
+        hasLeftRef.current = false;
         const init = async () => {
             if (!resumeId) return;
             const res = await callFetchWebRtcRoom(resumeId);
@@ -174,6 +198,11 @@ const WebRtcInterviewRoomPage = () => {
                 return;
             }
             if (cancelled) return;
+
+            if (res.data.roomFull) {
+                setErrorMsg('Phòng phỏng vấn 1-1 này hiện đã đủ 2 người tham gia. Vui lòng thử lại khi có một bên rời phòng.');
+                return;
+            }
 
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -199,12 +228,11 @@ const WebRtcInterviewRoomPage = () => {
 
         return () => {
             cancelled = true;
-            localStreamRef.current?.getTracks().forEach(t => t.stop());
-            pcRef.current?.close();
+            stopAllMediaAndConnections();
         };
-    }, [resumeId]);
+    }, [resumeId, stopAllMediaAndConnections]);
 
-    // 2. Đăng ký kênh Signaling WebSocket STOMP để bắt tay SDP Offer / Answer / ICE (chỉ chạy sau khi mediaReady)
+    // 2. Đăng ký kênh Signaling WebSocket STOMP để bắt tay SDP Offer / Answer / ICE & giữ slot phòng 1-1
     useEffect(() => {
         if (!mediaReady || !roomInfo || !stompClient || !stompClient.connected) return;
         createPeerConnection(roomInfo);
@@ -226,11 +254,19 @@ const WebRtcInterviewRoomPage = () => {
         const sub = stompClient.subscribe(`/topic/webrtc/${roomInfo.roomId}`, async (frame) => {
             if (!frame.body) return;
             const signal = JSON.parse(frame.body);
+
+            // Nếu phòng đã đủ 2 người khi người thứ 3 vừa vào cùng lúc
+            if (signal.type === 'room-full' && signal.targetInstance === clientInstanceId.current) {
+                hasLeftRef.current = true;
+                stopAllMediaAndConnections();
+                setErrorMsg(signal.message || 'Phòng phỏng vấn 1-1 này hiện đã đủ 2 người tham gia.');
+                return;
+            }
+
             if (signal.senderInstance === clientInstanceId.current) return;
 
             try {
                 if (signal.type === 'peer-ready') {
-                    // Tạo kết nối mới sạch sẽ khi đối phương mới vào hoặc vừa F5
                     pendingCandidatesRef.current = [];
                     const freshPc = createPeerConnection(roomInfo);
                     const dc = freshPc.createDataChannel('jobcake-p2p-channel');
@@ -270,12 +306,51 @@ const WebRtcInterviewRoomPage = () => {
         // Báo hiệu mình đã sẵn sàng trong phòng
         sendSignal(roomInfo.roomId, { type: 'peer-ready' });
 
+        // Gửi nhịp tim giữ slot phòng mỗi 15 giây
+        const heartbeatTimer = setInterval(() => {
+            if (!hasLeftRef.current) {
+                sendSignal(roomInfo.roomId, { type: 'peer-heartbeat' });
+            }
+        }, 15_000);
+
+        const handleBeforeUnload = () => {
+            if (!hasLeftRef.current) {
+                hasLeftRef.current = true;
+                sendSignal(roomInfo.roomId, { type: 'peer-leave' });
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
         return () => {
-            sendSignal(roomInfo.roomId, { type: 'peer-leave' });
+            clearInterval(heartbeatTimer);
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            if (!hasLeftRef.current) {
+                hasLeftRef.current = true;
+                sendSignal(roomInfo.roomId, { type: 'peer-leave' });
+            }
             sub.unsubscribe();
             pcRef.current?.close();
         };
-    }, [mediaReady, roomInfo, stompClient, createPeerConnection, sendSignal, setupDataChannel]);
+    }, [mediaReady, roomInfo, stompClient, createPeerConnection, sendSignal, setupDataChannel, stopAllMediaAndConnections]);
+
+    const handleLeaveRoom = () => {
+        if (!hasLeftRef.current && roomInfo?.roomId) {
+            hasLeftRef.current = true;
+            sendSignal(roomInfo.roomId, { type: 'peer-leave' });
+        }
+        stopAllMediaAndConnections();
+
+        const fallbackPath = roomInfo?.participantRole === 'INTERVIEWER' ? '/admin/resume' : '/';
+        if (window.history.length > 1) {
+            navigate(-1);
+        } else {
+            if (window.opener) {
+                window.close();
+            }
+            // Nếu trình duyệt chặn window.close() hoặc tab mở trực tiếp từ link Email -> điều hướng thẳng về trang phù hợp
+            navigate(fallbackPath, { replace: true });
+        }
+    };
 
     const toggleMic = () => {
         const audioTrack = localStreamRef.current?.getAudioTracks()[0];
@@ -296,6 +371,7 @@ const WebRtcInterviewRoomPage = () => {
     const handleShareScreen = async () => {
         try {
             const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            screenStreamRef.current = screenStream;
             const screenTrack = screenStream.getVideoTracks()[0];
             const sender = pcRef.current?.getSenders().find(s => s.track?.kind === 'video');
             if (sender) {
@@ -305,6 +381,7 @@ const WebRtcInterviewRoomPage = () => {
                 localVideoRef.current.srcObject = screenStream;
             }
             screenTrack.onended = () => {
+                screenStreamRef.current = null;
                 const camTrack = localStreamRef.current?.getVideoTracks()[0];
                 if (sender && camTrack) sender.replaceTrack(camTrack);
                 if (localVideoRef.current && localStreamRef.current) {
@@ -371,7 +448,10 @@ const WebRtcInterviewRoomPage = () => {
         return (
             <div style={{ maxWidth: 680, margin: '48px auto', padding: 16 }}>
                 <Alert type="error" showIcon message="Không thể vào phòng phỏng vấn" description={errorMsg} />
-                <Button style={{ marginTop: 16 }} onClick={() => navigate('/')}>Quay về Trang chủ</Button>
+                <Space style={{ marginTop: 16 }}>
+                    <Button type="primary" onClick={() => navigate('/')}>Quay về Trang chủ</Button>
+                    <Button onClick={() => window.location.reload()}>Thử tải lại</Button>
+                </Space>
             </div>
         );
     }
@@ -381,11 +461,12 @@ const WebRtcInterviewRoomPage = () => {
             <Card style={{ marginBottom: 14, borderRadius: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
                     <div>
-                        <Space align="center">
+                        <Space align="center" wrap>
                             <Title level={4} style={{ margin: 0 }}>
                                 🎥 Phòng Phỏng Vấn Trực Tuyến P2P (WebRTC)
                             </Title>
                             <Tag color="blue">{roomInfo?.participantRole === 'INTERVIEWER' ? 'Nhà Tuyển Dụng (HR)' : 'Ứng Viên'}</Tag>
+                            <Tag color="cyan">Phòng 1–1 (Tối đa 2 người)</Tag>
                         </Space>
                         <div style={{ marginTop: 4, color: '#4b5563', fontSize: 13 }}>
                             Vị trí: <strong>{roomInfo?.jobName}</strong> • {roomInfo?.companyName} • Ứng viên: <strong>{roomInfo?.candidateName}</strong>
@@ -449,7 +530,7 @@ const WebRtcInterviewRoomPage = () => {
                                 type="primary"
                                 danger
                                 icon={<DisconnectOutlined />}
-                                onClick={() => navigate(-1)}
+                                onClick={handleLeaveRoom}
                             >
                                 Rời Phòng Họp
                             </Button>
