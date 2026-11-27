@@ -296,6 +296,7 @@ export const WebChatDrawerHost = () => {
             }
             placement="right"
             width="min(760px, 96vw)"
+            zIndex={1150}
             open={open}
             onClose={() => setOpen(false)}
             styles={{ body: { padding: 0, display: 'flex', height: '100%' } }}

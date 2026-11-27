@@ -58,6 +58,7 @@ const ViewDetailResume = (props: IProps) => {
         if (status === 'APPROVED') {
             Modal.confirm({
                 title: 'Xác Nhận Tuyển Dụng Chính Thức',
+                zIndex: 1200,
                 icon: <CheckCircleOutlined style={{ color: '#52c41a' }} />,
                 content: (
                     <div style={{ marginTop: 8 }}>
@@ -95,6 +96,7 @@ const ViewDetailResume = (props: IProps) => {
         if (status === 'REJECTED') {
             Modal.confirm({
                 title: 'Xác Nhận Từ Chối Hồ Sơ Ứng Tuyển',
+                zIndex: 1200,
                 content: (
                     <div style={{ marginTop: 8 }}>
                         <p>Bạn có chắc chắn muốn từ chối hồ sơ ứng tuyển của <strong>{dataInit?.email}</strong>?</p>
@@ -172,6 +174,7 @@ const ViewDetailResume = (props: IProps) => {
             if (type !== 'OFFLINE') {
                 Modal.success({
                     title: 'Đã Lên Lịch Phỏng Vấn Trực Tuyến P2P (WebRTC)!',
+                    zIndex: 1200,
                     width: 540,
                     content: (
                         <div style={{ marginTop: 12 }}>
@@ -269,69 +272,80 @@ const ViewDetailResume = (props: IProps) => {
     return (
         <>
             <Drawer
-                title={<span style={{ color: '#111827', fontWeight: 600 }}>Chi Tiết Đơn Ứng Tuyển</span>}
+                title={<span style={{ color: '#111827', fontWeight: 600, whiteSpace: 'nowrap' }}>Chi Tiết Đơn Ứng Tuyển</span>}
                 placement="right"
                 onClose={() => { onClose(false); setDataInit(null); }}
                 open={open}
-                width={"min(680px, 95vw)"}
+                width={"min(700px, 95vw)"}
                 maskClosable={false}
                 destroyOnClose
                 extra={
-                    <Space wrap>
-                        {dataInit?.id && (
-                            <>
-                                <Button
-                                    icon={<RobotOutlined />}
-                                    loading={isAiLoading}
-                                    onClick={async () => {
-                                        setIsAiLoading(true);
-                                        try {
-                                            const res = await callEvaluateResumeAi(dataInit.id);
-                                            if (res?.data) {
-                                                setAiResult(res.data);
-                                                setIsAiModalOpen(true);
-                                            } else {
-                                                message.error(res?.message || "Không thể phân tích CV");
-                                            }
-                                        } finally {
-                                            setIsAiLoading(false);
-                                        }
-                                    }}
-                                    style={{ borderRadius: 6, borderColor: '#7c3aed', color: '#7c3aed', fontWeight: 500 }}
-                                >
-                                    AI Đánh Giá CV
-                                </Button>
-                                <Button
-                                    icon={<VideoCameraOutlined />}
-                                    onClick={() => window.open(`/interview/${dataInit.id}`, '_blank')}
-                                    style={{ borderRadius: 6, borderColor: '#0d9488', color: '#0d9488', fontWeight: 500 }}
-                                >
-                                    Phòng P2P (WebRTC)
-                                </Button>
-                                {dataInit?.user?.id && (
-                                    <Button
-                                        icon={<MessageOutlined />}
-                                        onClick={() => {
-                                            triggerOpenWebChat(
-                                                {
-                                                    userId: Number(dataInit.user.id),
-                                                    name: dataInit.user.name || dataInit.email,
-                                                    email: dataInit.email,
-                                                    roleName: 'USER',
-                                                    companyName: '',
-                                                    lastMessage: `Trao đổi hồ sơ: ${dataInit?.job?.name || ''}`,
-                                                    lastMessageAt: null,
-                                                    unreadCount: 0
-                                                },
-                                                dataInit?.job?.id
-                                            );
-                                        }}
-                                        style={{ borderRadius: 6, borderColor: '#1677ff', color: '#1677ff', fontWeight: 500 }}
-                                    >
-                                        Nhắn Ứng Viên
-                                    </Button>
-                                )}
-                            </>
+                    <Button loading={isSubmit} type="primary" onClick={handleChangeStatus} style={{ borderRadius: 6 }}>
+                        Cập Nhật Trạng Thái
+                    </Button>
+                }
+            >
+                {dataInit?.id && (
+                    <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 8,
+                        padding: '10px 12px',
+                        marginBottom: 16,
+                        background: '#f8fafc',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: 8
+                    }}>
+                        <Button
+                            icon={<RobotOutlined />}
+                            loading={isAiLoading}
+                            onClick={async () => {
+                                setIsAiLoading(true);
+                                try {
+                                    const res = await callEvaluateResumeAi(dataInit.id);
+                                    if (res?.data) {
+                                        setAiResult(res.data);
+                                        setIsAiModalOpen(true);
+                                    } else {
+                                        message.error(res?.message || "Không thể phân tích CV");
+                                    }
+                                } finally {
+                                    setIsAiLoading(false);
+                                }
+                            }}
+                            style={{ borderRadius: 6, borderColor: '#7c3aed', color: '#7c3aed', fontWeight: 500 }}
+                        >
+                            AI Đánh Giá CV
+                        </Button>
+                        <Button
+                            icon={<VideoCameraOutlined />}
+                            onClick={() => window.open(`/interview/${dataInit.id}`, '_blank')}
+                            style={{ borderRadius: 6, borderColor: '#0d9488', color: '#0d9488', fontWeight: 500 }}
+                        >
+                            Phòng P2P (WebRTC)
+                        </Button>
+                        {dataInit?.user?.id && (
+                            <Button
+                                icon={<MessageOutlined />}
+                                onClick={() => {
+                                    triggerOpenWebChat(
+                                        {
+                                            userId: Number(dataInit.user.id),
+                                            name: dataInit.user.name || dataInit.email,
+                                            email: dataInit.email,
+                                            roleName: 'USER',
+                                            companyName: '',
+                                            lastMessage: `Trao đổi hồ sơ: ${dataInit?.job?.name || ''}`,
+                                            lastMessageAt: null,
+                                            unreadCount: 0
+                                        },
+                                        dataInit?.job?.id
+                                    );
+                                }}
+                                style={{ borderRadius: 6, borderColor: '#1677ff', color: '#1677ff', fontWeight: 500 }}
+                            >
+                                Nhắn Ứng Viên
+                            </Button>
                         )}
                         {dataInit?.status === 'REVIEWING' && (
                             <Button
@@ -354,12 +368,8 @@ const ViewDetailResume = (props: IProps) => {
                                 Đổi Lịch Phỏng Vấn
                             </Button>
                         )}
-                        <Button loading={isSubmit} type="primary" onClick={handleChangeStatus} style={{ borderRadius: 6 }}>
-                            Cập Nhật Trạng Thái
-                        </Button>
-                    </Space>
-                }
-            >
+                    </div>
+                )}
                 <Descriptions
                     title="Thông tin hồ sơ ứng tuyển"
                     bordered
@@ -536,6 +546,7 @@ const ViewDetailResume = (props: IProps) => {
             <Modal
                 title={<span style={{ color: '#111827', fontWeight: 600 }}>Duyệt Hồ Sơ & Lên Lịch Phỏng Vấn</span>}
                 open={isModalOpen}
+                zIndex={1200}
                 onOk={handleInterviewSubmit}
                 onCancel={() => {
                     setIsModalOpen(false);
@@ -645,20 +656,22 @@ const ViewDetailResume = (props: IProps) => {
             {/* Modal kết quả AI Đánh giá & Chấm điểm CV */}
             <Modal
                 title={
-                    <Space>
+                    <Space wrap>
                         <RobotOutlined style={{ color: '#7c3aed' }} />
                         <span>Kết Quả AI Phân Tích & Chấm Điểm Hồ Sơ Ứng Viên</span>
                         {aiResult?.engineUsed && <Tag color="purple">{aiResult.engineUsed}</Tag>}
                     </Space>
                 }
                 open={isAiModalOpen}
+                zIndex={1200}
+                centered
                 onCancel={() => setIsAiModalOpen(false)}
                 footer={[
                     <Button key="close" type="primary" onClick={() => setIsAiModalOpen(false)}>
                         Đóng
                     </Button>
                 ]}
-                width={640}
+                width={660}
             >
                 {aiResult && (
                     <div style={{ marginTop: 12 }}>
@@ -667,7 +680,15 @@ const ViewDetailResume = (props: IProps) => {
                                 type="circle"
                                 percent={aiResult.matchScore}
                                 size={84}
-                                strokeColor={aiResult.matchScore >= 80 ? '#16a34a' : aiResult.matchScore >= 65 ? '#2563eb' : '#d97706'}
+                                strokeColor={
+                                    aiResult.matchScore >= 80
+                                        ? '#16a34a'
+                                        : aiResult.matchScore >= 60
+                                            ? '#2563eb'
+                                            : aiResult.matchScore >= 40
+                                                ? '#d97706'
+                                                : '#dc2626'
+                                }
                             />
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontWeight: 700, fontSize: 16, color: '#111827', marginBottom: 4 }}>
