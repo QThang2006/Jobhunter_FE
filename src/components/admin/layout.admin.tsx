@@ -28,6 +28,7 @@ import { setLogoutAction } from '@/redux/slice/accountSlide';
 import { ALL_PERMISSIONS } from '@/config/permissions';
 import NotificationBell from '@/components/share/notification-bell';
 import WebChatWidget from '@/components/share/web-chat-drawer';
+import ManageAccount from '@/components/client/modal/manage.account';
 import { GiCroissant } from 'react-icons/gi';
 
 const { Content, Sider } = Layout;
@@ -38,6 +39,7 @@ const LayoutAdmin = () => {
 
     const [collapsed, setCollapsed] = useState(false);
     const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+    const [openManageAccount, setOpenManageAccount] = useState(false);
     const [activeMenu, setActiveMenu] = useState('');
     const user = useAppSelector(state => state.account.user);
 
@@ -166,6 +168,10 @@ const LayoutAdmin = () => {
 
     const itemsDropdown = [
         {
+            label: <span onClick={() => setOpenManageAccount(true)}><UserOutlined /> Quản lý tài khoản / Mã App</span>,
+            key: 'manage-account',
+        },
+        {
             label: <Link to={'/'}><HomeOutlined /> Trang chủ</Link>,
             key: 'home',
         },
@@ -285,6 +291,7 @@ const LayoutAdmin = () => {
                 <Content className="mobile-admin-content">
                     <Outlet />
                 </Content>
+                <ManageAccount open={openManageAccount} onClose={setOpenManageAccount} />
             </Layout>
         );
     }
@@ -342,6 +349,7 @@ const LayoutAdmin = () => {
                     </Content>
                 </Layout>
             </Layout>
+            <ManageAccount open={openManageAccount} onClose={setOpenManageAccount} />
         </>
     );
 };

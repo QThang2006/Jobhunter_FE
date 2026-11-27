@@ -32,6 +32,10 @@ export const callFetchAccount = () => {
     return axios.get<IBackendRes<IGetAccount>>('/api/v1/auth/account')
 }
 
+export const callGenerateStationCode = () => {
+    return axios.post<IBackendRes<{ code: string; formattedCode: string; expiresInSeconds: number; expiresAt: string }>, IBackendRes<{ code: string; formattedCode: string; expiresInSeconds: number; expiresAt: string }>>('/api/v1/auth/station-code');
+}
+
 export const callRefreshToken = () => {
     return axios.get<IBackendRes<IAccount>>('/api/v1/auth/refresh')
 }

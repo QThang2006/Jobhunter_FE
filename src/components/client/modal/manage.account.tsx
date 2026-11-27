@@ -1,11 +1,11 @@
-import { Button, Col, Form, Modal, Row, Select, Space, Table, Tabs, message, notification, Input } from "antd";
+import { Button, Col, Form, Modal, Row, Select, Space, Table, Tabs, message, notification, Input, Alert, Typography } from "antd";
 import type { TabsProps } from 'antd';
 import { IResume, ISubscribers } from "@/types/backend";
 import { useState, useEffect, useCallback } from 'react';
-import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callUpdateProfile, callFetchProfile, callUpdatePassword } from "@/config/api";
+import { callCreateSubscriber, callFetchAllSkill, callFetchResumeByUser, callGetSubscriberSkills, callUpdateSubscriber, callUpdateProfile, callFetchProfile, callUpdatePassword, callGenerateStationCode } from "@/config/api";
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { MonitorOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import { MonitorOutlined, VideoCameraOutlined, CopyOutlined, LaptopOutlined, ReloadOutlined } from "@ant-design/icons";
 import { SKILLS_LIST } from "@/config/utils";
 import { useAppSelector } from "@/redux/hooks";
 import { useWebSocket } from "@/context/websocket.context";
@@ -391,6 +391,128 @@ const JobByEmail = (props: any) => {
     )
 }
 
+const StationAppConnect = () => {
+    const user = useAppSelector(state => state.account.user);
+    const [loading, setLoading] = useState(false);
+    const [code, setCode] = useState<string>('');
+    const [formattedCode, setFormattedCode] = useState<string>('');
+    const [secondsLeft, setSecondsLeft] = useState<number>(0);
+
+    useEffect(() => {
+        if (secondsLeft <= 0) return;
+        const timer = setInterval(() => {
+            setSecondsLeft(prev => (prev > 0 ? prev - 1 : 0));
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [secondsLeft]);
+
+    const handleGenerate = async () => {
+        setLoading(true);
+        try {
+            const res = await callGenerateStationCode();
+            if (res?.data?.code) {
+                setCode(res.data.code);
+                setFormattedCode(res.data.formattedCode || res.data.code);
+                setSecondsLeft(res.data.expiresInSeconds || 120);
+                message.success("Đã tạo mã đăng nhập 6 số cho App Xưởng Bánh!");
+            } else {
+                notification.error({
+                    message: 'Không thể tạo mã kết nối',
+                    description: res?.message || 'Vui lòng thử lại.'
+                });
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const mm = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+    const ss = String(secondsLeft % 60).padStart(2, '0');
+
+    return (
+        <div style={{ maxWidth: 560, padding: '8px 4px' }}>
+            <Alert
+                type="info"
+                showIcon
+                icon={<LaptopOutlined />}
+                message="Đăng nhập nhanh App Desktop Xưởng Bánh (JobCake Station)"
+                description={
+                    <span>
+                        Dành cho tài khoản đăng nhập bằng <strong>Google (Gmail)</strong> hoặc không muốn gõ mật khẩu trên máy quầy bếp.
+                        Mã 6 số chỉ dùng <strong>đúng 1 lần</strong> và tự hết hạn sau <strong>2 phút</strong>.
+                    </span>
+                }
+                style={{ marginBottom: 18, borderRadius: 8 }}
+            />
+
+            <div style={{
+                padding: '20px 24px',
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: 10,
+                textAlign: 'center'
+            }}>
+                <div style={{ fontSize: 13, color: '#64748b', marginBottom: 8 }}>
+                    Tài khoản kết nối: <strong>{user?.name}</strong> ({user?.email})
+                </div>
+
+                {code && secondsLeft > 0 ? (
+                    <>
+                        <Typography.Title
+                            level={1}
+                            style={{
+                                margin: '8px 0 4px',
+                                letterSpacing: 10,
+                                color: '#1677ff',
+                                fontFamily: 'monospace',
+                                fontSize: 40
+                            }}
+                        >
+                            {formattedCode}
+                        </Typography.Title>
+                        <div style={{ fontSize: 13, color: '#dc2626', fontWeight: 600, marginBottom: 16 }}>
+                            ⏱ Còn hiệu lực: {mm}:{ss} (chỉ dùng 1 lần)
+                        </div>
+                        <Space wrap>
+                            <Button
+                                type="primary"
+                                icon={<CopyOutlined />}
+                                onClick={() => {
+                                    navigator.clipboard.writeText(code);
+                                    message.success("Đã sao chép mã 6 số!");
+                                }}
+                            >
+                                Sao chép mã
+                            </Button>
+                            <Button icon={<ReloadOutlined />} loading={loading} onClick={handleGenerate}>
+                                Tạo mã mới
+                            </Button>
+                        </Space>
+                    </>
+                ) : (
+                    <>
+                        {code && secondsLeft === 0 && (
+                            <div style={{ color: '#d97706', fontSize: 13, marginBottom: 12 }}>
+                                Mã trước đó đã hết hạn. Bấm nút bên dưới để lấy mã mới.
+                            </div>
+                        )}
+                        <Button
+                            type="primary"
+                            size="large"
+                            icon={<LaptopOutlined />}
+                            loading={loading}
+                            onClick={handleGenerate}
+                            style={{ borderRadius: 8 }}
+                        >
+                            Tạo Mã Đăng Nhập App (6 số)
+                        </Button>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const ManageAccount = (props: IProps) => {
     const { open, onClose } = props;
 
@@ -408,6 +530,11 @@ const ManageAccount = (props: IProps) => {
             key: 'user-shift',
             label: `Lịch ca làm của tôi`,
             children: <UserShiftSchedule />,
+        },
+        {
+            key: 'station-app-connect',
+            label: `Kết nối App Xưởng Bánh`,
+            children: <StationAppConnect />,
         },
         {
             key: 'email-by-skills',
