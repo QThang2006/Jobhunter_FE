@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Badge, Button, Card, Col, Input, Row, Space, Statistic, Table, Tag, Typography, message } from 'antd';
+import { Badge, Button, Card, Col, Input, Row, Select, Space, Statistic, Table, Tag, Typography, message } from 'antd';
 import {
     ApartmentOutlined,
     CloudSyncOutlined,
@@ -8,13 +8,15 @@ import {
     NotificationOutlined,
     ReloadOutlined,
     SendOutlined,
+    ShopOutlined,
     WifiOutlined
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
-import { callFetchBakeryNetworkStatus, callSendBakeryDirective } from '@/config/api';
-import { IBakeryNetworkStatus, IBakeryStationDto, IBakeryStationLog, ISharedRecipeIndex } from '@/types/backend';
+import { callFetchBakeryNetworkStatus, callFetchCompany, callSendBakeryDirective } from '@/config/api';
+import { IBakeryNetworkStatus, IBakeryStationDto, IBakeryStationLog, ICompany, ISharedRecipeIndex } from '@/types/backend';
 import { useWebSocket } from '@/context/websocket.context';
+import { useAppSelector } from '@/redux/hooks';
 
 const { Title, Text } = Typography;
 
@@ -26,23 +28,37 @@ const formatBytes = (bytes?: number) => {
 };
 
 const BakeryNetworkPage = () => {
+    const currentUser = useAppSelector(state => state.account.user);
+    const isSuperAdmin = currentUser?.role?.name === 'SUPER_ADMIN';
+
     const [data, setData] = useState<IBakeryNetworkStatus | null>(null);
+    const [companies, setCompanies] = useState<ICompany[]>([]);
+    const [selectedCompanyId, setSelectedCompanyId] = useState<string | number | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
     const [directiveText, setDirectiveText] = useState<string>('');
     const [sending, setSending] = useState<boolean>(false);
     const { stompClient } = useWebSocket();
 
+    useEffect(() => {
+        if (!isSuperAdmin) return;
+        callFetchCompany('page=1&size=100').then(res => {
+            if (res?.data?.result) {
+                setCompanies(res.data.result);
+            }
+        }).catch(() => {});
+    }, [isSuperAdmin]);
+
     const fetchStatus = useCallback(async (silent = false) => {
         if (!silent) setLoading(true);
         try {
-            const res = await callFetchBakeryNetworkStatus();
+            const res = await callFetchBakeryNetworkStatus(isSuperAdmin ? selectedCompanyId : undefined);
             if (res?.data) {
                 setData(res.data);
             }
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [isSuperAdmin, selectedCompanyId]);
 
     useEffect(() => {
         fetchStatus();
@@ -63,9 +79,10 @@ const BakeryNetworkPage = () => {
         }
         setSending(true);
         try {
-            const res = await callSendBakeryDirective(directiveText.trim());
+            const res = await callSendBakeryDirective(directiveText.trim(), isSuperAdmin ? selectedCompanyId : undefined);
             if (res?.data) {
-                message.success('Đã gửi chỉ đạo! Tracker xưởng bánh sẽ tự phát Loa UDP tới toàn bộ máy trạm.');
+                const target = res.data.companyName || data?.scopedCompanyName || 'xưởng bánh';
+                message.success(`Đã gửi chỉ đạo tới ${target}! Tracker xưởng sẽ tự phát Loa UDP tới đúng các máy trạm của tiệm.`);
                 setDirectiveText('');
                 fetchStatus(true);
             }
@@ -75,8 +92,9 @@ const BakeryNetworkPage = () => {
     };
 
     const stationColumns: ColumnsType<IBakeryStationDto> = [
-        { title: 'Mã Máy', dataIndex: 'stationId', key: 'stationId', width: 120, render: v => <Tag color="geekblue">{v}</Tag> },
+        { title: 'Mã Máy', dataIndex: 'stationId', key: 'stationId', width: 115, render: v => <Tag color="geekblue">{v}</Tag> },
         { title: 'Nhân Viên Trực', dataIndex: 'bakerName', key: 'bakerName', render: v => <strong>{v}</strong> },
+        { title: 'Tiệm Bánh', dataIndex: 'companyName', key: 'companyName', render: v => <Tag color="cyan" icon={<ShopOutlined />}>{v || 'Nội bộ'}</Tag> },
         { title: 'Khu Vực Bếp', dataIndex: 'kitchenZone', key: 'kitchenZone', render: v => <Tag color="blue">{v}</Tag> },
         {
             title: 'Địa Chỉ Mạng LAN (TCP / UDP)',
@@ -102,7 +120,8 @@ const BakeryNetworkPage = () => {
 
     const recipeColumns: ColumnsType<ISharedRecipeIndex> = [
         { title: 'Tên Tệp Công Thức / Ảnh Mẫu', dataIndex: 'fileName', key: 'fileName', render: v => <strong>📄 {v}</strong> },
-        { title: 'Dung Lượng', dataIndex: 'fileSize', key: 'fileSize', width: 120, render: v => formatBytes(v) },
+        { title: 'Tiệm Bánh', dataIndex: 'companyName', key: 'companyName', width: 155, render: v => <Tag color="cyan">{v || 'Nội bộ'}</Tag> },
+        { title: 'Dung Lượng', dataIndex: 'fileSize', key: 'fileSize', width: 115, render: v => formatBytes(v) },
         {
             title: 'Mã Toàn Vẹn SHA-256',
             dataIndex: 'sha256Hash',
@@ -135,7 +154,7 @@ const BakeryNetworkPage = () => {
             title: 'Sự Kiện',
             dataIndex: 'eventType',
             key: 'eventType',
-            width: 150,
+            width: 145,
             render: (v: string) => {
                 const color = v === 'ONLINE' || v === 'TRACKER_START' ? 'green'
                     : v === 'ADMIN_DIRECTIVE' ? 'gold'
@@ -143,27 +162,46 @@ const BakeryNetworkPage = () => {
                 return <Tag color={color}>{v}</Tag>;
             }
         },
-        { title: 'Nguồn Tracker', dataIndex: 'trackerHost', key: 'trackerHost', width: 170 },
+        { title: 'Tiệm Bánh', dataIndex: 'companyName', key: 'companyName', width: 155, render: v => <Tag color="cyan">{v || 'Toàn hệ thống'}</Tag> },
+        { title: 'Nguồn Tracker', dataIndex: 'trackerHost', key: 'trackerHost', width: 160 },
         { title: 'Chi Tiết Hoạt Động', dataIndex: 'detail', key: 'detail' }
     ];
 
     const trackerOnline = Boolean(data?.trackerOnline);
+    const scopeLabel = data?.scopedCompanyName || (isSuperAdmin ? 'Tất cả Tiệm Bánh' : (currentUser?.company?.name || 'Tiệm bánh của bạn'));
 
     return (
         <div style={{ padding: 8 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
                 <div>
-                    <Title level={4} style={{ margin: 0 }}>
-                        <ApartmentOutlined style={{ color: '#1677ff', marginRight: 8 }} />
-                        Giám Sát Mạng Lưới Phân Tán Xưởng Bánh (Cloud ↔ RMI/P2P)
-                    </Title>
-                    <Text type="secondary">
-                        Theo dõi thời gian thực các máy trạm JobCake Station tại xưởng bánh và gửi thông báo chỉ đạo từ xa qua loa UDP.
-                    </Text>
+                    <Space wrap align="center">
+                        <Title level={4} style={{ margin: 0 }}>
+                            <ApartmentOutlined style={{ color: '#1677ff', marginRight: 8 }} />
+                            Giám Sát Mạng Lưới Phân Tán Xưởng Bánh (Cloud ↔ RMI/P2P)
+                        </Title>
+                        <Tag color="blue" icon={<ShopOutlined />}>Phạm vi: {scopeLabel}</Tag>
+                    </Space>
+                    <div style={{ marginTop: 4 }}>
+                        <Text type="secondary">
+                            Dữ liệu máy trạm, công thức P2P và loa chỉ đạo được cô lập độc lập theo từng tiệm bánh.
+                        </Text>
+                    </div>
                 </div>
-                <Button icon={<ReloadOutlined />} onClick={() => fetchStatus()} loading={loading}>
-                    Làm mới
-                </Button>
+                <Space wrap>
+                    {isSuperAdmin && (
+                        <Select
+                            allowClear
+                            placeholder="Lọc theo Tiệm bánh (Mặc định: Tất cả)"
+                            style={{ minWidth: 240 }}
+                            value={selectedCompanyId}
+                            onChange={(val) => setSelectedCompanyId(val)}
+                            options={companies.map(c => ({ label: c.name, value: c.id }))}
+                        />
+                    )}
+                    <Button icon={<ReloadOutlined />} onClick={() => fetchStatus()} loading={loading}>
+                        Làm mới
+                    </Button>
+                </Space>
             </div>
 
             <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
@@ -226,9 +264,9 @@ const BakeryNetworkPage = () => {
 
             <Card
                 title={
-                    <Space>
+                    <Space wrap>
                         <NotificationOutlined style={{ color: '#f59e0b' }} />
-                        <span>Phát Chỉ Đạo Khẩn Từ Chủ Tiệm Xuống Toàn Xưởng Bánh (Web Cloud → RMI Tracker → Loa UDP Broadcast)</span>
+                        <span>Phát Chỉ Đạo Khẩn Xuống Xưởng ({scopeLabel}) — Web Cloud → RMI Tracker → Loa UDP</span>
                     </Space>
                 }
                 style={{ marginBottom: 16, borderRadius: 10 }}
@@ -236,7 +274,7 @@ const BakeryNetworkPage = () => {
                 <Space.Compact style={{ width: '100%' }}>
                     <Input
                         size="large"
-                        placeholder="VD: Đơn bánh cưới 3 tầng #108 khách ghé lấy sớm lúc 16:30, bếp nướng & phòng kem ưu tiên hoàn thiện!"
+                        placeholder={`Nhập lệnh chỉ đạo gửi riêng tới ${scopeLabel}...`}
                         value={directiveText}
                         onChange={e => setDirectiveText(e.target.value)}
                         onPressEnter={handleSendDirective}
@@ -258,28 +296,28 @@ const BakeryNetworkPage = () => {
                 title={
                     <Space>
                         <Badge status={trackerOnline ? 'processing' : 'warning'} />
-                        <span>1. Danh Sách Máy Trạm Nhân Viên Đang Hoạt Động Tại Xưởng</span>
+                        <span>1. Danh Sách Máy Trạm Nhân Viên Đang Hoạt Động ({scopeLabel})</span>
                     </Space>
                 }
                 style={{ marginBottom: 16, borderRadius: 10 }}
             >
                 <Table<IBakeryStationDto>
-                    rowKey="stationId"
+                    rowKey={(r) => `${r.companyId || 'local'}-${r.stationId}`}
                     columns={stationColumns}
                     dataSource={data?.onlineStations || []}
                     loading={loading}
                     pagination={false}
                     locale={{
                         emptyText: trackerOnline
-                            ? 'Chưa có máy trạm nào đăng nhập vào Tracker'
+                            ? `Chưa có máy trạm nào của ${scopeLabel} đăng nhập vào Tracker`
                             : 'Tracker xưởng bánh đang tắt (Các máy trạm tại tiệm đang tự vận hành ở chế độ P2P Thuần qua mạng LAN)'
                     }}
-                    scroll={{ x: 700 }}
+                    scroll={{ x: 760 }}
                 />
             </Card>
 
             <Card
-                title="2. Chỉ Mục Tệp Công Thức & Mẫu Bánh Đang Chia Sẻ Trong Mạng P2P (shared_recipe_indexes)"
+                title={`2. Chỉ Mục Tệp Công Thức & Mẫu Bánh Đang Chia Sẻ (${scopeLabel})`}
                 style={{ marginBottom: 16, borderRadius: 10 }}
             >
                 <Table<ISharedRecipeIndex>
@@ -288,12 +326,12 @@ const BakeryNetworkPage = () => {
                     dataSource={data?.sharedRecipes || []}
                     loading={loading}
                     pagination={{ pageSize: 6 }}
-                    scroll={{ x: 750 }}
+                    scroll={{ x: 780 }}
                 />
             </Card>
 
             <Card
-                title="3. Nhật Ký Hoạt Động Mạng Phân Tán Xưởng Bánh Trên PostgreSQL (bakery_station_logs)"
+                title={`3. Nhật Ký Hoạt Động Mạng Phân Tán Trên PostgreSQL (${scopeLabel})`}
                 style={{ borderRadius: 10 }}
             >
                 <Table<IBakeryStationLog>
@@ -302,7 +340,7 @@ const BakeryNetworkPage = () => {
                     dataSource={data?.recentLogs || []}
                     loading={loading}
                     pagination={{ pageSize: 8 }}
-                    scroll={{ x: 750 }}
+                    scroll={{ x: 780 }}
                 />
             </Card>
         </div>

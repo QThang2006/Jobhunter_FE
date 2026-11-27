@@ -419,14 +419,18 @@ export const callFetchCompanyEmployees = (companyId?: string | number) => {
 };
 
 /**
- * Module Bakery P2P Network Monitor (Đồng bộ từ JobCake RMI Tracker)
+ * Module Bakery P2P Network Monitor (Đồng bộ từ JobCake RMI Tracker — phân tách theo từng tiệm bánh)
  */
-export const callFetchBakeryNetworkStatus = () => {
-    return axios.get<IBackendRes<IBakeryNetworkStatus>>('/api/v1/bakery-network/status');
+export const callFetchBakeryNetworkStatus = (companyId?: number | string) => {
+    const query = companyId ? `?companyId=${companyId}` : '';
+    return axios.get<IBackendRes<IBakeryNetworkStatus>>(`/api/v1/bakery-network/status${query}`);
 };
 
-export const callSendBakeryDirective = (message: string) => {
-    return axios.post<IBackendRes<{ queued: boolean; directive: string; pendingCount: number }>>('/api/v1/bakery-network/directive', { message });
+export const callSendBakeryDirective = (message: string, companyId?: number | string) => {
+    return axios.post<IBackendRes<{ queued: boolean; directive: string; companyId?: number; companyName?: string; pendingCount: number }>>(
+        '/api/v1/bakery-network/directive',
+        companyId ? { message, companyId: Number(companyId) } : { message }
+    );
 };
 
 /**

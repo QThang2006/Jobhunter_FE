@@ -244,6 +244,7 @@ export interface IBakeryStationDto {
     bakerName: string;
     email?: string;
     kitchenZone: string;
+    companyId?: number | null;
     companyName?: string;
     ipAddress: string;
     tcpPort: number;
@@ -260,6 +261,7 @@ export interface ISharedRecipeIndex {
     stationId: string;
     bakerName: string;
     kitchenZone: string;
+    companyId?: number | null;
     companyName: string;
     updatedAt: string;
 }
@@ -267,6 +269,8 @@ export interface ISharedRecipeIndex {
 export interface IBakeryStationLog {
     id: number;
     trackerHost: string;
+    companyId?: number | null;
+    companyName?: string;
     eventType: string;
     detail: string;
     activeStationCount: number;
@@ -283,6 +287,8 @@ export interface IBakeryNetworkStatus {
     sharedRecipes: ISharedRecipeIndex[];
     recentLogs: IBakeryStationLog[];
     pendingDirectiveCount: number;
+    scopedCompanyId?: number | null;
+    scopedCompanyName?: string;
 }
 
 export interface IWebChatContact {
